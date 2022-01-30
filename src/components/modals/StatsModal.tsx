@@ -15,6 +15,7 @@ type Props = {
   gameStats: GameStats
   isGameLost: boolean
   isGameWon: boolean
+  day?: number
   handleShareCopySuccess: () => void
   handleShareFailure: () => void
   handleNewGameClick: () => void
@@ -27,6 +28,7 @@ export const StatsModal = ({
   gameStats,
   isGameLost,
   isGameWon,
+  day,
   handleShareCopySuccess,
   handleShareFailure,
   handleNewGameClick,
@@ -43,7 +45,7 @@ export const StatsModal = ({
   }, [guesses, isGameLost, handleShareCopySuccess, handleShareFailure])
 
   const renderShareText = useCallback((guesses: Word[], lost: boolean) => {
-    const text = getShareText(guesses, lost)
+    const text = getShareText(guesses, lost, day)
     const rows = text.split('\n')
     return (
       <p className="text-xs text-left pt-5">
@@ -55,7 +57,7 @@ export const StatsModal = ({
         ))}
       </p>
     )
-  }, [])
+  }, [day])
 
   return (
     <BaseModal title="Statisztika" isOpen={isOpen} handleClose={handleClose}>

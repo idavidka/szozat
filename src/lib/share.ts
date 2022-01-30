@@ -1,8 +1,9 @@
 import { MAX_NUMBER_OF_GUESSES } from '../constants/constants'
 import { getGuessStatuses, Word } from './statuses'
-import { solutionIndex, solutionCreator } from './words'
+import { solutionCreator, getCurrentWord } from './words'
 
-export const getShareText = (guesses: Word[], lost: boolean) => {
+export const getShareText = (guesses: Word[], lost: boolean, day?: number) => {
+  const { solutionIndex } = getCurrentWord(day)
   const identifier =
     solutionCreator !== undefined
       ? 'Egyéni feladvány: ' + solutionCreator

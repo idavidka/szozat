@@ -249,6 +249,7 @@ function App() {
         handleClose={() => setIsStatsModalOpen(false)}
         guesses={guesses}
         gameStats={stats}
+        day={day}
         isGameLost={isGameLost}
         isGameWon={isGameWon}
         handleShareCopySuccess={handleShareCopySuccess}
