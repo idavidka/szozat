@@ -198,20 +198,22 @@ function App() {
     setIsNewGameModalOpen(false)
   }
 
-  const handleManualFailure = () => {
-    const newGuesses = [...guesses, currentGuess].filter(
-      (guess) => guess.length
-    )
+  const handleManualEnd = () => {
+    if (!isGameWon) {
+      const newGuesses = [...guesses, currentGuess].filter(
+        (guess) => guess.length
+      )
 
-    for (let i = 0; i < MAX_NUMBER_OF_GUESSES; i++) {
-      if (!newGuesses[i]) {
-        newGuesses[i] = ['-', '-', '-', '-', '-']
+      for (let i = 0; i < MAX_NUMBER_OF_GUESSES; i++) {
+        if (!newGuesses[i]) {
+          newGuesses[i] = ['-', '-', '-', '-', '-']
+        }
       }
-    }
-    setGuesses(newGuesses)
+      setGuesses(newGuesses)
 
-    setStats(addStatsForCompletedGame(stats, newGuesses.length))
-    setIsGameLost(true)
+      setStats(addStatsForCompletedGame(stats, newGuesses.length))
+      setIsGameLost(true)
+    }
     setIsStatsModalOpen(true)
   }
 
@@ -260,7 +262,7 @@ function App() {
       <NewGameModal
         isOpen={isNewGameModelOpen}
         handleClose={() => setIsNewGameModalOpen(false)}
-        handleFailure={handleManualFailure}
+        handleFailure={handleManualEnd}
       />
       <AboutModal
         isOpen={isAboutModalOpen}
