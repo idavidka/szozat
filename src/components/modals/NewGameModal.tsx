@@ -1,20 +1,13 @@
 import { BaseModal } from './BaseModal'
-import { Word } from '../../lib/statuses'
 import React from 'react'
 
 type Props = {
   isOpen: boolean
   handleClose: () => void
   handleFailure: () => void
-  solution: Word
 }
 
-export const NewGameModal = ({
-  isOpen,
-  solution,
-  handleClose,
-  handleFailure,
-}: Props) => {
+export const NewGameModal = ({ isOpen, handleClose, handleFailure }: Props) => {
   return (
     <BaseModal title="Feladás" isOpen={isOpen} handleClose={handleClose}>
       <h4 className="text-lg leading-6 font-medium text-gray-900 dark:text-slate-200">

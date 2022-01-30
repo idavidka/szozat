@@ -212,6 +212,7 @@ function App() {
 
     setStats(addStatsForCompletedGame(stats, newGuesses.length))
     setIsGameLost(true)
+    setIsStatsModalOpen(true)
   }
 
   return (
@@ -260,7 +261,6 @@ function App() {
         isOpen={isNewGameModelOpen}
         handleClose={() => setIsNewGameModalOpen(false)}
         handleFailure={handleManualFailure}
-        solution={solution}
       />
       <AboutModal
         isOpen={isAboutModalOpen}
