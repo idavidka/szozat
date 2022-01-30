@@ -4,6 +4,7 @@ import {
   PlusCircleIcon,
   RefreshIcon,
 } from '@heroicons/react/outline'
+import animateScrollTo from 'animated-scroll-to'
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Alert } from './components/alerts/Alert'
 import { Grid } from './components/grid/Grid'
@@ -31,17 +32,16 @@ import { ThemeContext } from './components/theme/ThemeContext'
 import { CreatePuzzleModal } from './components/modals/CreatePuzzleModal'
 
 const ALERT_TIME_MS = 2000
+const NEW_GAME_TIME_MS = 500
 
 function App() {
   const context = React.useContext(ThemeContext)
   const [currentGuess, setCurrentGuess] = useState<Word>([])
   const [isGameWon, setIsGameWon] = useState(false)
-  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false)
-  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState<
+    'info' | 'new-game' | 'stat' | 'about' | 'create-puzzle' | false
+  >(false)
   const [isNotEnoughLetters, setIsNotEnoughLetters] = useState(false)
-  const [isStatsModalOpen, setIsStatsModalOpen] = useState(false)
-  const [isNewGameModelOpen, setIsNewGameModalOpen] = useState(false)
-  const [isCreatePuzzleModalOpen, setIsCreatePuzzleModalOpen] = useState(false)
   const [isWordNotFoundAlertOpen, setIsWordNotFoundAlertOpen] = useState(false)
   const [shareComplete, setShareComplete] = useState(false)
   const [shareFailed, setShareFailed] = useState(false)
@@ -55,7 +55,7 @@ function App() {
   const [guesses, setGuesses] = useState<Word[]>(() => {
     const loaded = loadGameStateFromLocalStorage()
     if (loaded == null) {
-      setIsInfoModalOpen(true)
+      setIsModalOpen('info')
     }
     if (loaded == null || !isWordEqual(loaded.solution, solution)) {
       return []
@@ -71,33 +71,57 @@ function App() {
     }
     return loaded.guesses
   })
-  const [gridSize, setGridSize] = useState({ width: 0, height: 0 })
+  // const [gridSize, setGridSize] = useState({ width: 0, height: 0 })
 
   const gridContainerRef = useRef<HTMLDivElement>(null)
 
   const [stats, setStats] = useState(() => loadStats())
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (gridContainerRef.current == null) {
-        return
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     if (gridContainerRef.current == null) {
+  //       return
+  //     }
+  //     const gridContainerHeight = gridContainerRef.current.clientHeight
+  //     const gridWidth = Math.min(
+  //       Math.floor(gridContainerHeight * (5 / MAX_NUMBER_OF_GUESSES)),
+  //       350
+  //     )
+  //     const gridHeight = Math.floor((MAX_NUMBER_OF_GUESSES * gridWidth) / 5)
+  //     setGridSize({ width: gridWidth, height: gridHeight })
+  //   }
+  //   window.addEventListener('resize', handleResize)
+  //   handleResize()
+  //   return () => {
+  //     window.removeEventListener('resize', handleResize)
+  //   }
+  // }, [setGridSize])
+
+  const checkViewPort = () => {
+    const currentRow = gridContainerRef.current?.querySelector(
+      '.current-row'
+    ) as HTMLDivElement | null
+    const parent = gridContainerRef.current
+
+    if (parent && currentRow) {
+      if (parent.offsetTop > currentRow.offsetTop - parent.scrollTop) {
+        animateScrollTo(currentRow.previousElementSibling ?? currentRow, {
+          elementToScroll: parent,
+        })
       }
-      const gridContainerHeight = gridContainerRef.current.clientHeight
-      const gridWidth = Math.min(
-        Math.floor(gridContainerHeight * (5 / MAX_NUMBER_OF_GUESSES)),
-        350
-      )
-      const gridHeight = Math.floor((MAX_NUMBER_OF_GUESSES * gridWidth) / 5)
-      setGridSize({ width: gridWidth, height: gridHeight })
+      if (
+        parent.offsetTop + parent.offsetHeight <
+        currentRow.offsetTop + currentRow.offsetHeight - parent.scrollTop
+      ) {
+        animateScrollTo(currentRow.nextElementSibling ?? currentRow, {
+          elementToScroll: parent,
+        })
+      }
     }
-    window.addEventListener('resize', handleResize)
-    handleResize()
-    return () => {
-      window.removeEventListener('resize', handleResize)
-    }
-  }, [setGridSize])
+  }
 
   useEffect(() => {
+    checkViewPort()
     saveGameStateToLocalStorage({ guesses, solution, day })
   }, [guesses, solution, day])
 
@@ -108,17 +132,19 @@ function App() {
       )
       setTimeout(() => {
         setSuccessAlert('')
-        setIsStatsModalOpen(true)
+        isModalOpen !== 'new-game' && setIsModalOpen('stat')
       }, ALERT_TIME_MS)
     }
     if (isGameLost) {
       setTimeout(() => {
-        setIsStatsModalOpen(true)
+        isModalOpen !== 'new-game' && setIsModalOpen('stat')
       }, ALERT_TIME_MS)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isGameWon, isGameLost])
 
   const onChar = (value: CharValue) => {
+    checkViewPort()
     if (
       currentGuess.length < 5 &&
       guesses.length < MAX_NUMBER_OF_GUESSES &&
@@ -129,10 +155,12 @@ function App() {
   }
 
   const onDelete = () => {
+    checkViewPort()
     setCurrentGuess(currentGuess.slice(0, -1))
   }
 
   const onEnter = () => {
+    checkViewPort()
     if (isGameWon || isGameLost) {
       return
     }
@@ -195,10 +223,11 @@ function App() {
     setGuesses([])
     setCurrentGuess([])
     setDay((prev) => prev + 1)
-    setIsNewGameModalOpen(false)
+    setIsModalOpen(false)
   }
 
   const handleManualEnd = () => {
+    setIsModalOpen(false)
     if (!isGameWon) {
       const newGuesses = [...guesses, currentGuess].filter(
         (guess) => guess.length
@@ -214,7 +243,11 @@ function App() {
       setStats(addStatsForCompletedGame(stats, newGuesses.length))
       setIsGameLost(true)
     }
-    setIsStatsModalOpen(true)
+
+    setTimeout(() => {
+      setSuccessAlert('')
+      setIsModalOpen('stat')
+    }, NEW_GAME_TIME_MS)
   }
 
   return (
@@ -244,12 +277,12 @@ function App() {
         variant="warning"
       />
       <InfoModal
-        isOpen={isInfoModalOpen}
-        handleClose={() => setIsInfoModalOpen(false)}
+        isOpen={isModalOpen === 'info'}
+        handleClose={() => setIsModalOpen(false)}
       />
       <StatsModal
-        isOpen={isStatsModalOpen}
-        handleClose={() => setIsStatsModalOpen(false)}
+        isOpen={isModalOpen === 'stat'}
+        handleClose={() => setIsModalOpen(false)}
         guesses={guesses}
         gameStats={stats}
         day={day}
@@ -260,17 +293,17 @@ function App() {
         handleNewGameClick={handleNewGame}
       />
       <NewGameModal
-        isOpen={isNewGameModelOpen}
-        handleClose={() => setIsNewGameModalOpen(false)}
+        isOpen={isModalOpen === 'new-game'}
+        handleClose={() => setIsModalOpen(false)}
         handleFailure={handleManualEnd}
       />
       <AboutModal
-        isOpen={isAboutModalOpen}
-        handleClose={() => setIsAboutModalOpen(false)}
+        isOpen={isModalOpen === 'about'}
+        handleClose={() => setIsModalOpen(false)}
       />
       <CreatePuzzleModal
-        isOpen={isCreatePuzzleModalOpen}
-        handleClose={() => setIsCreatePuzzleModalOpen(false)}
+        isOpen={isModalOpen === 'create-puzzle'}
+        handleClose={() => setIsModalOpen(false)}
       />
       <div className="bg-white dark:bg-gray-800 transition-all">
         <div className="flex flex-col h-[100vh] py-8 w-[100%] max-w-[500px] mx-auto sm:px-6 lg:px-8">
@@ -281,29 +314,29 @@ function App() {
             <ThemeToggle />
             <InformationCircleIcon
               className="h-6 w-6 cursor-pointer dark:text-gray-300"
-              onClick={() => setIsInfoModalOpen(true)}
+              onClick={() => setIsModalOpen('info')}
             />
             <ChartBarIcon
               className="h-6 w-6 cursor-pointer dark:text-gray-300"
-              onClick={() => setIsStatsModalOpen(true)}
+              onClick={() => setIsModalOpen('stat')}
             />
             <PlusCircleIcon
               className="h-6 w-6 cursor-pointer dark:text-gray-300"
-              onClick={() => setIsCreatePuzzleModalOpen(true)}
+              onClick={() => setIsModalOpen('create-puzzle')}
             />
             <RefreshIcon
               className="h-6 w-6 cursor-pointer dark:text-gray-300"
-              onClick={() => setIsNewGameModalOpen(true)}
+              onClick={() => setIsModalOpen('new-game')}
             />
           </div>
           <div
             ref={gridContainerRef}
-            className="grow flex justify-center items-center overflow-hidden mb-5"
+            className="grow flex justify-center overflow-auto mb-5"
           >
             <Grid
               guesses={guesses}
               currentGuess={currentGuess}
-              size={gridSize}
+              // size={gridSize}
               day={day}
             />
           </div>
@@ -321,7 +354,7 @@ function App() {
           <button
             type="button"
             className="mx-auto mt-8 flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 select-none"
-            onClick={() => setIsAboutModalOpen(true)}
+            onClick={() => setIsModalOpen('about')}
           >
             A játék eredetéről
           </button>

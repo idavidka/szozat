@@ -1,3 +1,4 @@
+import moment from 'moment'
 import { MAX_NUMBER_OF_GUESSES } from '../constants/constants'
 import { getGuessStatuses, Word } from './statuses'
 import { solutionCreator, getCurrentWord } from './words'
@@ -7,7 +8,9 @@ export const getShareText = (guesses: Word[], lost: boolean, day: number) => {
   const identifier =
     solutionCreator !== undefined
       ? 'Egyéni feladvány: ' + solutionCreator
-      : solutionIndex + '. nap'
+      : solutionIndex +
+        '. nap, ' +
+        moment('2022-01-01').add(solutionIndex, 'days').format('YYYY. MM. DD.')
   const text =
     'Szózat - ' +
     identifier +
