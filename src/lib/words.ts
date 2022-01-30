@@ -21,11 +21,11 @@ export const isWinningWord = (word: Word) => {
   return isWordEqual(solution, word)
 }
 
-export const getWordOfDay = () => {
+export const getWordOfDay = (day?: number) => {
   // January 1, 2022 Game Epoch
   const epochMs = new Date('January 1, 2022 00:00:00').valueOf()
-  const now = Date.now()
   const msInDay = 86400000
+  const now = Date.now() + (day ?? 0) * msInDay
   const index = Math.floor((now - epochMs) / msInDay)
   const indexModulo = index % WORDS.length
   const nextday = (index + 1) * msInDay + epochMs
@@ -56,9 +56,9 @@ export const getWordFromUrl = () => {
   }
 }
 
-export const getCurrentWord = () => {
+export const getCurrentWord = (day?: number) => {
   const wordFromUrl = getWordFromUrl()
-  const wordOfDay = getWordOfDay()
+  const wordOfDay = getWordOfDay(day)
   if (wordFromUrl !== undefined) {
     return {
       ...wordFromUrl,

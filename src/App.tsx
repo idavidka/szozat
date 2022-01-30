@@ -2,19 +2,21 @@ import {
   InformationCircleIcon,
   ChartBarIcon,
   PlusCircleIcon,
+  RefreshIcon,
 } from '@heroicons/react/outline'
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Alert } from './components/alerts/Alert'
 import { Grid } from './components/grid/Grid'
 import { Keyboard } from './components/keyboard/Keyboard'
 import { AboutModal } from './components/modals/AboutModal'
 import { InfoModal } from './components/modals/InfoModal'
 import { StatsModal } from './components/modals/StatsModal'
+import { NewGameModal } from './components/modals/NewGameModal'
 import {
   isWordInWordList,
   isWinningWord,
-  solution,
   isWordEqual,
+  getCurrentWord,
 } from './lib/words'
 import { WIN_MESSAGES } from './constants/strings'
 import { addStatsForCompletedGame, loadStats } from './lib/stats'
@@ -38,12 +40,18 @@ function App() {
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false)
   const [isNotEnoughLetters, setIsNotEnoughLetters] = useState(false)
   const [isStatsModalOpen, setIsStatsModalOpen] = useState(false)
+  const [isNewGameModelOpen, setIsNewGameModalOpen] = useState(false)
   const [isCreatePuzzleModalOpen, setIsCreatePuzzleModalOpen] = useState(false)
   const [isWordNotFoundAlertOpen, setIsWordNotFoundAlertOpen] = useState(false)
   const [shareComplete, setShareComplete] = useState(false)
   const [shareFailed, setShareFailed] = useState(false)
   const [isGameLost, setIsGameLost] = useState(false)
   const [successAlert, setSuccessAlert] = useState('')
+
+  const savedDay = useMemo(() => loadGameStateFromLocalStorage()?.day ?? 0, [])
+  const [day, setDay] = useState(savedDay)
+
+  const { solution } = useMemo(() => getCurrentWord(day), [day])
   const [guesses, setGuesses] = useState<Word[]>(() => {
     const loaded = loadGameStateFromLocalStorage()
     if (loaded == null) {
@@ -90,8 +98,8 @@ function App() {
   }, [setGridSize])
 
   useEffect(() => {
-    saveGameStateToLocalStorage({ guesses, solution })
-  }, [guesses])
+    saveGameStateToLocalStorage({ guesses, solution, day })
+  }, [guesses, solution, day])
 
   useEffect(() => {
     if (isGameWon) {
@@ -181,6 +189,11 @@ function App() {
     }, ALERT_TIME_MS)
   }, [])
 
+  const handleNewGame = () => {
+    setDay((prev) => prev + 1)
+    setIsNewGameModalOpen(false)
+  }
+
   return (
     <div className={context.theme}>
       <Alert message="Nincs elég betű" isOpen={isNotEnoughLetters} />
@@ -220,6 +233,13 @@ function App() {
         isGameWon={isGameWon}
         handleShareCopySuccess={handleShareCopySuccess}
         handleShareFailure={handleShareFailure}
+        handleNewGameClick={handleNewGame}
+      />
+      <NewGameModal
+        isOpen={isNewGameModelOpen}
+        handleClose={() => setIsNewGameModalOpen(false)}
+        handleNewGameClick={handleNewGame}
+        solution={solution}
       />
       <AboutModal
         isOpen={isAboutModalOpen}
@@ -247,6 +267,10 @@ function App() {
             <PlusCircleIcon
               className="h-6 w-6 cursor-pointer dark:text-gray-300"
               onClick={() => setIsCreatePuzzleModalOpen(true)}
+            />
+            <RefreshIcon
+              className="h-6 w-6 cursor-pointer dark:text-gray-300"
+              onClick={() => setIsNewGameModalOpen(true)}
             />
           </div>
           <div

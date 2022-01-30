@@ -7,6 +7,7 @@ const themeKey = 'colorTheme'
 type StoredGameState = {
   guesses: Word[]
   solution: Word
+  day: number
 }
 
 export const saveGameStateToLocalStorage = (gameState: StoredGameState) => {
