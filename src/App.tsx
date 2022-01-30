@@ -105,6 +105,7 @@ function App() {
 
     if (parent && currentRow) {
       if (parent.offsetTop > currentRow.offsetTop - parent.scrollTop) {
+        animateScrollTo(0)
         animateScrollTo(currentRow.previousElementSibling ?? currentRow, {
           elementToScroll: parent,
         })
@@ -113,6 +114,7 @@ function App() {
         parent.offsetTop + parent.offsetHeight <
         currentRow.offsetTop + currentRow.offsetHeight - parent.scrollTop
       ) {
+        animateScrollTo(0)
         animateScrollTo(currentRow.nextElementSibling ?? currentRow, {
           elementToScroll: parent,
         })
@@ -332,6 +334,7 @@ function App() {
           <div
             ref={gridContainerRef}
             className="grow flex justify-center overflow-auto mb-5"
+            style={{ minHeight: 300 }}
           >
             <Grid
               guesses={guesses}
