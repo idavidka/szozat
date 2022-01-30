@@ -190,8 +190,28 @@ function App() {
   }, [])
 
   const handleNewGame = () => {
+    setIsGameLost(false)
+    setIsGameWon(false)
+    setGuesses([])
+    setCurrentGuess([])
     setDay((prev) => prev + 1)
     setIsNewGameModalOpen(false)
+  }
+
+  const handleManualFailure = () => {
+    const newGuesses = [...guesses, currentGuess].filter(
+      (guess) => guess.length
+    )
+
+    for (let i = 0; i < MAX_NUMBER_OF_GUESSES; i++) {
+      if (!newGuesses[i]) {
+        newGuesses[i] = ['-', '-', '-', '-', '-']
+      }
+    }
+    setGuesses(newGuesses)
+
+    setStats(addStatsForCompletedGame(stats, newGuesses.length))
+    setIsGameLost(true)
   }
 
   return (
@@ -238,7 +258,7 @@ function App() {
       <NewGameModal
         isOpen={isNewGameModelOpen}
         handleClose={() => setIsNewGameModalOpen(false)}
-        handleNewGameClick={handleNewGame}
+        handleFailure={handleManualFailure}
         solution={solution}
       />
       <AboutModal

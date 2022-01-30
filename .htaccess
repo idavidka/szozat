@@ -1,0 +1,13 @@
+RewriteEngine on
+
+RewriteCond %{HTTP_HOST} ^szozat.idavid.hu$
+RewriteCond %{REQUEST_URI} !^/build/
+RewriteRule ^(.*)$ /build/$1 [L]
+
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f
+RewriteRule ^(.*)$ $1 [L]
+
+RewriteCond %{HTTP_HOST} ^szozat.idavid.hu$
+RewriteCond %{REQUEST_URI} ^/build/
+RewriteCond %{REQUEST_URI} !^/build/index.html
+RewriteRule ^(.*)$ /build/index.html [L]
