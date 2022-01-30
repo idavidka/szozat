@@ -253,7 +253,7 @@ function App() {
   }
 
   return (
-    <div className={context.theme}>
+    <div className={context.theme + ' h-[100%]'}>
       <Alert message="Nincs elég betű" isOpen={isNotEnoughLetters} />
       <Alert
         message="Nem találtunk ilyen szót"
@@ -307,8 +307,11 @@ function App() {
         isOpen={isModalOpen === 'create-puzzle'}
         handleClose={() => setIsModalOpen(false)}
       />
-      <div className="bg-white dark:bg-gray-800 transition-all">
-        <div className="flex flex-col h-[100vh] py-8 w-[100%] max-w-[500px] mx-auto sm:px-6 lg:px-8">
+      <div className="bg-white dark:bg-gray-800 transition-all h-[100%]">
+        <div
+          className="flex flex-col py-8 w-[100%] h-[100%] max-w-[500px] mx-auto sm:px-6 lg:px-8"
+          style={{ boxSizing: 'border-box' }}
+        >
           <div className="flex w-80 mx-auto items-center mb-8">
             <h1 className="text-xl grow font-bold dark:text-gray-300">
               Szózat
@@ -334,7 +337,7 @@ function App() {
           <div
             ref={gridContainerRef}
             className="grow flex justify-center overflow-auto mb-5"
-            style={{ minHeight: 300 }}
+            style={{ minHeight: 60 }}
           >
             <Grid
               guesses={guesses}
@@ -352,11 +355,9 @@ function App() {
               day={day}
             />
           </div>
-        </div>
-        <div className="pb-5">
           <button
             type="button"
-            className="mx-auto mt-8 flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 select-none"
+            className="mx-auto flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 select-none"
             onClick={() => setIsModalOpen('about')}
           >
             A játék eredetéről

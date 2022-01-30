@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  height: 100vh;
+}
+
+#root {
+  height: 100%;
+}
+
 .cell-animation {
   animation: revealCharCell linear;
   animation-duration: 0.15s;
