@@ -15,7 +15,7 @@ type Props = {
   gameStats: GameStats
   isGameLost: boolean
   isGameWon: boolean
-  day?: number
+  day: number
   handleShareCopySuccess: () => void
   handleShareFailure: () => void
   handleNewGameClick: () => void
@@ -35,29 +35,32 @@ export const StatsModal = ({
 }: Props) => {
   const handleShareClick = useCallback(async () => {
     try {
-      const { type } = await shareStatus(guesses, isGameLost)
+      const { type } = await shareStatus(guesses, isGameLost, day)
       if (type === 'clipboard') {
         handleShareCopySuccess()
       }
     } catch (e) {
       handleShareFailure()
     }
-  }, [guesses, isGameLost, handleShareCopySuccess, handleShareFailure])
+  }, [guesses, isGameLost, day, handleShareCopySuccess, handleShareFailure])
 
-  const renderShareText = useCallback((guesses: Word[], lost: boolean) => {
-    const text = getShareText(guesses, lost, day)
-    const rows = text.split('\n')
-    return (
-      <p className="text-xs text-left pt-5">
-        {rows.map((row, index) => (
-          <React.Fragment key={index}>
-            {row}
-            <br />
-          </React.Fragment>
-        ))}
-      </p>
-    )
-  }, [day])
+  const renderShareText = useCallback(
+    (guesses: Word[], lost: boolean) => {
+      const text = getShareText(guesses, lost, day)
+      const rows = text.split('\n')
+      return (
+        <p className="text-xs text-left pt-5">
+          {rows.map((row, index) => (
+            <React.Fragment key={index}>
+              {row}
+              <br />
+            </React.Fragment>
+          ))}
+        </p>
+      )
+    },
+    [day]
+  )
 
   return (
     <BaseModal title="Statisztika" isOpen={isOpen} handleClose={handleClose}>

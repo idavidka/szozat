@@ -1,5 +1,5 @@
 import { CHAR_VALUES } from './wordCommons'
-import { solution } from './words'
+import { getCurrentWord } from './words'
 
 export type CharStatus = 'absent' | 'present' | 'correct'
 
@@ -11,7 +11,11 @@ export function isCharValue(value: string): value is CharValue {
   return CHAR_VALUES.includes(value as any)
 }
 
-export const getStatuses = (guesses: Word[]): { [key: string]: CharStatus } => {
+export const getStatuses = (
+  guesses: Word[],
+  day: number
+): { [key: string]: CharStatus } => {
+  const { solution } = getCurrentWord(day)
   const charObj: { [key: string]: CharStatus } = {}
 
   guesses.forEach((word) => {
@@ -36,7 +40,8 @@ export const getStatuses = (guesses: Word[]): { [key: string]: CharStatus } => {
   return charObj
 }
 
-export const getGuessStatuses = (guess: Word): CharStatus[] => {
+export const getGuessStatuses = (guess: Word, day: number): CharStatus[] => {
+  const { solution } = getCurrentWord(day)
   const solutionCharsTaken = solution.map((_) => false)
 
   const statuses: CharStatus[] = Array.from(Array(guess.length))

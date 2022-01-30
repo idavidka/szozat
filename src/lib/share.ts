@@ -2,7 +2,7 @@ import { MAX_NUMBER_OF_GUESSES } from '../constants/constants'
 import { getGuessStatuses, Word } from './statuses'
 import { solutionCreator, getCurrentWord } from './words'
 
-export const getShareText = (guesses: Word[], lost: boolean, day?: number) => {
+export const getShareText = (guesses: Word[], lost: boolean, day: number) => {
   const { solutionIndex } = getCurrentWord(day)
   const identifier =
     solutionCreator !== undefined
@@ -14,14 +14,18 @@ export const getShareText = (guesses: Word[], lost: boolean, day?: number) => {
     ' - ' +
     (lost ? 'X' : guesses.length) +
     `/${MAX_NUMBER_OF_GUESSES}\n\n` +
-    generateEmojiGrid(guesses) +
+    generateEmojiGrid(guesses, day) +
     '\n\n' +
     window.location.href
   return text
 }
 
-export const shareStatus = async (guesses: Word[], lost: boolean) => {
-  const text = getShareText(guesses, lost)
+export const shareStatus = async (
+  guesses: Word[],
+  lost: boolean,
+  day: number
+) => {
+  const text = getShareText(guesses, lost, day)
   if (navigator?.share != null) {
     await navigator.share({ text })
     return { type: 'share' as const }
@@ -33,10 +37,10 @@ export const shareStatus = async (guesses: Word[], lost: boolean) => {
   throw new Error('No sharing methods are available')
 }
 
-export const generateEmojiGrid = (guesses: Word[]) => {
+export const generateEmojiGrid = (guesses: Word[], day: number) => {
   return guesses
     .map((guess) => {
-      const status = getGuessStatuses(guess)
+      const status = getGuessStatuses(guess, day)
       return guess
         .map((letter, i) => {
           switch (status[i]) {

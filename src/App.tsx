@@ -153,7 +153,7 @@ function App() {
       }, ALERT_TIME_MS)
     }
 
-    const winningWord = isWinningWord(currentGuess)
+    const winningWord = isWinningWord(currentGuess, day)
 
     if (
       currentGuess.length === 5 &&
@@ -302,6 +302,7 @@ function App() {
               guesses={guesses}
               currentGuess={currentGuess}
               size={gridSize}
+              day={day}
             />
           </div>
           <div className="pb-5">
@@ -310,6 +311,7 @@ function App() {
               onDelete={onDelete}
               onEnter={onEnter}
               guesses={guesses}
+              day={day}
             />
           </div>
         </div>

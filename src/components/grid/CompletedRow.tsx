@@ -3,10 +3,11 @@ import { Cell } from './Cell'
 
 type Props = {
   guess: Word
+  day: number
 }
 
-export const CompletedRow = ({ guess }: Props) => {
-  const statuses = getGuessStatuses(guess)
+export const CompletedRow = ({ guess, day }: Props) => {
+  const statuses = getGuessStatuses(guess, day)
 
   return (
     <div className="grid grid-cols-5 gap-1">

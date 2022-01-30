@@ -8,9 +8,10 @@ type Props = {
   guesses: Word[]
   currentGuess: Word
   size: { width: number; height: number }
+  day: number
 }
 
-export const Grid = ({ guesses, currentGuess, size }: Props) => {
+export const Grid = ({ guesses, currentGuess, size, day }: Props) => {
   const empties =
     guesses.length < MAX_NUMBER_OF_GUESSES - 1
       ? Array.from(Array(MAX_NUMBER_OF_GUESSES - 1 - guesses.length))
@@ -22,7 +23,7 @@ export const Grid = ({ guesses, currentGuess, size }: Props) => {
       style={{ width: `${size.width}px`, height: `${size.height}px` }}
     >
       {guesses.map((guess, i) => (
-        <CompletedRow key={i} guess={guess} />
+        <CompletedRow key={i} guess={guess} day={day} />
       ))}
       {guesses.length < MAX_NUMBER_OF_GUESSES && (
         <CurrentRow guess={currentGuess} />
