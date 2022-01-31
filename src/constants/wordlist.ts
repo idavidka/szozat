@@ -1,13 +1,13 @@
 import { Word } from '../lib/statuses'
-// import words from './hungarian-puzzles.json'
 import { toWord } from './utils'
 
-import words3 from './hungarian-word-letter-list-3.json'
-import words4 from './hungarian-word-letter-list-4.json'
-import words5 from './hungarian-word-letter-list-5.json'
-import words6 from './hungarian-word-letter-list-6.json'
-import words7 from './hungarian-word-letter-list-7.json'
-import words8 from './hungarian-word-letter-list-8.json'
+import words3 from './hungarian-puzzles-3.json'
+import words4 from './hungarian-puzzles-4.json'
+import words5 from './hungarian-puzzles-5.json'
+import words6 from './hungarian-puzzles-6.json'
+import words7 from './hungarian-puzzles-7.json'
+import words8 from './hungarian-puzzles-8.json'
+import words9 from './hungarian-puzzles-9.json'
 
 const words: Record<number, string[][]> = {
   3: words3,
@@ -16,6 +16,7 @@ const words: Record<number, string[][]> = {
   6: words6,
   7: words7,
   8: words8,
+  9: words9,
 }
 
 export const getWords = (difficulty: number): Word[] =>

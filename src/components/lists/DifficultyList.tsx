@@ -20,6 +20,7 @@ const options: { id: number; label: string; className?: string }[] = [
   { id: 6, label: '6 betű', className: 'text-red-900 bg-red-100' },
   { id: 7, label: '7 betű', className: 'text-violet-900 bg-violet-100' },
   { id: 8, label: '8 betű', className: 'text-indigo-900 bg-indigo-100' },
+  { id: 9, label: '9 betű', className: 'text-purple-900 bg-purple-100' },
 ]
 
 export const DifficultyList = ({ selected, onChange }: Props) => {

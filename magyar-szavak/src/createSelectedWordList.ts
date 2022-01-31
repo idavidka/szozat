@@ -2,16 +2,16 @@ import fs from 'fs'
 import { getWordLetters } from '../../src/lib/hungarianWordUtils'
 import yargs from 'yargs'
 import { CHAR_VALUES } from './constants'
-import { shuffle } from 'lodash'
 
 type Arguments = ReturnType<typeof yargs.parse>
 const args: Arguments = yargs.parseSync(process.argv)
 const TARGET_WORD_LENGTH: number = (args?.length as number) ?? 5
-const OUTPUT: string =
-  (args?.output as string) ?? 'hungarian-word-letter-list.json'
+const OUTPUT: string = (args?.output as string) ?? 'hungarian-puzzles.json'
 
 // Parse input file
-const hungarianWordsText = fs.readFileSync('./src/magyar-szavak.txt').toString()
+const hungarianWordsText = fs
+  .readFileSync(`./src/selected/selected-${TARGET_WORD_LENGTH}.txt`)
+  .toString()
 const hungarianWords = hungarianWordsText
   .split('\n')
   .map((word) => word.toLowerCase().trim())
@@ -37,12 +37,4 @@ fs.writeFileSync(
     ''
   )}-${TARGET_WORD_LENGTH}.json`,
   jsonString
-)
-
-fs.writeFileSync(
-  `./src/selected/selected-${TARGET_WORD_LENGTH}.txt`,
-  shuffle(shuffle(candidateWordLetters))
-    .slice(0, 500)
-    .map((candidateWordLetter) => candidateWordLetter.join(''))
-    .join('\n')
 )

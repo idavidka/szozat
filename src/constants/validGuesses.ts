@@ -7,6 +7,7 @@ import words5 from './hungarian-word-letter-list-5.json'
 import words6 from './hungarian-word-letter-list-6.json'
 import words7 from './hungarian-word-letter-list-7.json'
 import words8 from './hungarian-word-letter-list-8.json'
+import words9 from './hungarian-word-letter-list-9.json'
 
 const words: Record<number, string[][]> = {
   3: words3,
@@ -15,6 +16,7 @@ const words: Record<number, string[][]> = {
   6: words6,
   7: words7,
   8: words8,
+  9: words9,
 }
 
 export const getValidGuesses = (difficulty: number): Word[] =>

@@ -1,3 +1,4 @@
+import { getGridColClassName } from '../../constants/utils'
 import { getGuessStatuses, Word } from '../../lib/statuses'
 import { Cell } from './Cell'
 
@@ -11,7 +12,7 @@ export const CompletedRow = ({ guess, day, difficulty }: Props) => {
   const statuses = getGuessStatuses(guess, day, difficulty)
 
   return (
-    <div className={`grid grid-cols-${difficulty} gap-1`}>
+    <div className={`grid ${getGridColClassName(difficulty)} gap-1`}>
       {guess.map((letter, i) => (
         <Cell key={i} value={letter} status={statuses[i]} />
       ))}

@@ -3,6 +3,7 @@ import { MAX_NUMBER_OF_GUESSES } from '../../constants/constants'
 import { BaseModal } from './BaseModal'
 import { useMemo } from 'react'
 import { getWords } from '../../constants/wordlist'
+import { getGridColClassName } from '../../constants/utils'
 
 type Props = {
   isOpen: boolean
@@ -30,7 +31,6 @@ export const InfoModal = ({ isOpen, handleClose, difficulty }: Props) => {
     return { indexes, letters }
   }, [difficulty, words])
 
-  console.log('ASD', highlights)
   return (
     <BaseModal title="Szabályok" isOpen={isOpen} handleClose={handleClose}>
       <p className="text-sm text-gray-500 dark:text-slate-200">
@@ -39,7 +39,9 @@ export const InfoModal = ({ isOpen, handleClose, difficulty }: Props) => {
       </p>
 
       {/* <div className="flex justify-center mb-1 mt-4"> */}
-      <div className={`grid grid-cols-${difficulty} gap-1 mb-1 mt-4`}>
+      <div
+        className={`grid ${getGridColClassName(difficulty)} gap-1 mb-1 mt-4`}
+      >
         {words[0].map((letter, index) => (
           <Cell
             value={letter}
@@ -51,7 +53,9 @@ export const InfoModal = ({ isOpen, handleClose, difficulty }: Props) => {
         Az {highlights.letters[0]} betű szerepel a szóban és jó helyen van.
       </p>
 
-      <div className={`grid grid-cols-${difficulty} gap-1 mb-1 mt-4`}>
+      <div
+        className={`grid ${getGridColClassName(difficulty)} gap-1 mb-1 mt-4`}
+      >
         {words[1].map((letter, index) => (
           <Cell
             value={letter}
@@ -63,7 +67,9 @@ export const InfoModal = ({ isOpen, handleClose, difficulty }: Props) => {
         Az {highlights.letters[1]} betű szerepel a szóban, de nem jó helyen van.
       </p>
 
-      <div className={`grid grid-cols-${difficulty} gap-1 mb-1 mt-4`}>
+      <div
+        className={`grid ${getGridColClassName(difficulty)} gap-1 mb-1 mt-4`}
+      >
         {words[2].map((letter, index) => (
           <Cell
             value={letter}
