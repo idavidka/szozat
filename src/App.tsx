@@ -33,14 +33,15 @@ import { MAX_NUMBER_OF_GUESSES } from './constants/constants'
 import { ThemeToggle } from './components/theme/ThemeToggle'
 import { ThemeContext } from './components/theme/ThemeContext'
 import { CreatePuzzleModal } from './components/modals/CreatePuzzleModal'
+import { times } from 'lodash'
 
 const ALERT_TIME_MS = 2000
-const NEW_GAME_TIME_MS = 500
+const NEW_GAME_TIME_MS = 2000
 
 function App() {
   const context = React.useContext(ThemeContext)
   const [currentGuess, setCurrentGuess] = useState<Word>([])
-  const [isGameWon, setIsGameWon] = useState(false)
+  const [isGameWon, setIsGameWon] = useState<Record<number, boolean>>({})
   const [isModalOpen, setIsModalOpen] = useState<
     'info' | 'new-game' | 'stat' | 'about' | 'create-puzzle' | false
   >(false)
@@ -48,15 +49,24 @@ function App() {
   const [isWordNotFoundAlertOpen, setIsWordNotFoundAlertOpen] = useState(false)
   const [shareComplete, setShareComplete] = useState(false)
   const [shareFailed, setShareFailed] = useState(false)
-  const [isGameLost, setIsGameLost] = useState(false)
+  const [isGameLost, setIsGameLost] = useState<Record<number, boolean>>({})
   const [successAlert, setSuccessAlert] = useState('')
   const savedDificulty = useMemo(() => loadDifficultyToLocalStorage(), [])
   const [difficulty, setDifficulty] = useState(savedDificulty)
-  const loadedState = useMemo(
-    () => loadGameStateFromLocalStorage(difficulty),
+  const getLoadedState = useCallback(
+    (stateDifficulty) => loadGameStateFromLocalStorage(stateDifficulty),
+    []
+  )
+
+  const maxGuess = useMemo(
+    () => MAX_NUMBER_OF_GUESSES[difficulty],
     [difficulty]
   )
-  const savedDay = useMemo(() => loadedState?.day ?? 0, [loadedState?.day])
+
+  const savedDay = useMemo(
+    () => getLoadedState(difficulty)?.day ?? 0,
+    [difficulty, getLoadedState]
+  )
   const [day, setDay] = useState(savedDay)
 
   const { solution } = useMemo(
@@ -65,7 +75,7 @@ function App() {
   )
 
   const getLoadedGuesses = useCallback(() => {
-    const loaded = loadedState
+    const loaded = getLoadedState(difficulty)
     if (loaded == null) {
       setIsModalOpen('info')
     }
@@ -76,41 +86,23 @@ function App() {
       isWordEqual(guess, solution)
     )
     if (gameWasWon) {
-      setIsGameWon(true)
+      setIsGameWon({ [difficulty]: true })
     }
-    if (loaded.guesses.length === MAX_NUMBER_OF_GUESSES && !gameWasWon) {
-      setIsGameLost(true)
+    if (loaded.guesses.length === maxGuess && !gameWasWon) {
+      setIsGameLost({ [difficulty]: true })
     }
     return loaded.guesses
-  }, [loadedState, solution])
+  }, [difficulty, getLoadedState, maxGuess, solution])
+  const getLoadedStats = useCallback(
+    (statDifficulty) => loadStats(statDifficulty),
+    []
+  )
 
   const [guesses, setGuesses] = useState<Word[]>([])
 
-  // const [gridSize, setGridSize] = useState({ width: 0, height: 0 })
-
   const gridContainerRef = useRef<HTMLDivElement>(null)
 
-  const [stats, setStats] = useState(() => loadStats())
-
-  // useEffect(() => {
-  //   const handleResize = () => {
-  //     if (gridContainerRef.current == null) {
-  //       return
-  //     }
-  //     const gridContainerHeight = gridContainerRef.current.clientHeight
-  //     const gridWidth = Math.min(
-  //       Math.floor(gridContainerHeight * (5 / MAX_NUMBER_OF_GUESSES)),
-  //       350
-  //     )
-  //     const gridHeight = Math.floor((MAX_NUMBER_OF_GUESSES * gridWidth) / 5)
-  //     setGridSize({ width: gridWidth, height: gridHeight })
-  //   }
-  //   window.addEventListener('resize', handleResize)
-  //   handleResize()
-  //   return () => {
-  //     window.removeEventListener('resize', handleResize)
-  //   }
-  // }, [setGridSize])
+  const [stats, setStats] = useState(getLoadedStats(difficulty))
 
   const checkViewPort = () => {
     const currentRow = gridContainerRef.current?.querySelector(
@@ -130,7 +122,7 @@ function App() {
         currentRow.offsetTop + currentRow.offsetHeight - parent.scrollTop
       ) {
         animateScrollTo(0)
-        animateScrollTo(currentRow.nextElementSibling ?? currentRow, {
+        animateScrollTo(currentRow.previousElementSibling ?? currentRow, {
           elementToScroll: parent,
         })
       }
@@ -141,7 +133,8 @@ function App() {
     checkViewPort()
     saveDifficultyToLocalStorage(difficulty)
     setGuesses(getLoadedGuesses())
-  }, [difficulty, getLoadedGuesses])
+    setStats(getLoadedStats(difficulty))
+  }, [difficulty, getLoadedGuesses, getLoadedStats])
 
   useEffect(() => {
     checkViewPort()
@@ -149,7 +142,7 @@ function App() {
   }, [guesses, solution, day, difficulty])
 
   useEffect(() => {
-    if (isGameWon) {
+    if (isGameWon[difficulty]) {
       setSuccessAlert(
         WIN_MESSAGES[Math.floor(Math.random() * WIN_MESSAGES.length)]
       )
@@ -158,7 +151,7 @@ function App() {
         isModalOpen !== 'new-game' && setIsModalOpen('stat')
       }, ALERT_TIME_MS)
     }
-    if (isGameLost) {
+    if (isGameLost[difficulty]) {
       setTimeout(() => {
         isModalOpen !== 'new-game' && setIsModalOpen('stat')
       }, ALERT_TIME_MS)
@@ -170,8 +163,8 @@ function App() {
     checkViewPort()
     if (
       currentGuess.length < difficulty &&
-      guesses.length < MAX_NUMBER_OF_GUESSES &&
-      !isGameWon
+      guesses.length < maxGuess &&
+      !isGameWon[difficulty]
     ) {
       setCurrentGuess([...currentGuess, value])
     }
@@ -184,7 +177,7 @@ function App() {
 
   const onEnter = () => {
     checkViewPort()
-    if (isGameWon || isGameLost) {
+    if (isGameWon[difficulty] || isGameLost[difficulty]) {
       return
     }
     if (!(currentGuess.length === difficulty)) {
@@ -208,20 +201,22 @@ function App() {
 
     if (
       currentGuess.length === difficulty &&
-      guesses.length < MAX_NUMBER_OF_GUESSES &&
-      !isGameWon
+      guesses.length < maxGuess &&
+      !isGameWon[difficulty]
     ) {
       setGuesses([...guesses, currentGuess])
       setCurrentGuess([])
 
       if (winningWord) {
-        setStats(addStatsForCompletedGame(stats, guesses.length))
-        return setIsGameWon(true)
+        setStats(addStatsForCompletedGame(stats, guesses.length, difficulty))
+        return setIsGameWon({ [difficulty]: true })
       }
 
-      if (guesses.length === MAX_NUMBER_OF_GUESSES - 1) {
-        setStats(addStatsForCompletedGame(stats, guesses.length + 1))
-        setIsGameLost(true)
+      if (guesses.length === maxGuess - 1) {
+        setStats(
+          addStatsForCompletedGame(stats, guesses.length + 1, difficulty)
+        )
+        setIsGameLost({ [difficulty]: true })
       }
     }
   }
@@ -241,8 +236,8 @@ function App() {
   }, [])
 
   const handleNewGame = () => {
-    setIsGameLost(false)
-    setIsGameWon(false)
+    setIsGameLost({ [difficulty]: false })
+    setIsGameWon({ [difficulty]: false })
     setGuesses([])
     setCurrentGuess([])
     setDay((prev) => prev + 1)
@@ -251,20 +246,22 @@ function App() {
 
   const handleManualEnd = () => {
     setIsModalOpen(false)
-    if (!isGameWon) {
-      const newGuesses = [...guesses, currentGuess].filter(
-        (guess) => guess.length
-      )
+    if (!isGameWon[difficulty]) {
+      const emptyRow = times(difficulty, () => '-') as Word
+      const newGuesses = [
+        ...guesses,
+        emptyRow.map((letter, index) => currentGuess[index] ?? letter),
+      ].filter((guess) => guess.length)
 
-      for (let i = 0; i < MAX_NUMBER_OF_GUESSES; i++) {
+      for (let i = 0; i < maxGuess; i++) {
         if (!newGuesses[i]) {
-          newGuesses[i] = ['-', '-', '-', '-', '-']
+          newGuesses[i] = [...emptyRow]
         }
       }
       setGuesses(newGuesses)
 
-      setStats(addStatsForCompletedGame(stats, newGuesses.length))
-      setIsGameLost(true)
+      setStats(addStatsForCompletedGame(stats, newGuesses.length, difficulty))
+      setIsGameLost({ [difficulty]: true })
     }
 
     setTimeout(() => {
@@ -282,7 +279,7 @@ function App() {
       />
       <Alert
         message={`Vesztettél, a megoldás ez volt: ${solution.join('')}`}
-        isOpen={isGameLost}
+        isOpen={!!isGameLost[difficulty]}
       />
       <Alert
         message={successAlert}
@@ -308,14 +305,14 @@ function App() {
         isOpen={isModalOpen === 'stat'}
         handleClose={() => setIsModalOpen(false)}
         guesses={guesses}
-        gameStats={stats}
         day={day}
         difficulty={difficulty}
-        isGameLost={isGameLost}
-        isGameWon={isGameWon}
+        isGameLost={isGameLost[difficulty]}
+        isGameWon={isGameWon[difficulty]}
         handleShareCopySuccess={handleShareCopySuccess}
         handleShareFailure={handleShareFailure}
         handleNewGameClick={handleNewGame}
+        handleStats={getLoadedStats}
       />
       <NewGameModal
         isOpen={isModalOpen === 'new-game'}
@@ -358,7 +355,9 @@ function App() {
             />
             <RefreshIcon
               className="h-6 w-6 cursor-pointer dark:text-gray-300"
-              onClick={() => setIsModalOpen('new-game')}
+              onClick={() =>
+                setIsModalOpen(isGameWon[difficulty] ? 'stat' : 'new-game')
+              }
             />
           </div>
           <div
@@ -368,7 +367,6 @@ function App() {
             <Grid
               guesses={guesses}
               currentGuess={currentGuess}
-              // size={gridSize}
               day={day}
               difficulty={difficulty}
             />

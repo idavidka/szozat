@@ -29,9 +29,9 @@ export const DifficultyList = ({ selected, onChange }: Props) => {
     [selected]
   )
   return (
-    <div className="mr-2 relative">
+    <div className="mr-2 relative w-[85px] h-[36px]">
       <Listbox value={selected} onChange={onChange}>
-        <div className="relative mt-1">
+        <div className="absolute mt-1">
           <Listbox.Button className="relative py-2 pl-3 pr-8 text-left bg-white rounded-lg shadow-md cursor-default focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-orange-300 focus-visible:ring-offset-2 focus-visible:border-indigo-500 sm:text-sm">
             <span className="block truncate">{selectedOption.label}</span>
             <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">

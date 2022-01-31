@@ -33,7 +33,7 @@ export const saveGameStateToLocalStorage = (
 export const loadGameStateFromLocalStorage = (difficulty: number) => {
   const state =
     localStorage.getItem(`${gameStateKey}-${difficulty}`) ??
-    localStorage.getItem(gameStateKey)
+    (difficulty === 5 ? localStorage.getItem(gameStateKey) : undefined)
   return state ? (JSON.parse(state) as StoredGameState) : null
 }
 
@@ -48,12 +48,20 @@ export type GameStats = {
   successRate: number
 }
 
-export const saveStatsToLocalStorage = (gameStats: GameStats) => {
-  localStorage.setItem(gameStatKey, JSON.stringify(gameStats))
+export const saveStatsToLocalStorage = (
+  gameStats: GameStats,
+  difficulty: number
+) => {
+  localStorage.setItem(
+    `${gameStatKey}-${difficulty}`,
+    JSON.stringify(gameStats)
+  )
 }
 
-export const loadStatsFromLocalStorage = () => {
-  const stats = localStorage.getItem(gameStatKey)
+export const loadStatsFromLocalStorage = (difficulty: number) => {
+  const stats =
+    localStorage.getItem(`${gameStatKey}-${difficulty}`) ??
+    (difficulty === 5 ? localStorage.getItem(gameStatKey) : undefined)
   return stats ? (JSON.parse(stats) as GameStats) : null
 }
 

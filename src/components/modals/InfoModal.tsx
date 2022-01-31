@@ -34,8 +34,9 @@ export const InfoModal = ({ isOpen, handleClose, difficulty }: Props) => {
   return (
     <BaseModal title="Szabályok" isOpen={isOpen} handleClose={handleClose}>
       <p className="text-sm text-gray-500 dark:text-slate-200">
-        Találd ki a napi szót {MAX_NUMBER_OF_GUESSES} tippből! Minden tipp után
-        a négyzetek színe jelzi, hogy mennyire kerültél közel a megoldáshoz.
+        Találd ki a napi <b>{difficulty} betűs</b> szót{' '}
+        <b>{MAX_NUMBER_OF_GUESSES[difficulty]} tippből</b>! Minden tipp után a
+        négyzetek színe jelzi, hogy mennyire kerültél közel a megoldáshoz.
       </p>
 
       {/* <div className="flex justify-center mb-1 mt-4"> */}
@@ -44,6 +45,7 @@ export const InfoModal = ({ isOpen, handleClose, difficulty }: Props) => {
       >
         {words[0].map((letter, index) => (
           <Cell
+            key={index}
             value={letter}
             status={index === highlights.indexes[0] ? 'correct' : undefined}
           />
@@ -58,6 +60,7 @@ export const InfoModal = ({ isOpen, handleClose, difficulty }: Props) => {
       >
         {words[1].map((letter, index) => (
           <Cell
+            key={index}
             value={letter}
             status={index === highlights.indexes[1] ? 'present' : undefined}
           />
@@ -72,6 +75,7 @@ export const InfoModal = ({ isOpen, handleClose, difficulty }: Props) => {
       >
         {words[2].map((letter, index) => (
           <Cell
+            key={index}
             value={letter}
             status={index === highlights.indexes[2] ? 'absent' : undefined}
           />

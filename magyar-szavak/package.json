@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "candidates": "ts-node ./src/createCandidateWordList.ts",
-    "selected": "ts-node ./src/createSelectedWordList.ts",
+    "start": "ts-node ./src/createCandidateWordList.ts",
     "test": "npx mocha -r ./node_modules/ts-node/register/index.js ./src/**/*.spec.ts --timeout=10000"
   },
   "author": "",

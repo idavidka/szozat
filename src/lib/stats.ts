@@ -1,3 +1,4 @@
+import { times } from 'lodash'
 import { MAX_NUMBER_OF_GUESSES } from '../constants/constants'
 import {
   GameStats,
@@ -9,14 +10,15 @@ import {
 
 export const addStatsForCompletedGame = (
   gameStats: GameStats,
-  count: number
+  count: number,
+  difficulty: number
 ) => {
   // Count is number of incorrect guesses before end.
   const stats = { ...gameStats }
 
   stats.totalGames += 1
 
-  if (count > MAX_NUMBER_OF_GUESSES - 1) {
+  if (count > MAX_NUMBER_OF_GUESSES[difficulty] - 1) {
     // A fail situation
     stats.currentStreak = 0
     stats.gamesFailed += 1
@@ -31,26 +33,23 @@ export const addStatsForCompletedGame = (
 
   stats.successRate = getSuccessRate(stats)
 
-  saveStatsToLocalStorage(stats)
+  saveStatsToLocalStorage(stats, difficulty)
   return stats
 }
 
-const defaultWinDistribution: number[] = []
-for (let i = 0; i < MAX_NUMBER_OF_GUESSES; i++) {
-  defaultWinDistribution.push(0)
+export const getDefaultStats = (difficulty: number): GameStats => {
+  return {
+    winDistribution: times(difficulty, () => 0),
+    gamesFailed: 0,
+    currentStreak: 0,
+    bestStreak: 0,
+    totalGames: 0,
+    successRate: 0,
+  }
 }
 
-const defaultStats: GameStats = {
-  winDistribution: defaultWinDistribution,
-  gamesFailed: 0,
-  currentStreak: 0,
-  bestStreak: 0,
-  totalGames: 0,
-  successRate: 0,
-}
-
-export const loadStats = () => {
-  return loadStatsFromLocalStorage() || defaultStats
+export const loadStats = (difficulty: number) => {
+  return loadStatsFromLocalStorage(difficulty) || getDefaultStats(difficulty)
 }
 
 const getSuccessRate = (gameStats: GameStats) => {

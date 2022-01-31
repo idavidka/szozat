@@ -21,7 +21,7 @@ export const getShareText = (
     identifier +
     ' - ' +
     (lost ? 'X' : guesses.length) +
-    `/${MAX_NUMBER_OF_GUESSES}\n\n` +
+    `/${MAX_NUMBER_OF_GUESSES[difficulty]}\n\n` +
     generateEmojiGrid(guesses, day, difficulty) +
     '\n\n' +
     window.location.href

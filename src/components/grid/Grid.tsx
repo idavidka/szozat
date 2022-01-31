@@ -14,8 +14,10 @@ type Props = {
 
 export const Grid = ({ guesses, currentGuess, day, difficulty }: Props) => {
   const empties =
-    guesses.length < MAX_NUMBER_OF_GUESSES - 1
-      ? Array.from(Array(MAX_NUMBER_OF_GUESSES - 1 - guesses.length))
+    guesses.length < MAX_NUMBER_OF_GUESSES[difficulty] - 1
+      ? Array.from(
+          Array(MAX_NUMBER_OF_GUESSES[difficulty] - 1 - guesses.length)
+        )
       : []
 
   return (
@@ -27,7 +29,7 @@ export const Grid = ({ guesses, currentGuess, day, difficulty }: Props) => {
       {guesses.map((guess, i) => (
         <CompletedRow key={i} guess={guess} day={day} difficulty={difficulty} />
       ))}
-      {guesses.length < MAX_NUMBER_OF_GUESSES && (
+      {guesses.length < MAX_NUMBER_OF_GUESSES[difficulty] && (
         <CurrentRow guess={currentGuess} difficulty={difficulty} />
       )}
       {empties.map((_, i) => (
