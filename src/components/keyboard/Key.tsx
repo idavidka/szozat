@@ -8,6 +8,8 @@ type Props = {
   value: KeyValue
   width?: number
   status?: CharStatus
+  className?: string
+  disabled?: boolean
   onClick: (value: KeyValue) => void
 }
 
@@ -16,11 +18,13 @@ export const Key = ({
   status,
   width = 40,
   value,
+  className,
   onClick,
+  disabled,
 }: Props) => {
   const classes = classnames(
     'flex items-center justify-center rounded mx-0.5 text-xs font-bold cursor-pointer select-none',
-    {
+    className ?? {
       'bg-slate-200 dark:bg-slate-500 hover:bg-slate-600 dark:hover:bg-slate-400 active:bg-slate-400 dark:text-slate-900':
         !status,
       'bg-slate-400 text-white': status === 'absent',
@@ -38,6 +42,7 @@ export const Key = ({
 
   return (
     <button
+      disabled={!!disabled}
       style={{ width: `${width}px`, height: '50px' }}
       className={classes}
       onClick={handleClick}

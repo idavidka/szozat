@@ -182,7 +182,8 @@ function App() {
     if (isGameWon[difficulty] || isGameLost[difficulty]) {
       return
     }
-    if (!(currentGuess.length === difficulty)) {
+
+    if (currentGuess.length !== difficulty) {
       setIsNotEnoughLetters(true)
       return setTimeout(() => {
         setIsNotEnoughLetters(false)
@@ -407,6 +408,8 @@ function App() {
               guesses={guesses}
               day={day}
               difficulty={difficulty}
+              enabledOnEnter={currentGuess.length === difficulty}
+              enabledOnDelete={currentGuess.length > 0}
             />
           </div>
           <button

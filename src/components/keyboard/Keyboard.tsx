@@ -10,6 +10,8 @@ type Props = {
   guesses: Word[]
   day: number
   difficulty: number
+  enabledOnEnter?: boolean
+  enabledOnDelete?: boolean
 }
 
 export const Keyboard = ({
@@ -19,6 +21,8 @@ export const Keyboard = ({
   guesses,
   day,
   difficulty,
+  enabledOnEnter,
+  enabledOnDelete,
 }: Props) => {
   const charStatuses = getStatuses(guesses, day, difficulty)
 
@@ -96,7 +100,13 @@ export const Keyboard = ({
         <Key value="Ű" onClick={onClick} status={charStatuses['Ű']} />
       </div>
       <div className="flex justify-center">
-        <Key width={65.4} value="ENTER" onClick={onClick}>
+        <Key
+          width={65.4}
+          className="bg-lime-500 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+          value="ENTER"
+          onClick={onClick}
+          disabled={!enabledOnEnter}
+        >
           Beküld
         </Key>
         <Key value="Í" onClick={onClick} status={charStatuses['Í']} />
@@ -107,7 +117,13 @@ export const Keyboard = ({
         <Key value="B" onClick={onClick} status={charStatuses['B']} />
         <Key value="N" onClick={onClick} status={charStatuses['N']} />
         <Key value="M" onClick={onClick} status={charStatuses['M']} />
-        <Key width={65.4} value="DELETE" onClick={onClick}>
+        <Key
+          width={65.4}
+          className="bg-red-500 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+          value="DELETE"
+          onClick={onClick}
+          disabled={!enabledOnDelete}
+        >
           Töröl
         </Key>
       </div>
