@@ -13,9 +13,10 @@ export function isCharValue(value: string): value is CharValue {
 
 export const getStatuses = (
   guesses: Word[],
-  day: number
+  day: number,
+  difficulty: number
 ): { [key: string]: CharStatus } => {
-  const { solution } = getCurrentWord(day)
+  const { solution } = getCurrentWord(day, difficulty)
   const charObj: { [key: string]: CharStatus } = {}
 
   guesses.forEach((word) => {
@@ -40,8 +41,12 @@ export const getStatuses = (
   return charObj
 }
 
-export const getGuessStatuses = (guess: Word, day: number): CharStatus[] => {
-  const { solution } = getCurrentWord(day)
+export const getGuessStatuses = (
+  guess: Word,
+  day: number,
+  difficulty: number
+): CharStatus[] => {
+  const { solution } = getCurrentWord(day, difficulty)
   const solutionCharsTaken = solution.map((_) => false)
 
   const statuses: CharStatus[] = Array.from(Array(guess.length))

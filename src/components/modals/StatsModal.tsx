@@ -16,6 +16,7 @@ type Props = {
   isGameLost: boolean
   isGameWon: boolean
   day: number
+  difficulty: number
   handleShareCopySuccess: () => void
   handleShareFailure: () => void
   handleNewGameClick: () => void
@@ -29,24 +30,32 @@ export const StatsModal = ({
   isGameLost,
   isGameWon,
   day,
+  difficulty,
   handleShareCopySuccess,
   handleShareFailure,
   handleNewGameClick,
 }: Props) => {
   const handleShareClick = useCallback(async () => {
     try {
-      const { type } = await shareStatus(guesses, isGameLost, day)
+      const { type } = await shareStatus(guesses, isGameLost, day, difficulty)
       if (type === 'clipboard') {
         handleShareCopySuccess()
       }
     } catch (e) {
       handleShareFailure()
     }
-  }, [guesses, isGameLost, day, handleShareCopySuccess, handleShareFailure])
+  }, [
+    guesses,
+    isGameLost,
+    day,
+    difficulty,
+    handleShareCopySuccess,
+    handleShareFailure,
+  ])
 
   const renderShareText = useCallback(
     (guesses: Word[], lost: boolean) => {
-      const text = getShareText(guesses, lost, day)
+      const text = getShareText(guesses, lost, day, difficulty)
       const rows = text.split('\n')
       return (
         <p className="text-xs text-left pt-5">
@@ -59,7 +68,7 @@ export const StatsModal = ({
         </p>
       )
     },
-    [day]
+    [day, difficulty]
   )
 
   return (

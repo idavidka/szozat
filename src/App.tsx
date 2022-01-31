@@ -13,6 +13,7 @@ import { AboutModal } from './components/modals/AboutModal'
 import { InfoModal } from './components/modals/InfoModal'
 import { StatsModal } from './components/modals/StatsModal'
 import { NewGameModal } from './components/modals/NewGameModal'
+import { DifficultyList } from './components/lists/DifficultyList'
 import {
   isWordInWordList,
   isWinningWord,
@@ -22,7 +23,9 @@ import {
 import { WIN_MESSAGES } from './constants/strings'
 import { addStatsForCompletedGame, loadStats } from './lib/stats'
 import {
+  loadDifficultyToLocalStorage,
   loadGameStateFromLocalStorage,
+  saveDifficultyToLocalStorage,
   saveGameStateToLocalStorage,
 } from './lib/localStorage'
 import { CharValue, Word } from './lib/statuses'
@@ -47,13 +50,22 @@ function App() {
   const [shareFailed, setShareFailed] = useState(false)
   const [isGameLost, setIsGameLost] = useState(false)
   const [successAlert, setSuccessAlert] = useState('')
-
-  const savedDay = useMemo(() => loadGameStateFromLocalStorage()?.day ?? 0, [])
+  const savedDificulty = useMemo(() => loadDifficultyToLocalStorage(), [])
+  const [difficulty, setDifficulty] = useState(savedDificulty)
+  const loadedState = useMemo(
+    () => loadGameStateFromLocalStorage(difficulty),
+    [difficulty]
+  )
+  const savedDay = useMemo(() => loadedState?.day ?? 0, [loadedState?.day])
   const [day, setDay] = useState(savedDay)
 
-  const { solution } = useMemo(() => getCurrentWord(day), [day])
-  const [guesses, setGuesses] = useState<Word[]>(() => {
-    const loaded = loadGameStateFromLocalStorage()
+  const { solution } = useMemo(
+    () => getCurrentWord(day, difficulty),
+    [day, difficulty]
+  )
+
+  const getLoadedGuesses = useCallback(() => {
+    const loaded = loadedState
     if (loaded == null) {
       setIsModalOpen('info')
     }
@@ -70,7 +82,10 @@ function App() {
       setIsGameLost(true)
     }
     return loaded.guesses
-  })
+  }, [loadedState, solution])
+
+  const [guesses, setGuesses] = useState<Word[]>([])
+
   // const [gridSize, setGridSize] = useState({ width: 0, height: 0 })
 
   const gridContainerRef = useRef<HTMLDivElement>(null)
@@ -124,8 +139,14 @@ function App() {
 
   useEffect(() => {
     checkViewPort()
-    saveGameStateToLocalStorage({ guesses, solution, day })
-  }, [guesses, solution, day])
+    saveDifficultyToLocalStorage(difficulty)
+    setGuesses(getLoadedGuesses())
+  }, [difficulty, getLoadedGuesses])
+
+  useEffect(() => {
+    checkViewPort()
+    saveGameStateToLocalStorage({ guesses, solution, day }, difficulty)
+  }, [guesses, solution, day, difficulty])
 
   useEffect(() => {
     if (isGameWon) {
@@ -148,7 +169,7 @@ function App() {
   const onChar = (value: CharValue) => {
     checkViewPort()
     if (
-      currentGuess.length < 5 &&
+      currentGuess.length < difficulty &&
       guesses.length < MAX_NUMBER_OF_GUESSES &&
       !isGameWon
     ) {
@@ -166,7 +187,7 @@ function App() {
     if (isGameWon || isGameLost) {
       return
     }
-    if (!(currentGuess.length === 5)) {
+    if (!(currentGuess.length === difficulty)) {
       setIsNotEnoughLetters(true)
       return setTimeout(() => {
         setIsNotEnoughLetters(false)
@@ -174,7 +195,7 @@ function App() {
     }
 
     if (
-      !isWordInWordList(currentGuess) &&
+      !isWordInWordList(currentGuess, difficulty) &&
       !isWordEqual(currentGuess, solution)
     ) {
       setIsWordNotFoundAlertOpen(true)
@@ -183,10 +204,10 @@ function App() {
       }, ALERT_TIME_MS)
     }
 
-    const winningWord = isWinningWord(currentGuess, day)
+    const winningWord = isWinningWord(currentGuess, day, difficulty)
 
     if (
-      currentGuess.length === 5 &&
+      currentGuess.length === difficulty &&
       guesses.length < MAX_NUMBER_OF_GUESSES &&
       !isGameWon
     ) {
@@ -281,6 +302,7 @@ function App() {
       <InfoModal
         isOpen={isModalOpen === 'info'}
         handleClose={() => setIsModalOpen(false)}
+        difficulty={difficulty}
       />
       <StatsModal
         isOpen={isModalOpen === 'stat'}
@@ -288,6 +310,7 @@ function App() {
         guesses={guesses}
         gameStats={stats}
         day={day}
+        difficulty={difficulty}
         isGameLost={isGameLost}
         isGameWon={isGameWon}
         handleShareCopySuccess={handleShareCopySuccess}
@@ -312,10 +335,14 @@ function App() {
           className="flex flex-col py-8 w-[100%] h-[100%] max-w-[500px] mx-auto sm:px-6 lg:px-8"
           style={{ boxSizing: 'border-box' }}
         >
-          <div className="flex w-80 mx-auto items-center mb-8">
+          <div className="flex w-80 mx-auto items-center mb-8 relative z-20">
             <h1 className="text-xl grow font-bold dark:text-gray-300">
               Szózat
             </h1>
+            <DifficultyList
+              selected={difficulty}
+              onChange={(value) => setDifficulty(value)}
+            />
             <ThemeToggle />
             <InformationCircleIcon
               className="h-6 w-6 cursor-pointer dark:text-gray-300"
@@ -336,14 +363,14 @@ function App() {
           </div>
           <div
             ref={gridContainerRef}
-            className="grow flex justify-center overflow-auto mb-5"
-            style={{ minHeight: 60 }}
+            className="grow flex justify-center overflow-auto mb-5 min-h-[60px]  relative z-10"
           >
             <Grid
               guesses={guesses}
               currentGuess={currentGuess}
               // size={gridSize}
               day={day}
+              difficulty={difficulty}
             />
           </div>
           <div className="pb-5">
@@ -353,6 +380,7 @@ function App() {
               onEnter={onEnter}
               guesses={guesses}
               day={day}
+              difficulty={difficulty}
             />
           </div>
           <button

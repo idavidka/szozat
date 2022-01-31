@@ -1,13 +1,36 @@
 import { Cell } from '../grid/Cell'
 import { MAX_NUMBER_OF_GUESSES } from '../../constants/constants'
 import { BaseModal } from './BaseModal'
+import { useMemo } from 'react'
+import { getWords } from '../../constants/wordlist'
 
 type Props = {
   isOpen: boolean
   handleClose: () => void
+  difficulty: number
 }
+export const InfoModal = ({ isOpen, handleClose, difficulty }: Props) => {
+  const words = useMemo(() => {
+    const currentWords = getWords(difficulty)
+    return [currentWords[0], currentWords[1], currentWords[2]]
+  }, [difficulty])
 
-export const InfoModal = ({ isOpen, handleClose }: Props) => {
+  const highlights = useMemo(() => {
+    const indexes = [
+      0,
+      Math.floor(difficulty / 2) - (difficulty % 2 === 0 ? 1 : 0),
+      difficulty - (difficulty > 4 ? 2 : 1),
+    ]
+    const letters = [
+      words[0][indexes[0]],
+      words[1][indexes[1]],
+      words[2][indexes[2]],
+    ]
+
+    return { indexes, letters }
+  }, [difficulty, words])
+
+  console.log('ASD', highlights)
   return (
     <BaseModal title="Szabályok" isOpen={isOpen} handleClose={handleClose}>
       <p className="text-sm text-gray-500 dark:text-slate-200">
@@ -16,37 +39,40 @@ export const InfoModal = ({ isOpen, handleClose }: Props) => {
       </p>
 
       {/* <div className="flex justify-center mb-1 mt-4"> */}
-      <div className="grid grid-cols-5 gap-1 mb-1 mt-4">
-        <Cell value="L" status="correct" />
-        <Cell value="A" />
-        <Cell value="K" />
-        <Cell value="Á" />
-        <Cell value="S" />
+      <div className={`grid grid-cols-${difficulty} gap-1 mb-1 mt-4`}>
+        {words[0].map((letter, index) => (
+          <Cell
+            value={letter}
+            status={index === highlights.indexes[0] ? 'correct' : undefined}
+          />
+        ))}
       </div>
       <p className="text-sm text-gray-500 dark:text-slate-200">
-        Az L betű szerepel a szóban és jó helyen van.
+        Az {highlights.letters[0]} betű szerepel a szóban és jó helyen van.
       </p>
 
-      <div className="grid grid-cols-5 gap-1 mb-1 mt-4">
-        <Cell value="GY" />
-        <Cell value="E" />
-        <Cell value="R" status="present" />
-        <Cell value="E" />
-        <Cell value="K" />
+      <div className={`grid grid-cols-${difficulty} gap-1 mb-1 mt-4`}>
+        {words[1].map((letter, index) => (
+          <Cell
+            value={letter}
+            status={index === highlights.indexes[1] ? 'present' : undefined}
+          />
+        ))}
       </div>
       <p className="text-sm text-gray-500 dark:text-slate-200">
-        Az R betű szerepel a szóban, de nem jó helyen van.
+        Az {highlights.letters[1]} betű szerepel a szóban, de nem jó helyen van.
       </p>
 
-      <div className="grid grid-cols-5 gap-1 mb-1 mt-4">
-        <Cell value="A" />
-        <Cell value="L" />
-        <Cell value="SZ" />
-        <Cell value="I" status="absent" />
-        <Cell value="K" />
+      <div className={`grid grid-cols-${difficulty} gap-1 mb-1 mt-4`}>
+        {words[2].map((letter, index) => (
+          <Cell
+            value={letter}
+            status={index === highlights.indexes[2] ? 'absent' : undefined}
+          />
+        ))}
       </div>
       <p className="text-sm text-gray-500 dark:text-slate-200">
-        Az I betű nem szerepel a szóban.
+        Az {highlights.letters[2]} betű nem szerepel a szóban.
       </p>
     </BaseModal>
   )

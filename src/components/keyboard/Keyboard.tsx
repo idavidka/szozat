@@ -9,6 +9,7 @@ type Props = {
   onEnter: () => void
   guesses: Word[]
   day: number
+  difficulty: number
 }
 
 export const Keyboard = ({
@@ -17,8 +18,9 @@ export const Keyboard = ({
   onEnter,
   guesses,
   day,
+  difficulty,
 }: Props) => {
-  const charStatuses = getStatuses(guesses, day)
+  const charStatuses = getStatuses(guesses, day, difficulty)
 
   const onClick = (value: KeyValue) => {
     if (value === 'ENTER') {

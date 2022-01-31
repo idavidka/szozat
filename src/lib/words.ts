@@ -1,5 +1,5 @@
-import { WORDS } from '../constants/wordlist'
-import { VALIDGUESSES } from '../constants/validGuesses'
+import { getWords } from '../constants/wordlist'
+import { getValidGuesses } from '../constants/validGuesses'
 import { Word } from './statuses'
 import { isEqual } from 'lodash'
 import { getWordLetters } from './hungarianWordUtils'
@@ -13,26 +13,29 @@ export const isWordEqual = (word1: Word, word2: Word) => {
   return isEqual(word1, word2)
 }
 
-export const isWordInWordList = (word: Word) => {
-  return VALIDGUESSES.some((validWord) => isWordEqual(word, validWord))
+export const isWordInWordList = (word: Word, difficulty: number) => {
+  return getValidGuesses(difficulty).some((validWord) =>
+    isWordEqual(word, validWord)
+  )
 }
 
-export const isWinningWord = (word: Word, day: number) => {
-  const { solution: currentSolution } = getCurrentWord(day)
+export const isWinningWord = (word: Word, day: number, difficulty: number) => {
+  const { solution: currentSolution } = getCurrentWord(day, difficulty)
   return isWordEqual(currentSolution, word)
 }
 
-export const getWordOfDay = (day: number) => {
+export const getWordOfDay = (day: number, difficulty: number) => {
+  const words = getWords(difficulty)
   // January 1, 2022 Game Epoch
   const epochMs = new Date('January 1, 2022 00:00:00').valueOf()
   const msInDay = 86400000
   const now = Date.now() + (day ?? 0) * msInDay
   const index = Math.floor((now - epochMs) / msInDay)
-  const indexModulo = index % WORDS.length
+  const indexModulo = index % words.length
   const nextday = (index + 1) * msInDay + epochMs
 
   return {
-    solution: WORDS[indexModulo],
+    solution: words[indexModulo],
     solutionIndex: indexModulo,
     tomorrow: nextday,
   }
@@ -57,9 +60,9 @@ export const getWordFromUrl = () => {
   }
 }
 
-export const getCurrentWord = (day: number) => {
+export const getCurrentWord = (day: number, difficulty: number) => {
   const wordFromUrl = getWordFromUrl()
-  const wordOfDay = getWordOfDay(day)
+  const wordOfDay = getWordOfDay(day, difficulty)
   if (wordFromUrl !== undefined) {
     return {
       ...wordFromUrl,
@@ -74,4 +77,4 @@ export const getCurrentWord = (day: number) => {
 }
 
 export const { solution, solutionIndex, solutionCreator, tomorrow } =
-  getCurrentWord(0)
+  getCurrentWord(0, 5)

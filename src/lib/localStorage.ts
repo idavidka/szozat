@@ -2,6 +2,7 @@ import { Word } from './statuses'
 import { ThemeValue } from './theme'
 
 const gameStateKey = 'gameState'
+const difficultyKey = 'difficulty'
 const themeKey = 'colorTheme'
 
 type StoredGameState = {
@@ -10,12 +11,29 @@ type StoredGameState = {
   day: number
 }
 
-export const saveGameStateToLocalStorage = (gameState: StoredGameState) => {
-  localStorage.setItem(gameStateKey, JSON.stringify(gameState))
+export const saveDifficultyToLocalStorage = (difficulty: number) => {
+  localStorage.setItem(difficultyKey, difficulty.toString())
 }
 
-export const loadGameStateFromLocalStorage = () => {
-  const state = localStorage.getItem(gameStateKey)
+export const loadDifficultyToLocalStorage = (): number => {
+  const difficulty = parseInt(localStorage.getItem(difficultyKey) ?? '5', 10)
+  return difficulty ?? 5
+}
+
+export const saveGameStateToLocalStorage = (
+  gameState: StoredGameState,
+  difficulty: number
+) => {
+  localStorage.setItem(
+    `${gameStateKey}-${difficulty}`,
+    JSON.stringify(gameState)
+  )
+}
+
+export const loadGameStateFromLocalStorage = (difficulty: number) => {
+  const state =
+    localStorage.getItem(`${gameStateKey}-${difficulty}`) ??
+    localStorage.getItem(gameStateKey)
   return state ? (JSON.parse(state) as StoredGameState) : null
 }
 

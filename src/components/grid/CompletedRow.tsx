@@ -4,13 +4,14 @@ import { Cell } from './Cell'
 type Props = {
   guess: Word
   day: number
+  difficulty: number
 }
 
-export const CompletedRow = ({ guess, day }: Props) => {
-  const statuses = getGuessStatuses(guess, day)
+export const CompletedRow = ({ guess, day, difficulty }: Props) => {
+  const statuses = getGuessStatuses(guess, day, difficulty)
 
   return (
-    <div className="grid grid-cols-5 gap-1">
+    <div className={`grid grid-cols-${difficulty} gap-1`}>
       {guess.map((letter, i) => (
         <Cell key={i} value={letter} status={statuses[i]} />
       ))}
