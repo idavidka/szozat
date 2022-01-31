@@ -19,3 +19,12 @@ export const getGridColClassName = (difficulty: number) => {
 
   return className
 }
+declare global {
+  interface Window {
+    dataLayer: any
+  }
+}
+export const addGTM = (...props: any[]) => {
+  window.dataLayer?.push(props)
+  console.log(window.dataLayer)
+}

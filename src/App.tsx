@@ -34,6 +34,7 @@ import { ThemeToggle } from './components/theme/ThemeToggle'
 import { ThemeContext } from './components/theme/ThemeContext'
 import { CreatePuzzleModal } from './components/modals/CreatePuzzleModal'
 import { times } from 'lodash'
+import { addGTM } from './constants/utils'
 
 const ALERT_TIME_MS = 2000
 const NEW_GAME_TIME_MS = 2000
@@ -186,6 +187,10 @@ function App() {
         setIsNotEnoughLetters(false)
       }, ALERT_TIME_MS)
     }
+    addGTM('event', 'guess', {
+      guess: currentGuess.join(''),
+      difficulty,
+    })
 
     if (
       !isWordInWordList(currentGuess, difficulty) &&
@@ -209,6 +214,10 @@ function App() {
 
       if (winningWord) {
         setStats(addStatsForCompletedGame(stats, guesses.length, difficulty))
+        addGTM('event', 'win', {
+          guess: currentGuess.join(''),
+          difficulty,
+        })
         return setIsGameWon({ [difficulty]: true })
       }
 
@@ -216,12 +225,17 @@ function App() {
         setStats(
           addStatsForCompletedGame(stats, guesses.length + 1, difficulty)
         )
+        addGTM('event', 'lost', {
+          guesses: guesses.map((guess) => guess.join('')),
+          difficulty,
+        })
         setIsGameLost({ [difficulty]: true })
       }
     }
   }
 
   const handleShareCopySuccess = useCallback(() => {
+    addGTM('event', 'copy', { status: 'success' })
     setShareComplete(true)
     setTimeout(() => {
       setShareComplete(false)
@@ -229,13 +243,23 @@ function App() {
   }, [])
 
   const handleShareFailure = useCallback(() => {
+    addGTM('event', 'copy', { status: 'failed' })
     setShareFailed(true)
     setTimeout(() => {
       setShareFailed(false)
     }, ALERT_TIME_MS)
   }, [])
 
+  const handleDifficultyChange = (value: number) => {
+    addGTM('event', 'changeDifficulty', {
+      previous: difficulty,
+      current: value,
+    })
+    setDifficulty(value)
+  }
+
   const handleNewGame = () => {
+    addGTM('event', 'newGame', { difficulty })
     setIsGameLost({ [difficulty]: false })
     setIsGameWon({ [difficulty]: false })
     setGuesses([])
@@ -258,6 +282,7 @@ function App() {
           newGuesses[i] = [...emptyRow]
         }
       }
+      addGTM('event', 'giveUp', { difficulty, guesses: newGuesses })
       setGuesses(newGuesses)
 
       setStats(addStatsForCompletedGame(stats, newGuesses.length, difficulty))
@@ -338,7 +363,7 @@ function App() {
             </h1>
             <DifficultyList
               selected={difficulty}
-              onChange={(value) => setDifficulty(value)}
+              onChange={handleDifficultyChange}
             />
             <ThemeToggle />
             <InformationCircleIcon
