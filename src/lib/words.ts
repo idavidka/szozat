@@ -41,7 +41,7 @@ export const getWordOfDay = (day: number, difficulty: number) => {
   }
 }
 
-export const getWordFromUrl = () => {
+export const getWordFromUrl = (difficulty: number) => {
   const customSolution = getDecodedHashParam(HASH_PARAM_KEY_SOLUTION)
   if (customSolution === undefined) {
     return undefined
@@ -51,7 +51,7 @@ export const getWordFromUrl = () => {
   const customWord = getWordLetters(customSolution).map((char) =>
     char.toUpperCase()
   ) as Word
-  if (customWord.length !== 5) {
+  if (customWord.length !== difficulty) {
     return undefined
   }
   return {
@@ -61,7 +61,7 @@ export const getWordFromUrl = () => {
 }
 
 export const getCurrentWord = (day: number, difficulty: number) => {
-  const wordFromUrl = getWordFromUrl()
+  const wordFromUrl = getWordFromUrl(difficulty)
   const wordOfDay = getWordOfDay(day, difficulty)
   if (wordFromUrl !== undefined) {
     return {

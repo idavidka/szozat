@@ -26,5 +26,7 @@ declare global {
 }
 export const addGTM = (...props: any[]) => {
   window.dataLayer?.push(props)
-  console.log(window.dataLayer)
+  // console.log(window.dataLayer)
 }
+
+export const isLocalhost = () => window.location.hostname === 'localhost'

@@ -83,6 +83,7 @@ function App() {
     if (loaded == null || !isWordEqual(loaded.solution, solution)) {
       return []
     }
+
     const gameWasWon = loaded.guesses.some((guess) =>
       isWordEqual(guess, solution)
     )
@@ -352,6 +353,7 @@ function App() {
       <CreatePuzzleModal
         isOpen={isModalOpen === 'create-puzzle'}
         handleClose={() => setIsModalOpen(false)}
+        difficulty={difficulty}
       />
       <div className="bg-white dark:bg-gray-800 transition-all h-[100%]">
         <div

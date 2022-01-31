@@ -1,7 +1,7 @@
 import moment from 'moment'
 import { MAX_NUMBER_OF_GUESSES } from '../constants/constants'
 import { getGuessStatuses, Word } from './statuses'
-import { solutionCreator, getCurrentWord } from './words'
+import { getCurrentWord } from './words'
 
 export const getShareText = (
   guesses: Word[],
@@ -10,7 +10,7 @@ export const getShareText = (
   difficulty: number,
   solution?: Word
 ) => {
-  const { solutionIndex } = getCurrentWord(day, difficulty)
+  const { solutionIndex, solutionCreator } = getCurrentWord(day, difficulty)
   const identifier =
     solutionCreator !== undefined
       ? 'Egyéni feladvány: ' + solutionCreator

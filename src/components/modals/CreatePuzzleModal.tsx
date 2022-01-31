@@ -7,10 +7,25 @@ import { BaseModal } from './BaseModal'
 
 type Props = {
   isOpen: boolean
+  difficulty: number
   handleClose: () => void
 }
 
-export const CreatePuzzleModal = ({ isOpen, handleClose }: Props) => {
+const numberNames: Record<number, string> = {
+  3: 'három',
+  4: 'négy',
+  5: 'öt',
+  6: 'hat',
+  7: 'hét',
+  8: 'nyolc',
+  9: 'kilenc',
+}
+
+export const CreatePuzzleModal = ({
+  isOpen,
+  handleClose,
+  difficulty,
+}: Props) => {
   const [word, setWord] = useState<string>('')
   const [creator, setCreator] = useState<string>('')
   const [wordLetters, setWordLetters] = useState<Word | undefined>()
@@ -32,7 +47,7 @@ export const CreatePuzzleModal = ({ isOpen, handleClose }: Props) => {
   )
 
   const gameLink =
-    wordLetters?.length === 5 && creator.length > 0
+    wordLetters?.length === difficulty && creator.length > 0
       ? createCustomGameUrl(word, creator)
       : undefined
 
@@ -47,7 +62,7 @@ export const CreatePuzzleModal = ({ isOpen, handleClose }: Props) => {
       </p>
 
       <p className="text-gray-500 dark:text-slate-200 pb-2 pt-5">
-        Válassz egy ötbetűs szót:
+        Válassz egy {numberNames[difficulty]}betűs szót:
       </p>
       <div className="pb-2">
         <input
@@ -55,17 +70,23 @@ export const CreatePuzzleModal = ({ isOpen, handleClose }: Props) => {
           name="word"
           value={word}
           onChange={handleWordChange}
+          maxLength={difficulty * 2}
         />
       </div>
-      {wordLetters?.length !== 5 && (
+      {wordLetters?.length !== difficulty && (
         <p className="text-sm text-red-500 dark:text-red-500 pb-2">
-          A szónak ötbetűsnek kell lennie.
+          A szónak {numberNames[difficulty]}betűsnek kell lennie.
         </p>
       )}
-      {wordLetters !== undefined && word.length >= 5 && (
+      {wordLetters !== undefined && word.length >= difficulty && (
         <div className="flex justify-between">
           {wordLetters.map((wordLetter, index) => (
-            <Cell key={index} value={wordLetter} status="correct" />
+            <Cell
+              className="mr-2"
+              key={index}
+              value={wordLetter}
+              status="correct"
+            />
           ))}
         </div>
       )}

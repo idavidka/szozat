@@ -1,3 +1,5 @@
+import { shuffle } from 'lodash'
+import { isLocalhost } from '../constants/utils'
 import { Word } from './statuses'
 import { ThemeValue } from './theme'
 
@@ -11,12 +13,53 @@ type StoredGameState = {
   day: number
 }
 
+const encrypt = (value: string): string => {
+  const buffer = window.btoa(encodeURIComponent(value)).split('')
+  const reverseBuffer = buffer.reverse()
+
+  return window.btoa(
+    shuffle(buffer).join('') + reverseBuffer.join('') + shuffle(buffer).join('')
+  )
+}
+
+const decrypt = (value: string): string => {
+  const buffer = window.atob(value)
+  const length = buffer.length / 3
+  const reverseBuffer = buffer.substring(length, length * 2)
+
+  return decodeURIComponent(
+    window.atob(reverseBuffer.split('').reverse().join(''))
+  )
+}
+
+const setItem: typeof localStorage.setItem = (key: string, value: string) => {
+  localStorage.setItem(key, isLocalhost() ? value : encrypt(value))
+}
+
+const getItem: typeof localStorage.getItem = (key: string) => {
+  const value = localStorage.getItem(key)
+
+  try {
+    if (value) {
+      JSON.parse(value)
+      return value
+    }
+  } catch (err) {}
+
+  return value ? decrypt(value) : null
+}
+
 export const saveDifficultyToLocalStorage = (difficulty: number) => {
-  localStorage.setItem(difficultyKey, difficulty.toString())
+  setItem(difficultyKey, JSON.stringify({ difficulty: difficulty.toString() }))
 }
 
 export const loadDifficultyToLocalStorage = (): number => {
-  const difficulty = parseInt(localStorage.getItem(difficultyKey) ?? '5', 10)
+  const value = getItem(difficultyKey)
+
+  const difficulty = parseInt(
+    (value ? JSON.parse(value)?.difficulty : null) ?? '5',
+    10
+  )
   return difficulty ?? 5
 }
 
@@ -24,15 +67,12 @@ export const saveGameStateToLocalStorage = (
   gameState: StoredGameState,
   difficulty: number
 ) => {
-  localStorage.setItem(
-    `${gameStateKey}-${difficulty}`,
-    JSON.stringify(gameState)
-  )
+  setItem(`${gameStateKey}-${difficulty}`, JSON.stringify(gameState))
 }
 
 export const loadGameStateFromLocalStorage = (difficulty: number) => {
   const state =
-    localStorage.getItem(`${gameStateKey}-${difficulty}`) ??
+    getItem(`${gameStateKey}-${difficulty}`) ??
     (difficulty === 5 ? localStorage.getItem(gameStateKey) : undefined)
   return state ? (JSON.parse(state) as StoredGameState) : null
 }
@@ -52,21 +92,18 @@ export const saveStatsToLocalStorage = (
   gameStats: GameStats,
   difficulty: number
 ) => {
-  localStorage.setItem(
-    `${gameStatKey}-${difficulty}`,
-    JSON.stringify(gameStats)
-  )
+  setItem(`${gameStatKey}-${difficulty}`, JSON.stringify(gameStats))
 }
 
 export const loadStatsFromLocalStorage = (difficulty: number) => {
   const stats =
-    localStorage.getItem(`${gameStatKey}-${difficulty}`) ??
-    (difficulty === 5 ? localStorage.getItem(gameStatKey) : undefined)
+    getItem(`${gameStatKey}-${difficulty}`) ??
+    (difficulty === 5 ? getItem(gameStatKey) : undefined)
   return stats ? (JSON.parse(stats) as GameStats) : null
 }
 
 export const loadInitialTheme = (): ThemeValue => {
-  const savedTheme = localStorage.getItem(themeKey)
+  const savedTheme = getItem(themeKey)
   if (typeof savedTheme === 'string') {
     return savedTheme as ThemeValue
   }
@@ -79,5 +116,4 @@ export const loadInitialTheme = (): ThemeValue => {
   return 'light' // light theme as the default
 }
 
-export const saveTheme = (theme: ThemeValue) =>
-  localStorage.setItem(themeKey, theme)
+export const saveTheme = (theme: ThemeValue) => setItem(themeKey, theme)
