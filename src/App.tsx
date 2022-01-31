@@ -334,6 +334,7 @@ function App() {
         difficulty={difficulty}
         isGameLost={isGameLost[difficulty]}
         isGameWon={isGameWon[difficulty]}
+        solution={isGameWon[difficulty] ? solution : undefined}
         handleShareCopySuccess={handleShareCopySuccess}
         handleShareFailure={handleShareFailure}
         handleNewGameClick={handleNewGame}

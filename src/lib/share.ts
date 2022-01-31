@@ -7,7 +7,8 @@ export const getShareText = (
   guesses: Word[],
   lost: boolean,
   day: number,
-  difficulty: number
+  difficulty: number,
+  solution?: Word
 ) => {
   const { solutionIndex } = getCurrentWord(day, difficulty)
   const identifier =
@@ -21,7 +22,9 @@ export const getShareText = (
     identifier +
     ' - ' +
     (lost ? 'X' : guesses.length) +
-    `/${MAX_NUMBER_OF_GUESSES[difficulty]}\n\n` +
+    `/${MAX_NUMBER_OF_GUESSES[difficulty]}\n${
+      solution ? `Megfejtés: ${solution?.join('')}` : ''
+    }\n\n` +
     generateEmojiGrid(guesses, day, difficulty) +
     '\n\n' +
     window.location.href
@@ -32,9 +35,10 @@ export const shareStatus = async (
   guesses: Word[],
   lost: boolean,
   day: number,
-  difficulty: number
+  difficulty: number,
+  solution?: Word
 ) => {
-  const text = getShareText(guesses, lost, day, difficulty)
+  const text = getShareText(guesses, lost, day, difficulty, solution)
   if (navigator?.share != null) {
     await navigator.share({ text })
     return { type: 'share' as const }

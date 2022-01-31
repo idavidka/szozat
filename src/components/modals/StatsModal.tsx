@@ -17,6 +17,7 @@ type Props = {
   isGameWon: boolean
   day: number
   difficulty: number
+  solution?: Word
   handleShareCopySuccess: () => void
   handleShareFailure: () => void
   handleNewGameClick: () => void
@@ -30,6 +31,7 @@ export const StatsModal = ({
   isGameLost,
   isGameWon,
   day,
+  solution,
   difficulty,
   handleShareCopySuccess,
   handleShareFailure,
@@ -47,7 +49,8 @@ export const StatsModal = ({
         guesses,
         isGameLost,
         day,
-        statDifficulty
+        statDifficulty,
+        solution
       )
       if (type === 'clipboard') {
         handleShareCopySuccess()
@@ -60,13 +63,14 @@ export const StatsModal = ({
     isGameLost,
     day,
     statDifficulty,
+    solution,
     handleShareCopySuccess,
     handleShareFailure,
   ])
 
   const renderShareText = useCallback(
-    (guesses: Word[], lost: boolean) => {
-      const text = getShareText(guesses, lost, day, statDifficulty)
+    (guesses: Word[], lost: boolean, solution?: Word) => {
+      const text = getShareText(guesses, lost, day, statDifficulty, solution)
       const rows = text.split('\n')
       return (
         <p className="text-xs text-left pt-5">
@@ -144,7 +148,7 @@ export const StatsModal = ({
             <p>
               Ha a megosztás gomb nem működik, másold ki innen az eredményedet:
             </p>
-            {renderShareText(guesses, isGameLost)}
+            {renderShareText(guesses, isGameLost, solution)}
           </div>
         </>
       )}
