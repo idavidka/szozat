@@ -37,7 +37,7 @@ import { times } from 'lodash'
 import { addGTM } from './constants/utils'
 
 const ALERT_TIME_MS = 2000
-const NEW_GAME_TIME_MS = 2000
+const NEW_GAME_TIME_MS = 500
 
 function App() {
   const context = React.useContext(ThemeContext)

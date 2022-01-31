@@ -1,9 +1,9 @@
 export const MAX_NUMBER_OF_GUESSES: Record<number, number> = {
-  3: 5,
-  4: 6,
+  3: 7,
+  4: 8,
   5: 8,
-  6: 9,
-  7: 11,
-  8: 12,
-  9: 14,
+  6: 10,
+  7: 12,
+  8: 14,
+  9: 18,
 }
