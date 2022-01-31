@@ -46,7 +46,7 @@ const getItem: typeof localStorage.getItem = (key: string) => {
     }
   } catch (err) {}
 
-  return value ? decrypt(value) : null
+  return value && value !== 'NaN' ? decrypt(value) : null
 }
 
 export const saveDifficultyToLocalStorage = (difficulty: number) => {
