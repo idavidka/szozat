@@ -12,9 +12,12 @@ export const AboutModal = ({ isOpen, handleClose }: Props) => {
         Ez egy nyílt forráskódú, magyar változata a Wordle játéknak.
         <br />
         <i>
-          Ebben a verzióban 3 betűtől 9 betűig változtathatot a kitalálandó szó
+          Ebben a verzióban 3 betűtől 9 betűig változtathatod a kitalálandó szó
           hosszát. Ha nem bírsz várni egy napot, tovább is tudsz menni a
-          következő napi szóra.
+          következő napi szóra.{' '}
+          <span className="text-sm text-red-600">
+            (Figyelem! A túl sok játék függőséget okoz! :) )
+          </span>
         </i>
       </p>
       <p className="text-sm text-gray-500 dark:text-slate-200 pb-2">
@@ -70,9 +73,6 @@ export const AboutModal = ({ isOpen, handleClose }: Props) => {
         A magyar verzió tech múzsája <strong>Vőfély Rozi</strong>, a programozói
         módosításokat pedig <strong>Danka Miklós</strong> és{' '}
         <strong>Imre Dávid</strong> végezte.
-      </p>
-      <p className="text-sm text-red-600">
-        Figyelem! A túl sok játék függőséget okoz! :)
       </p>
     </BaseModal>
   )
