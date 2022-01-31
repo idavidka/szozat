@@ -57,7 +57,7 @@ export const loadDifficultyToLocalStorage = (): number => {
   const value = getItem(difficultyKey)
 
   const difficulty = parseInt(
-    (value ? JSON.parse(value)?.difficulty : null) ?? '5',
+    (value && value !== 'NaN' ? JSON.parse(value)?.difficulty : null) ?? '5',
     10
   )
   return difficulty ?? 5
