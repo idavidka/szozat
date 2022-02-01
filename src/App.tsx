@@ -429,7 +429,11 @@ function App() {
             <RefreshIcon
               className="h-6 w-6 cursor-pointer dark:text-gray-300"
               onClick={() =>
-                setIsModalOpen(isGameWon[difficulty] ? 'stat' : 'new-game')
+                setIsModalOpen(
+                  isGameWon[difficulty] || isGameLost[difficulty]
+                    ? 'stat'
+                    : 'new-game'
+                )
               }
             />
           </div>
