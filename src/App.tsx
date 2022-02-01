@@ -20,9 +20,11 @@ import {
   isWordEqual,
   getCurrentWord,
 } from './lib/words'
+import { getStatsFromApi, sendStatsToAPI } from './lib/api'
 import { WIN_MESSAGES } from './constants/strings'
-import { addStatsForCompletedGame, loadStats } from './lib/stats'
+import { addStatsForCompletedGame, loadStats, toStats } from './lib/stats'
 import {
+  GameStats,
   loadDifficultyToLocalStorage,
   loadGameStateFromLocalStorage,
   saveDifficultyToLocalStorage,
@@ -104,6 +106,26 @@ function App() {
   const gridContainerRef = useRef<HTMLDivElement>(null)
 
   const [stats, setStats] = useState(getLoadedStats(difficulty))
+  const [globalStats, setGlobalStats] = useState()
+
+  useEffect(() => {
+    getStatsFromApi().then((data) => setGlobalStats(data))
+  }, [])
+
+  const getGlobalStats = useCallback(
+    (statDifficulty): GameStats | undefined =>
+      toStats(difficulty, globalStats?.[statDifficulty]),
+
+    [difficulty, globalStats]
+  )
+
+  const saveStat = useCallback(
+    (gameStats: GameStats) => {
+      setStats(gameStats)
+      sendStatsToAPI(gameStats, difficulty).then((data) => setGlobalStats(data))
+    },
+    [difficulty]
+  )
 
   const checkIsModalOpen = useCallback(
     (type: ModalId) => {
@@ -247,7 +269,7 @@ function App() {
       setCurrentGuess([])
 
       if (winningWord) {
-        setStats(addStatsForCompletedGame(stats, guesses.length, difficulty))
+        saveStat(addStatsForCompletedGame(stats, guesses.length, difficulty))
         addGTM('event', 'win', {
           guess: currentGuess.join(''),
           difficulty,
@@ -256,7 +278,7 @@ function App() {
       }
 
       if (guesses.length === maxGuess - 1) {
-        setStats(
+        saveStat(
           addStatsForCompletedGame(stats, guesses.length + 1, difficulty)
         )
         addGTM('event', 'lost', {
@@ -320,7 +342,7 @@ function App() {
       addGTM('event', 'giveUp', { difficulty, guesses: newGuesses })
       setGuesses(newGuesses)
 
-      setStats(addStatsForCompletedGame(stats, newGuesses.length, difficulty))
+      saveStat(addStatsForCompletedGame(stats, newGuesses.length, difficulty))
       setIsGameLost({ [difficulty]: true })
     }
 
@@ -380,12 +402,12 @@ function App() {
         day={day}
         difficulty={difficulty}
         isGameLost={isGameLost[difficulty]}
-        isGameWon={isGameWon[difficulty]}
         solution={isGameWon[difficulty] ? solution : undefined}
         handleShareCopySuccess={handleShareCopySuccess}
         handleShareFailure={handleShareFailure}
         handleNewGameClick={handleNewGame}
         handleStats={getLoadedStats}
+        handleGlobalStats={getGlobalStats}
       />
       <NewGameModal
         isOpen={checkIsModalOpen('new-game')}

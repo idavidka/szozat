@@ -498,3 +498,5 @@ hindi
 gross
 koszté
 púpos
+fődíj
+troll

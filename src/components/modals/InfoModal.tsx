@@ -1,7 +1,7 @@
 import { Cell } from '../grid/Cell'
 import { MAX_NUMBER_OF_GUESSES } from '../../constants/constants'
 import { BaseModal, ModalType } from './BaseModal'
-import { useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { getWords } from '../../constants/wordlist'
 import {
   getGridColClassName,
@@ -94,122 +94,32 @@ export const InfoModal = ({
       </p>
 
       {/* <div className="flex justify-center mb-1 mt-4"> */}
-      {words.map(({ word, letter: selectedLetter, text, status }) => (
-        <>
-          <div
-            className={`grid ${getGridColClassName(
-              difficulty
-            )} gap-1 mb-1 mt-4 mx-auto w-full ${getGridMaxWidthClassName(
-              difficulty
-            )}`}
-          >
-            {word.map((letter) => (
-              <Cell
-                key={selectedLetter}
-                value={letter}
-                status={
-                  letter === selectedLetter ? (status as CharStatus) : undefined
-                }
-              />
-            ))}
-          </div>
-          <p className="text-sm text-gray-500 dark:text-slate-200">{text}</p>
-        </>
-      ))}
-      {/* <div
-        className={`grid ${getGridColClassName(
-          difficulty
-        )} gap-1 mb-1 mt-4 mx-auto w-full ${getGridMaxWidthClassName(
-          difficulty
-        )}`}
-      >
-        {words[0].map((letter, index) => (
-          <Cell
-            key={index}
-            value={letter}
-            status={index === highlights.indexes[0] ? 'correct' : undefined}
-          />
-        ))}
-      </div>
-      <p className="text-sm text-gray-500 dark:text-slate-200">
-        Az {highlights.letters[0]} betű szerepel a szóban és jó helyen van.
-      </p>
-
-      <div
-        className={`grid ${getGridColClassName(
-          difficulty
-        )} gap-1 mb-1 mt-4 mx-auto w-full ${getGridMaxWidthClassName(
-          difficulty
-        )}`}
-      >
-        {words[1].map((letter, index) => (
-          <Cell
-            key={index}
-            value={letter}
-            status={index === highlights.indexes[1] ? 'present' : undefined}
-          />
-        ))}
-      </div>
-      <p className="text-sm text-gray-500 dark:text-slate-200">
-        Az {highlights.letters[1]} betű szerepel a szóban, de nem jó helyen van.
-      </p>
-
-      <div
-        className={`grid ${getGridColClassName(
-          difficulty
-        )} gap-1 mb-1 mt-4 mx-auto w-full ${getGridMaxWidthClassName(
-          difficulty
-        )}`}
-      >
-        {words[1].map((letter, index) => (
-          <Cell
-            key={index}
-            value={letter}
-            status={index === highlights.indexes[1] ? 'present' : undefined}
-          />
-        ))}
-      </div>
-      <p className="text-sm text-gray-500 dark:text-slate-200">
-        Az {highlights.letters[1]} betű szerepel a szóban, de nem jó helyen van.
-      </p>
-
-      <div
-        className={`grid ${getGridColClassName(
-          difficulty
-        )} gap-1 mb-1 mt-4 mx-auto w-full ${getGridMaxWidthClassName(
-          difficulty
-        )}`}
-      >
-        {words[1].map((letter, index) => (
-          <Cell
-            key={index}
-            value={letter}
-            status={index === highlights.indexes[1] ? 'present' : undefined}
-          />
-        ))}
-      </div>
-      <p className="text-sm text-gray-500 dark:text-slate-200">
-        Az {highlights.letters[1]} betű szerepel a szóban, de nem jó helyen van.
-      </p>
-
-      <div
-        className={`grid ${getGridColClassName(
-          difficulty
-        )} gap-1 mb-1 mt-4 mx-auto w-full ${getGridMaxWidthClassName(
-          difficulty
-        )}`}
-      >
-        {words[2].map((letter, index) => (
-          <Cell
-            key={index}
-            value={letter}
-            status={index === highlights.indexes[2] ? 'absent' : undefined}
-          />
-        ))}
-      </div>
-      <p className="text-sm text-gray-500 dark:text-slate-200">
-        Az {highlights.letters[2]} betű nem szerepel a szóban.
-      </p> */}
+      {words.map(
+        ({ word, letter: selectedLetter, text, status }, wordIndex) => (
+          <React.Fragment key={wordIndex}>
+            <div
+              className={`grid ${getGridColClassName(
+                difficulty
+              )} gap-1 mb-1 mt-4 mx-auto w-full ${getGridMaxWidthClassName(
+                difficulty
+              )}`}
+            >
+              {word.map((letter, letterIndex) => (
+                <Cell
+                  key={letterIndex}
+                  value={letter}
+                  status={
+                    letter === selectedLetter
+                      ? (status as CharStatus)
+                      : undefined
+                  }
+                />
+              ))}
+            </div>
+            <p className="text-sm text-gray-500 dark:text-slate-200">{text}</p>
+          </React.Fragment>
+        )
+      )}
       <div className="text-sm text-gray-500 dark:text-slate-200 mt-3">
         <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-slate-200">
           Használati tippek

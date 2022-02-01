@@ -1,10 +1,9 @@
-import { times } from 'lodash'
+import { isNil, times } from 'lodash'
 import { MAX_NUMBER_OF_GUESSES } from '../constants/constants'
 import {
   GameStats,
   loadStatsFromLocalStorage,
   saveStatsToLocalStorage,
-  sendStatsToAPI,
 } from './localStorage'
 
 // In stats array elements 0-(N-1) are successes in 1-N trys
@@ -35,20 +34,46 @@ export const addStatsForCompletedGame = (
   stats.successRate = getSuccessRate(stats)
 
   saveStatsToLocalStorage(stats, difficulty)
-  sendStatsToAPI(stats, difficulty)
 
   return stats
 }
 
 export const getDefaultStats = (difficulty: number): GameStats => {
   return {
-    winDistribution: times(difficulty, () => 0),
+    winDistribution: times(MAX_NUMBER_OF_GUESSES[difficulty], () => 0),
     gamesFailed: 0,
     currentStreak: 0,
     bestStreak: 0,
     totalGames: 0,
     successRate: 0,
   }
+}
+
+export const toStats = (
+  difficulty: number,
+  stat?: Record<string, number | number[]>
+): GameStats => {
+  const newStat = { ...getDefaultStats(difficulty) }
+
+  if (!stat) {
+    return newStat
+  }
+
+  if (!isNil(stat.failedCount) && typeof stat.failedCount === 'number') {
+    newStat.gamesFailed = stat.failedCount
+  }
+
+  if (!isNil(stat.totalCount) && typeof stat.totalCount === 'number') {
+    newStat.totalGames = stat.totalCount
+  }
+
+  if (!isNil(stat.distributions) && Array.isArray(stat.distributions)) {
+    newStat.winDistribution = stat.distributions
+  }
+
+  newStat.successRate = getSuccessRate(newStat)
+
+  return newStat
 }
 
 export const loadStats = (difficulty: number) => {

@@ -88,15 +88,24 @@ export type GameStats = {
   successRate: number
 }
 
+export const generateSessionId = () => {
+  const current = getItem('id')
+
+  if (current) {
+    return JSON.parse(current)
+  }
+
+  const id = Math.random().toString(36).substr(2, 10)
+  setItem('id', JSON.stringify({ id }))
+
+  return { id }
+}
+
 export const saveStatsToLocalStorage = (
   gameStats: GameStats,
   difficulty: number
 ) => {
   setItem(`${gameStatKey}-${difficulty}`, JSON.stringify(gameStats))
-}
-
-export const sendStatsToAPI = (gameStats: GameStats, difficulty: number) => {
-  // console.log('ASD', process.env.REACT_APP_API_URL)
 }
 
 export const loadStatsFromLocalStorage = (difficulty: number) => {
