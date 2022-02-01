@@ -6,6 +6,7 @@ export const sendStatsToAPI = (gameStats: GameStats, difficulty: number) => {
   }
 
   const sessionId = generateSessionId()
+  const url = `${window.location.protocol}//${process.env.REACT_APP_API_URL}`
 
   const data = new FormData()
   data.append('id', sessionId.id)
@@ -13,7 +14,7 @@ export const sendStatsToAPI = (gameStats: GameStats, difficulty: number) => {
   data.append('totalCount', gameStats.totalGames.toString())
   data.append('failedCount', gameStats.gamesFailed.toString())
   data.append('distributions', gameStats.winDistribution.toString())
-  return fetch(process.env.REACT_APP_API_URL, {
+  return fetch(url, {
     method: 'POST',
     body: data,
   }).then((response) => response.json())
@@ -24,12 +25,13 @@ export const getStatsFromApi = () => {
     return Promise.reject()
   }
 
+  const url = `${window.location.protocol}//${process.env.REACT_APP_API_URL}`
   const params = new URLSearchParams()
   params.append('stat', 'true')
   params.append('id', generateSessionId().id)
 
   params.toString()
-  return fetch(`${process.env.REACT_APP_API_URL}?${params.toString()}`, {
+  return fetch(`${url}?${params.toString()}`, {
     method: 'GET',
   }).then((response) => response.json())
 }
