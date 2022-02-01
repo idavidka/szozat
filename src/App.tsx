@@ -290,6 +290,7 @@ function App() {
       current: value,
     })
     setDifficulty(value)
+    setCurrentGuess(currentGuess.slice(0, value))
   }
 
   const handleNewGame = () => {

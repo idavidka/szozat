@@ -41,7 +41,7 @@ export const Keyboard = ({
   }
 
   useEffect(() => {
-    const listener = (e: KeyboardEvent) => {
+    const keyup = (e: KeyboardEvent) => {
       if (e.code === 'Enter') {
         onEnter()
       } else if (e.code === 'Backspace') {
@@ -74,10 +74,10 @@ export const Keyboard = ({
       }
     }
     resize()
-    window.addEventListener('keyup', listener)
+    window.addEventListener('keyup', keyup)
     window.addEventListener('resize', resize)
     return () => {
-      window.removeEventListener('keyup', listener)
+      window.removeEventListener('keyup', keyup)
       window.removeEventListener('resize', resize)
     }
   }, [onEnter, onDelete, onChar, onReplace])

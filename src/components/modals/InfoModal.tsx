@@ -91,7 +91,7 @@ export const InfoModal = ({
       <p className="text-sm text-gray-500 dark:text-slate-200">
         Az {highlights.letters[2]} betű nem szerepel a szóban.
       </p>
-      <p className="text-sm text-gray-500 dark:text-slate-200 mt-3">
+      <div className="text-sm text-gray-500 dark:text-slate-200 mt-3">
         <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-slate-200">
           Használati tippek
         </h3>
@@ -106,7 +106,7 @@ export const InfoModal = ({
             billentyűzejét.
           </li>
         </ul>
-      </p>
+      </div>
       <button
         type="button"
         className="mx-auto mt-2 flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 select-none"
