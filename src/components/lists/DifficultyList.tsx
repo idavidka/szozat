@@ -41,17 +41,14 @@ export const DifficultyList = ({ selected, onChange }: Props) => {
           onChange(value)
         }}
       >
-        <div className="absolute mt-1">
+        <div className="absolute ml-1">
           <Listbox.Button
             ref={buttonRef}
-            className="relative py-2 pl-3 pr-8 text-left bg-white rounded-lg shadow-md cursor-default focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-orange-300 focus-visible:ring-offset-2 focus-visible:border-indigo-500 sm:text-sm"
+            className="relative py-2 pl-3 pr-8 text-left bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-slate-200 rounded-lg shadow-md cursor-default focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75  focus-visible:ring-offset-2 focus-visible:border-indigo-500 sm:text-sm"
           >
             <span className="block truncate">{selectedOption.label}</span>
             <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-              <SelectorIcon
-                className="w-5 h-5 text-gray-400"
-                aria-hidden="true"
-              />
+              <SelectorIcon className="w-5 h-5 " aria-hidden="true" />
             </span>
           </Listbox.Button>
           <Transition
@@ -60,15 +57,16 @@ export const DifficultyList = ({ selected, onChange }: Props) => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Listbox.Options className="absolute w-full py-1 mt-1 overflow-auto text-base  bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+            <Listbox.Options className="absolute w-full py-1 mt-1 overflow-auto text-base bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-slate-200 rounded-md shadow-lg max-h-60 ring-1 ring-gray-200 dark:ring-slate-800 ring-opacity-5 focus:outline-none sm:text-sm">
               {options.map((option) => (
                 <Listbox.Option
                   key={option.id}
                   className={({ active }) =>
                     `${
                       active
-                        ? option.className ?? 'text-gray-900'
-                        : 'text-gray-900'
+                        ? option.className ??
+                          'text-gray-900 dark:text-slate-200'
+                        : 'text-gray-900 dark:text-slate-200'
                     }
                           cursor-default select-none relative py-2 pl-4 pr-4 id-${
                             option.id

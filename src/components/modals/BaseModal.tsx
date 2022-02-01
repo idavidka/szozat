@@ -1,6 +1,7 @@
-import { Fragment } from 'react'
+import { useContext, Fragment } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { XCircleIcon } from '@heroicons/react/outline'
+import { ThemeContext } from '../theme/ThemeContext'
 
 export type ModalId =
   | 'info'
@@ -20,11 +21,12 @@ type Props = {
 }
 
 export const BaseModal = ({ title, children, isOpen, handleClose }: Props) => {
+  const context = useContext(ThemeContext)
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog
         as="div"
-        className="fixed z-[1010] inset-0 overflow-y-auto"
+        className={`${context.theme} fixed z-[1010] inset-0 overflow-y-auto`}
         onClose={handleClose}
       >
         <div className="flex items-center justify-center min-h-screen py-10 px-4 text-center sm:block sm:p-0">
@@ -56,10 +58,10 @@ export const BaseModal = ({ title, children, isOpen, handleClose }: Props) => {
             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
-            <div className="inline-block align-bottom bg-white dark:bg-slate-500 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
+            <div className="inline-block align-bottom bg-white  dark:bg-slate-500 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
               <div className="absolute right-4 top-4">
                 <XCircleIcon
-                  className="h-6 w-6 cursor-pointer dark:text-slate-200"
+                  className="h-6 w-6 cursor-pointer text-gray-900 dark:text-slate-200"
                   onClick={() => handleClose()}
                 />
               </div>
