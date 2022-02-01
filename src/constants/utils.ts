@@ -5,6 +5,32 @@ export const toWord = (word: string[]): Word => {
   return word.map((letter) => letter.toUpperCase() as CharValue)
 }
 
+export const getArticle = (value: CharValue) => {
+  const own = [
+    'Q',
+    'W',
+    'T',
+    'P',
+    'D',
+    'G',
+    'H',
+    'J',
+    'K',
+    'Z',
+    'C',
+    'V',
+    'B',
+    'CS',
+    'DZ',
+    'DZS',
+    'GY',
+    'TY',
+    'ZS',
+  ]
+
+  return own.includes(value) ? 'A' : 'Az'
+}
+
 export const getGridColClassName = (difficulty: number) => {
   // workaround for tailwindcss parsing if classname is a literal template
   const className = classNames({

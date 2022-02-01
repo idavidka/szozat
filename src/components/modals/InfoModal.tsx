@@ -4,10 +4,10 @@ import { BaseModal, ModalType } from './BaseModal'
 import React, { useMemo } from 'react'
 import { getWords } from '../../constants/wordlist'
 import {
+  getArticle,
   getGridColClassName,
   getGridMaxWidthClassName,
 } from '../../constants/utils'
-import { CONSONANT_CHAR_VALUES } from '../../lib/wordCommons'
 import { CharStatus } from '../../lib/statuses'
 
 type Props = {
@@ -45,7 +45,7 @@ export const InfoModal = ({
       {
         word: currentWords[0],
         letter: letters[0],
-        text: `${CONSONANT_CHAR_VALUES.includes(letters[0]) ? 'A' : 'Az'} ${
+        text: `${getArticle(letters[0])} ${
           letters[0]
         } betű szerepel a szóban és jó helyen van.`,
         status: 'correct',
@@ -53,7 +53,7 @@ export const InfoModal = ({
       {
         word: currentWords[1],
         letter: letters[1],
-        text: `${CONSONANT_CHAR_VALUES.includes(letters[1]) ? 'A' : 'Az'} ${
+        text: `${getArticle(letters[1])} ${
           letters[1]
         } betű szerepel a szóban, jó helyen van, de többször előfordul.`,
         status: 'correct-diff',
@@ -61,7 +61,7 @@ export const InfoModal = ({
       {
         word: currentWords[2],
         letter: letters[2],
-        text: `${CONSONANT_CHAR_VALUES.includes(letters[2]) ? 'A' : 'Az'} ${
+        text: `${getArticle(letters[2])} ${
           letters[2]
         } betű szerepel a szóban, de nem jó helyen van.`,
         status: 'present',
@@ -69,7 +69,7 @@ export const InfoModal = ({
       {
         word: currentWords[3],
         letter: letters[3],
-        text: `${CONSONANT_CHAR_VALUES.includes(letters[3]) ? 'A' : 'Az'} ${
+        text: `${getArticle(letters[3])} ${
           letters[3]
         } betű szerepel a szóban, de nem jó helyen van és többször előfordul`,
         status: 'present-diff',
@@ -77,7 +77,7 @@ export const InfoModal = ({
       {
         word: currentWords[4],
         letter: letters[4],
-        text: `${CONSONANT_CHAR_VALUES.includes(letters[4]) ? 'A' : 'Az'} ${
+        text: `${getArticle(letters[4])} ${
           letters[4]
         } betű nem szerepel a szóban.`,
         status: 'absent',
