@@ -7,7 +7,7 @@ import {
   getArticle,
   getGridColClassName,
   getGridMaxWidthClassName,
-} from '../../constants/utils'
+} from '../../lib/utils'
 import { CharStatus } from '../../lib/statuses'
 
 type Props = {

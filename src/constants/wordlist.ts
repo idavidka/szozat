@@ -1,5 +1,5 @@
 import { Word } from '../lib/statuses'
-import { toWord } from './utils'
+import { toWord } from '../lib/utils'
 
 import words3 from './hungarian-puzzles-3.json'
 import words4 from './hungarian-puzzles-4.json'

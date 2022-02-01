@@ -1,4 +1,4 @@
-import { getGridColClassName } from '../../constants/utils'
+import { getGridColClassName } from '../../lib/utils'
 import { Word } from '../../lib/statuses'
 import { Cell } from './Cell'
 

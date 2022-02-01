@@ -1,5 +1,5 @@
 import { shuffle } from 'lodash'
-import { isLocalhost } from '../constants/utils'
+import { isLocalhost } from './utils'
 import { Word } from './statuses'
 import { ThemeValue } from './theme'
 

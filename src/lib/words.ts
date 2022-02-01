@@ -54,6 +54,7 @@ export const getWordFromUrl = (difficulty: number) => {
   if (customWord.length !== difficulty) {
     return undefined
   }
+
   return {
     solution: customWord,
     solutionCreator: customCreator,

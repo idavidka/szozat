@@ -1,4 +1,4 @@
-import { getGridColClassName } from '../../constants/utils'
+import { getGridColClassName } from '../../lib/utils'
 import { Cell } from './Cell'
 
 type Props = { difficulty: number }

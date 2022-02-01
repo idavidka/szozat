@@ -1,5 +1,6 @@
 import classNames from 'classnames'
-import { CharValue, Word } from '../lib/statuses'
+import { getHashParams, HASH_PARAM_KEY_DIFFICULTY } from './hashUtils'
+import { CharValue, Word } from './statuses'
 
 export const toWord = (word: string[]): Word => {
   return word.map((letter) => letter.toUpperCase() as CharValue)
@@ -29,6 +30,12 @@ export const getArticle = (value: CharValue) => {
   ]
 
   return own.includes(value) ? 'A' : 'Az'
+}
+
+export const getDifficultyFromUrl = (): number | undefined => {
+  const difficulty = getHashParams()[HASH_PARAM_KEY_DIFFICULTY]
+
+  return difficulty ? parseInt(difficulty) : undefined
 }
 
 export const getGridColClassName = (difficulty: number) => {

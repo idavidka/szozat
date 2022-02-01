@@ -48,7 +48,7 @@ export const CreatePuzzleModal = ({
 
   const gameLink =
     wordLetters?.length === difficulty && creator.length > 0
-      ? createCustomGameUrl(word, creator)
+      ? createCustomGameUrl(word, creator, difficulty)
       : undefined
 
   return (

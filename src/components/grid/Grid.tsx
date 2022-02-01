@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import { MAX_NUMBER_OF_GUESSES } from '../../constants/constants'
-import { getGridMaxWidthClassName } from '../../constants/utils'
+import { getGridMaxWidthClassName } from '../../lib/utils'
 import { Word } from '../../lib/statuses'
 import { CompletedRow } from './CompletedRow'
 import { CurrentRow } from './CurrentRow'
@@ -43,7 +43,6 @@ export const Grid = ({
     'text-lg': rowHeight >= 28,
   }
 
-  console.log('ASD', rowHeight)
   return (
     <div
       className={classNames(

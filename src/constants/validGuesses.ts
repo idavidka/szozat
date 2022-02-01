@@ -1,6 +1,5 @@
 import { Word } from '../lib/statuses'
-import { toWord } from './utils'
-
+import { toWord } from '../lib/utils'
 import words3 from './hungarian-word-letter-list-3.json'
 import words4 from './hungarian-word-letter-list-4.json'
 import words5 from './hungarian-word-letter-list-5.json'

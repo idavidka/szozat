@@ -40,7 +40,11 @@ import { ThemeToggle } from './components/theme/ThemeToggle'
 import { ThemeContext } from './components/theme/ThemeContext'
 import { CreatePuzzleModal } from './components/modals/CreatePuzzleModal'
 import { times } from 'lodash'
-import { addGTM, getGridMaxWidthClassName } from './constants/utils'
+import {
+  addGTM,
+  getDifficultyFromUrl,
+  getGridMaxWidthClassName,
+} from './lib/utils'
 import { ModalId, ModalType } from './components/modals/BaseModal'
 
 const ALERT_TIME_MS = 2000
@@ -48,6 +52,7 @@ const NEW_MODAL_TIME_MS = 500
 
 function App() {
   const context = React.useContext(ThemeContext)
+  const hashDifficulty = getDifficultyFromUrl()
   const [currentGuess, setCurrentGuess] = useState<Word>([])
   const [isGameWon, setIsGameWon] = useState<Record<number, boolean>>({})
   const [isModalOpen, setIsModalOpen] = useState<ModalType>(false)
@@ -57,7 +62,9 @@ function App() {
   const [shareFailed, setShareFailed] = useState(false)
   const [isGameLost, setIsGameLost] = useState<Record<number, boolean>>({})
   const [successAlert, setSuccessAlert] = useState('')
-  const savedDificulty = useMemo(() => loadDifficultyToLocalStorage(), [])
+  const savedDificulty = useMemo(() => {
+    return hashDifficulty ?? loadDifficultyToLocalStorage()
+  }, [hashDifficulty])
   const [difficulty, setDifficulty] = useState(savedDificulty)
   const getLoadedState = useCallback(
     (stateDifficulty) => loadGameStateFromLocalStorage(stateDifficulty),
@@ -206,10 +213,10 @@ function App() {
 
   useEffect(() => {
     checkViewPort()
-    saveDifficultyToLocalStorage(difficulty)
+    !hashDifficulty && saveDifficultyToLocalStorage(difficulty)
     setGuesses(getLoadedGuesses())
     setStats(getLoadedStats(difficulty))
-  }, [difficulty, getLoadedGuesses, getLoadedStats])
+  }, [difficulty, getLoadedGuesses, getLoadedStats, hashDifficulty])
 
   useEffect(() => {
     checkViewPort()
