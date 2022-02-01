@@ -63,15 +63,14 @@ export const Keyboard = ({
     }
 
     const resize = () => {
-      const bottomCheck = document.querySelector(
-        '.bottom-check'
-      ) as HTMLDivElement
+      const bottomCheck =
+        document.querySelector<HTMLDivElement>('.bottom-check')
 
       if (bottomCheck) {
         const heightDiff =
-          window.outerHeight - bottomCheck.offsetTop + bottomCheck.offsetHeight
+          document.documentElement.offsetHeight - window.innerHeight
 
-        document.body.style.height = `calc(100vh - ${heightDiff / 2.3}px)`
+        document.body.style.height = `calc(100vh - ${heightDiff}px)`
       }
     }
     resize()
