@@ -1,7 +1,12 @@
-import { getCurrentWord } from './words'
+import { getCurrentWord, getLetterCount } from './words'
 import { CHAR_VALUES, MULTIPLE_CONSONANT_CHAR_VALUES } from './wordCommons'
 
-export type CharStatus = 'absent' | 'present' | 'correct'
+export type CharStatus =
+  | 'absent'
+  | 'present'
+  | 'correct'
+  | 'present-diff'
+  | 'correct-diff'
 
 export type CharValue = typeof CHAR_VALUES[number]
 
@@ -24,6 +29,7 @@ export const getStatuses = (
   const charObj: { [key: string]: CharStatus } = {}
 
   guesses.forEach((word) => {
+    console.log('ASD', solution, word, charObj)
     word.forEach((letter, i) => {
       if (!solution.includes(letter)) {
         // make status absent
@@ -32,7 +38,7 @@ export const getStatuses = (
 
       if (letter === solution[i]) {
         //make status correct
-        return (charObj[letter] = 'correct')
+        return (charObj[letter] = 'absent')
       }
 
       if (charObj[letter] !== 'correct') {
@@ -55,10 +61,16 @@ export const getGuessStatuses = (
 
   const statuses: CharStatus[] = Array.from(Array(guess.length))
 
+  const solutionCount = getLetterCount(solution)
+  const guessCount = getLetterCount(guess)
+
   // handle all correct cases first
   guess.forEach((letter, i) => {
     if (letter === solution[i]) {
-      statuses[i] = 'correct'
+      statuses[i] =
+        solutionCount[letter] !== guessCount[letter]
+          ? 'correct-diff'
+          : 'correct'
       solutionCharsTaken[i] = true
       return
     }
@@ -79,7 +91,10 @@ export const getGuessStatuses = (
     )
 
     if (indexOfPresentChar > -1) {
-      statuses[i] = 'present'
+      statuses[i] =
+        solutionCount[letter] !== guessCount[letter]
+          ? 'present-diff'
+          : 'present'
       solutionCharsTaken[indexOfPresentChar] = true
       return
     } else {

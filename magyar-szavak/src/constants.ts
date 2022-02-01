@@ -27,7 +27,7 @@ export const MULTIPLE_CONSONANT_CHAR_VALUES = [
   'ZS',
 ]
 
-export const CONSONANT_CHAR_VALUES = [
+export const SINGLE_CONSONANT_CHAR_VALUES = [
   'Q',
   'W',
   'R',
@@ -51,10 +51,11 @@ export const CONSONANT_CHAR_VALUES = [
   'M',
 ]
 
-export const FOREIGN_CHAR_VALUES = ['Q', 'W', 'Y', 'X']
-
-export const CHAR_VALUES = [
-  ...VOWEL_CHAR_VALUES,
-  ...CONSONANT_CHAR_VALUES,
+export const CONSONANT_CHAR_VALUES = [
+  ...SINGLE_CONSONANT_CHAR_VALUES,
   ...MULTIPLE_CONSONANT_CHAR_VALUES,
 ]
+
+export const FOREIGN_CHAR_VALUES = ['Q', 'W', 'Y', 'X']
+
+export const CHAR_VALUES = [...VOWEL_CHAR_VALUES, ...CONSONANT_CHAR_VALUES]

@@ -1,6 +1,6 @@
 import { getWords } from '../constants/wordlist'
 import { getValidGuesses } from '../constants/validGuesses'
-import { Word } from './statuses'
+import { CharValue, Word } from './statuses'
 import { isEqual } from 'lodash'
 import { getWordLetters } from './hungarianWordUtils'
 import {
@@ -74,6 +74,12 @@ export const getCurrentWord = (day: number, difficulty: number) => {
     ...wordOfDay,
     solutionCreator: undefined,
   }
+}
+
+export const getLetterCount = (word: Word): Record<CharValue, number> => {
+  return word.reduce<Record<CharValue, number>>((acc, letter) => {
+    return { ...acc, [letter]: (acc[letter] ?? 0) + 1 }
+  }, {})
 }
 
 export const { solution, solutionIndex, solutionCreator, tomorrow } =
