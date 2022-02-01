@@ -61,14 +61,31 @@ export const Keyboard = ({
         }
       }
     }
+
+    const resize = () => {
+      const bottomCheck = document.querySelector(
+        '.bottom-check'
+      ) as HTMLDivElement
+
+      if (bottomCheck) {
+        const heightDiff =
+          window.outerHeight - bottomCheck.offsetTop + bottomCheck.offsetHeight
+
+        document.body.style.height = `calc(100vh - ${heightDiff / 1.5}px)`
+      }
+    }
+    resize()
     window.addEventListener('keyup', listener)
+    window.addEventListener('resize', resize)
     return () => {
       window.removeEventListener('keyup', listener)
+      window.removeEventListener('resize', resize)
     }
   }, [onEnter, onDelete, onChar, onReplace])
 
   return (
     <div>
+      <div className="bottom-check fixed bottom-0" />
       <div className="flex justify-center mb-1">
         <Key value="CS" onClick={onClick} status={charStatuses['CS']} />
         <Key value="DZ" onClick={onClick} status={charStatuses['DZ']} />

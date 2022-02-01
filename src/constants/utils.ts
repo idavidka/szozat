@@ -19,6 +19,21 @@ export const getGridColClassName = (difficulty: number) => {
 
   return className
 }
+
+export const getGridMaxWidthClassName = (difficulty: number) => {
+  // workaround for tailwindcss parsing if classname is a literal template
+  const className = classNames({
+    'max-w-[240px]': difficulty === 3,
+    'max-w-[320px]': difficulty === 4,
+    'max-w-[400px]': difficulty === 5,
+    'max-w-[480px]': difficulty === 6,
+    'max-w-[560px]': difficulty === 7,
+    'max-w-[640px]': difficulty === 8,
+    'max-w-[720px]': difficulty === 9,
+  })
+
+  return className
+}
 declare global {
   interface Window {
     dataLayer: any

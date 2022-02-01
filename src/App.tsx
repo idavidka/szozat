@@ -34,7 +34,7 @@ import { ThemeToggle } from './components/theme/ThemeToggle'
 import { ThemeContext } from './components/theme/ThemeContext'
 import { CreatePuzzleModal } from './components/modals/CreatePuzzleModal'
 import { times } from 'lodash'
-import { addGTM } from './constants/utils'
+import { addGTM, getGridMaxWidthClassName } from './constants/utils'
 
 const ALERT_TIME_MS = 2000
 const NEW_GAME_TIME_MS = 500
@@ -402,7 +402,9 @@ function App() {
           </div>
           <div
             ref={gridContainerRef}
-            className="grow flex justify-center overflow-auto mb-5 min-h-[60px]  relative z-10"
+            className={`grow flex justify-center overflow-auto mx-auto w-full mb-5 min-h-[60px] ${getGridMaxWidthClassName(
+              difficulty
+            )} relative z-10`}
           >
             <Grid
               guesses={guesses}

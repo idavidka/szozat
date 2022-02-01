@@ -94,7 +94,7 @@ export const InfoModal = ({ isOpen, handleClose, difficulty }: Props) => {
             szavak beírásához.
           </li>
           <li>
-            Dupla vagy triple betűk beírásához nyomd meg hosszan a megfelelő
+            Dupla vagy tripla betűk beírásához nyomd meg hosszan a megfelelő
             szimpla betűt vagy használd a számítógéped <b>[SHIFT]</b>{' '}
             billentyűzejét.
           </li>

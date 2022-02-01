@@ -1,4 +1,5 @@
 import { MAX_NUMBER_OF_GUESSES } from '../../constants/constants'
+import { getGridMaxWidthClassName } from '../../constants/utils'
 import { Word } from '../../lib/statuses'
 import { CompletedRow } from './CompletedRow'
 import { CurrentRow } from './CurrentRow'
@@ -22,9 +23,9 @@ export const Grid = ({ guesses, currentGuess, day, difficulty }: Props) => {
 
   return (
     <div
-      className={`grid grid-rows-8 gap-1 mx-auto p-2 w-full max-w-[${
-        difficulty * 60
-      }px]`}
+      className={`grid grid-rows-8 gap-1 mx-auto p-2 w-full ${getGridMaxWidthClassName(
+        difficulty
+      )}`}
     >
       {guesses.map((guess, i) => (
         <CompletedRow key={i} guess={guess} day={day} difficulty={difficulty} />
