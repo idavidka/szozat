@@ -1,16 +1,45 @@
-export const CHAR_VALUES = [
-  '-',
-  'Q',
-  'W',
+export const VOWEL_CHAR_VALUES = [
   'E',
-  'R',
-  'T',
-  'Y',
   'U',
   'I',
   'O',
-  'P',
   'A',
+  'Ö',
+  'Ü',
+  'Ó',
+  'Ő',
+  'Ú',
+  'É',
+  'Á',
+  'Ű',
+  'Í',
+]
+
+export const DOUBLE_CONSONANT_CHAR_VALUES = [
+  'CS',
+  'DZ',
+  'GY',
+  'LY',
+  'NY',
+  'SZ',
+  'TY',
+  'ZS',
+]
+
+export const TRIPLE_CONSONANT_CHAR_VALUES = ['DZS']
+
+export const MULTIPLE_CONSONANT_CHAR_VALUES = [
+  ...DOUBLE_CONSONANT_CHAR_VALUES,
+  ...TRIPLE_CONSONANT_CHAR_VALUES,
+]
+
+export const CONSONANT_CHAR_VALUES = [
+  'Q',
+  'W',
+  'R',
+  'T',
+  'Y',
+  'P',
   'S',
   'D',
   'F',
@@ -26,22 +55,13 @@ export const CHAR_VALUES = [
   'B',
   'N',
   'M',
-  'Ö',
-  'Ü',
-  'Ó',
-  'Ő',
-  'Ú',
-  'É',
-  'Á',
-  'Ű',
-  'Í',
-  'CS',
-  'DZ',
-  'DZS',
-  'GY',
-  'LY',
-  'NY',
-  'SZ',
-  'TY',
-  'ZS',
+]
+
+export const FOREIGN_CHAR_VALUES = ['Q', 'W', 'Y', 'X']
+
+export const CHAR_VALUES = [
+  '-',
+  ...VOWEL_CHAR_VALUES,
+  ...CONSONANT_CHAR_VALUES,
+  ...MULTIPLE_CONSONANT_CHAR_VALUES,
 ] as const

@@ -1,10 +1,11 @@
 import { KeyValue } from '../../lib/keyboard'
 import { CharValue, getStatuses, Word, isCharValue } from '../../lib/statuses'
 import { Key } from './Key'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 type Props = {
   onChar: (value: CharValue) => void
+  onReplace: (value: CharValue) => void
   onDelete: () => void
   onEnter: () => void
   guesses: Word[]
@@ -17,6 +18,7 @@ type Props = {
 export const Keyboard = ({
   onChar,
   onDelete,
+  onReplace,
   onEnter,
   guesses,
   day,
@@ -25,6 +27,7 @@ export const Keyboard = ({
   enabledOnDelete,
 }: Props) => {
   const charStatuses = getStatuses(guesses, day, difficulty)
+  const lastKey = useRef('')
 
   const onClick = (value: KeyValue) => {
     if (value === 'ENTER') {
@@ -43,9 +46,18 @@ export const Keyboard = ({
       } else if (e.code === 'Backspace') {
         onDelete()
       } else {
-        const key = e.key.toUpperCase()
+        const upperKey = e.key.toUpperCase()
+        const key =
+          e.shiftKey && isCharValue(lastKey.current + upperKey)
+            ? lastKey.current + upperKey
+            : upperKey
         if (key.length === 1 && isCharValue(key)) {
           onChar(key)
+          lastKey.current = key
+        }
+        if (key.length > 1 && isCharValue(key)) {
+          onReplace(key)
+          lastKey.current = key
         }
       }
     }
@@ -53,7 +65,7 @@ export const Keyboard = ({
     return () => {
       window.removeEventListener('keyup', listener)
     }
-  }, [onEnter, onDelete, onChar])
+  }, [onEnter, onDelete, onChar, onReplace])
 
   return (
     <div>
@@ -76,8 +88,18 @@ export const Keyboard = ({
         <Key value="W" onClick={onClick} status={charStatuses['W']} />
         <Key value="E" onClick={onClick} status={charStatuses['E']} />
         <Key value="R" onClick={onClick} status={charStatuses['R']} />
-        <Key value="T" onClick={onClick} status={charStatuses['T']} />
-        <Key value="Z" onClick={onClick} status={charStatuses['Z']} />
+        <Key
+          value="T"
+          additional={{ TY: charStatuses['TY'] }}
+          onClick={onClick}
+          status={charStatuses['T']}
+        />
+        <Key
+          value="Z"
+          additional={{ ZS: charStatuses['ZS'] }}
+          onClick={onClick}
+          status={charStatuses['Z']}
+        />
         <Key value="U" onClick={onClick} status={charStatuses['U']} />
         <Key value="I" onClick={onClick} status={charStatuses['I']} />
         <Key value="O" onClick={onClick} status={charStatuses['O']} />
@@ -87,14 +109,34 @@ export const Keyboard = ({
       </div>
       <div className="flex justify-center mb-1">
         <Key value="A" onClick={onClick} status={charStatuses['A']} />
-        <Key value="S" onClick={onClick} status={charStatuses['S']} />
-        <Key value="D" onClick={onClick} status={charStatuses['D']} />
+        <Key
+          value="S"
+          additional={{ SZ: charStatuses['SZ'] }}
+          onClick={onClick}
+          status={charStatuses['S']}
+        />
+        <Key
+          value="D"
+          additional={{ DZ: charStatuses['DZ'], DZS: charStatuses['DZS'] }}
+          onClick={onClick}
+          status={charStatuses['D']}
+        />
         <Key value="F" onClick={onClick} status={charStatuses['F']} />
-        <Key value="G" onClick={onClick} status={charStatuses['G']} />
+        <Key
+          value="G"
+          additional={{ GY: charStatuses['GY'] }}
+          onClick={onClick}
+          status={charStatuses['G']}
+        />
         <Key value="H" onClick={onClick} status={charStatuses['H']} />
         <Key value="J" onClick={onClick} status={charStatuses['J']} />
         <Key value="K" onClick={onClick} status={charStatuses['K']} />
-        <Key value="L" onClick={onClick} status={charStatuses['L']} />
+        <Key
+          value="L"
+          additional={{ LY: charStatuses['LY'] }}
+          onClick={onClick}
+          status={charStatuses['L']}
+        />
         <Key value="É" onClick={onClick} status={charStatuses['É']} />
         <Key value="Á" onClick={onClick} status={charStatuses['Á']} />
         <Key value="Ű" onClick={onClick} status={charStatuses['Ű']} />
@@ -112,10 +154,20 @@ export const Keyboard = ({
         <Key value="Í" onClick={onClick} status={charStatuses['Í']} />
         <Key value="Y" onClick={onClick} status={charStatuses['Y']} />
         <Key value="X" onClick={onClick} status={charStatuses['X']} />
-        <Key value="C" onClick={onClick} status={charStatuses['C']} />
+        <Key
+          value="C"
+          additional={{ CS: charStatuses['CS'] }}
+          onClick={onClick}
+          status={charStatuses['C']}
+        />
         <Key value="V" onClick={onClick} status={charStatuses['V']} />
         <Key value="B" onClick={onClick} status={charStatuses['B']} />
-        <Key value="N" onClick={onClick} status={charStatuses['N']} />
+        <Key
+          value="N"
+          additional={{ NY: charStatuses['NY'] }}
+          onClick={onClick}
+          status={charStatuses['N']}
+        />
         <Key value="M" onClick={onClick} status={charStatuses['M']} />
         <Key
           width={65.4}

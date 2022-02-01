@@ -84,6 +84,22 @@ export const InfoModal = ({ isOpen, handleClose, difficulty }: Props) => {
       <p className="text-sm text-gray-500 dark:text-slate-200">
         Az {highlights.letters[2]} betű nem szerepel a szóban.
       </p>
+      <p className="text-sm text-gray-500 dark:text-slate-200 mt-3">
+        <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-slate-200">
+          Használati tippek
+        </h3>
+        <ul className="list-disc pl-0 ml-2 text-left">
+          <li className="mb-2">
+            Használd a lenti virtuális vagy a számítógéped billentyűzetét a
+            szavak beírásához.
+          </li>
+          <li>
+            Dupla vagy triple betűk beírásához nyomd meg hosszan a megfelelő
+            szimpla betűt vagy használd a számítógéped <b>[SHIFT]</b>{' '}
+            billentyűzejét.
+          </li>
+        </ul>
+      </p>
     </BaseModal>
   )
 }

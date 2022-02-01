@@ -172,6 +172,17 @@ function App() {
     }
   }
 
+  const onReplace = (value: CharValue) => {
+    checkViewPort()
+    if (
+      currentGuess.length - 1 < difficulty &&
+      guesses.length < maxGuess &&
+      !isGameWon[difficulty]
+    ) {
+      setCurrentGuess([...currentGuess.slice(0, -1), value])
+    }
+  }
+
   const onDelete = () => {
     checkViewPort()
     setCurrentGuess(currentGuess.slice(0, -1))
@@ -404,6 +415,7 @@ function App() {
             <Keyboard
               onChar={onChar}
               onDelete={onDelete}
+              onReplace={onReplace}
               onEnter={onEnter}
               guesses={guesses}
               day={day}

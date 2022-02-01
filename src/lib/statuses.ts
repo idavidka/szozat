@@ -1,5 +1,5 @@
-import { CHAR_VALUES } from './wordCommons'
 import { getCurrentWord } from './words'
+import { CHAR_VALUES, MULTIPLE_CONSONANT_CHAR_VALUES } from './wordCommons'
 
 export type CharStatus = 'absent' | 'present' | 'correct'
 
@@ -9,6 +9,10 @@ export type Word = readonly CharValue[]
 
 export function isCharValue(value: string): value is CharValue {
   return CHAR_VALUES.includes(value as any)
+}
+
+export function isMultipleCharValue(value: string): value is CharValue {
+  return MULTIPLE_CONSONANT_CHAR_VALUES.includes(value as any)
 }
 
 export const getStatuses = (
