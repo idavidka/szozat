@@ -103,7 +103,12 @@ export const Keyboard = ({
       <div className="flex justify-center mb-1">
         <Key value="Q" onClick={onClick} status={charStatuses['Q']} />
         <Key value="W" onClick={onClick} status={charStatuses['W']} />
-        <Key value="E" onClick={onClick} status={charStatuses['E']} />
+        <Key
+          value="E"
+          additional={{ É: charStatuses['É'] }}
+          onClick={onClick}
+          status={charStatuses['E']}
+        />
         <Key value="R" onClick={onClick} status={charStatuses['R']} />
         <Key
           value="T"
@@ -117,15 +122,43 @@ export const Keyboard = ({
           onClick={onClick}
           status={charStatuses['Z']}
         />
-        <Key value="U" onClick={onClick} status={charStatuses['U']} />
-        <Key value="I" onClick={onClick} status={charStatuses['I']} />
-        <Key value="O" onClick={onClick} status={charStatuses['O']} />
+        <Key
+          value="U"
+          additional={{
+            Ú: charStatuses['Ú'],
+            Ü: charStatuses['Ü'],
+            Ű: charStatuses['Ű'],
+          }}
+          onClick={onClick}
+          status={charStatuses['U']}
+        />
+        <Key
+          value="I"
+          additional={{ Í: charStatuses['Í'] }}
+          onClick={onClick}
+          status={charStatuses['I']}
+        />
+        <Key
+          value="O"
+          additional={{
+            Ó: charStatuses['Ó'],
+            Ö: charStatuses['Ö'],
+            Ő: charStatuses['Ő'],
+          }}
+          onClick={onClick}
+          status={charStatuses['O']}
+        />
         <Key value="P" onClick={onClick} status={charStatuses['P']} />
         <Key value="Ő" onClick={onClick} status={charStatuses['Ő']} />
         <Key value="Ú" onClick={onClick} status={charStatuses['Ú']} />
       </div>
       <div className="flex justify-center mb-1">
-        <Key value="A" onClick={onClick} status={charStatuses['A']} />
+        <Key
+          value="A"
+          additional={{ Á: charStatuses['Á'] }}
+          onClick={onClick}
+          status={charStatuses['A']}
+        />
         <Key
           value="S"
           additional={{ SZ: charStatuses['SZ'] }}
