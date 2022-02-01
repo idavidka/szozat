@@ -1,6 +1,6 @@
 import { Cell } from '../grid/Cell'
 import { MAX_NUMBER_OF_GUESSES } from '../../constants/constants'
-import { BaseModal } from './BaseModal'
+import { BaseModal, ModalType } from './BaseModal'
 import { useMemo } from 'react'
 import { getWords } from '../../constants/wordlist'
 import { getGridColClassName } from '../../constants/utils'
@@ -8,9 +8,16 @@ import { getGridColClassName } from '../../constants/utils'
 type Props = {
   isOpen: boolean
   handleClose: () => void
+  handleModal: (state: ModalType) => void
   difficulty: number
 }
-export const InfoModal = ({ isOpen, handleClose, difficulty }: Props) => {
+
+export const InfoModal = ({
+  isOpen,
+  handleModal,
+  handleClose,
+  difficulty,
+}: Props) => {
   const words = useMemo(() => {
     const currentWords = getWords(difficulty)
     return [currentWords[0], currentWords[1], currentWords[2]]
@@ -100,6 +107,18 @@ export const InfoModal = ({ isOpen, handleClose, difficulty }: Props) => {
           </li>
         </ul>
       </p>
+      <button
+        type="button"
+        className="mx-auto mt-2 flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 select-none"
+        onClick={() => {
+          handleModal(false)
+          setTimeout(() => {
+            handleModal(['about', 'info'])
+          }, 500)
+        }}
+      >
+        A játék eredetéről
+      </button>
     </BaseModal>
   )
 }

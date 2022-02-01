@@ -35,17 +35,16 @@ import { ThemeContext } from './components/theme/ThemeContext'
 import { CreatePuzzleModal } from './components/modals/CreatePuzzleModal'
 import { times } from 'lodash'
 import { addGTM, getGridMaxWidthClassName } from './constants/utils'
+import { ModalId, ModalType } from './components/modals/BaseModal'
 
 const ALERT_TIME_MS = 2000
-const NEW_GAME_TIME_MS = 500
+const NEW_MODAL_TIME_MS = 500
 
 function App() {
   const context = React.useContext(ThemeContext)
   const [currentGuess, setCurrentGuess] = useState<Word>([])
   const [isGameWon, setIsGameWon] = useState<Record<number, boolean>>({})
-  const [isModalOpen, setIsModalOpen] = useState<
-    'info' | 'new-game' | 'stat' | 'about' | 'create-puzzle' | false
-  >(false)
+  const [isModalOpen, setIsModalOpen] = useState<ModalType>(false)
   const [isNotEnoughLetters, setIsNotEnoughLetters] = useState(false)
   const [isWordNotFoundAlertOpen, setIsWordNotFoundAlertOpen] = useState(false)
   const [shareComplete, setShareComplete] = useState(false)
@@ -105,6 +104,28 @@ function App() {
   const gridContainerRef = useRef<HTMLDivElement>(null)
 
   const [stats, setStats] = useState(getLoadedStats(difficulty))
+
+  const checkIsModalOpen = useCallback(
+    (type: ModalId) => {
+      if (typeof isModalOpen === 'string' && isModalOpen === type) {
+        return true
+      }
+
+      if (Array.isArray(isModalOpen) && isModalOpen?.[0] === type) {
+        return true
+      }
+
+      return false
+    },
+    [isModalOpen]
+  )
+  const checkIsModalCallback = useCallback(() => {
+    if (Array.isArray(isModalOpen) && isModalOpen?.[1]) {
+      return isModalOpen?.[1]
+    }
+
+    return null
+  }, [isModalOpen])
 
   const checkViewPort = () => {
     const currentRow = gridContainerRef.current?.querySelector(
@@ -305,7 +326,18 @@ function App() {
     setTimeout(() => {
       setSuccessAlert('')
       setIsModalOpen('stat')
-    }, NEW_GAME_TIME_MS)
+    }, NEW_MODAL_TIME_MS)
+  }
+
+  const handleModalClose = () => {
+    const fallbackModal = checkIsModalCallback()
+
+    setIsModalOpen(false)
+    if (fallbackModal) {
+      setTimeout(() => {
+        setIsModalOpen(fallbackModal)
+      }, NEW_MODAL_TIME_MS)
+    }
   }
 
   return (
@@ -335,13 +367,14 @@ function App() {
         variant="warning"
       />
       <InfoModal
-        isOpen={isModalOpen === 'info'}
-        handleClose={() => setIsModalOpen(false)}
+        isOpen={checkIsModalOpen('info')}
+        handleClose={handleModalClose}
+        handleModal={setIsModalOpen}
         difficulty={difficulty}
       />
       <StatsModal
-        isOpen={isModalOpen === 'stat'}
-        handleClose={() => setIsModalOpen(false)}
+        isOpen={checkIsModalOpen('stat')}
+        handleClose={handleModalClose}
         guesses={guesses}
         day={day}
         difficulty={difficulty}
@@ -354,17 +387,17 @@ function App() {
         handleStats={getLoadedStats}
       />
       <NewGameModal
-        isOpen={isModalOpen === 'new-game'}
-        handleClose={() => setIsModalOpen(false)}
+        isOpen={checkIsModalOpen('new-game')}
+        handleClose={handleModalClose}
         handleFailure={handleManualEnd}
       />
       <AboutModal
-        isOpen={isModalOpen === 'about'}
-        handleClose={() => setIsModalOpen(false)}
+        isOpen={checkIsModalOpen('about')}
+        handleClose={handleModalClose}
       />
       <CreatePuzzleModal
-        isOpen={isModalOpen === 'create-puzzle'}
-        handleClose={() => setIsModalOpen(false)}
+        isOpen={checkIsModalOpen('create-puzzle')}
+        handleClose={handleModalClose}
         difficulty={difficulty}
       />
       <div className="bg-white dark:bg-gray-800 transition-all h-[100%]">
@@ -426,13 +459,6 @@ function App() {
               enabledOnDelete={currentGuess.length > 0}
             />
           </div>
-          <button
-            type="button"
-            className="mx-auto flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 select-none"
-            onClick={() => setIsModalOpen('about')}
-          >
-            A játék eredetéről
-          </button>
         </div>
       </div>
     </div>
