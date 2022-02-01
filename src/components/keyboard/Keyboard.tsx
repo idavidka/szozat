@@ -28,6 +28,7 @@ export const Keyboard = ({
 }: Props) => {
   const charStatuses = getStatuses(guesses, day, difficulty)
   const lastKey = useRef('')
+  const documentHeight = useRef(document.documentElement.offsetHeight)
 
   const onClick = (value: KeyValue) => {
     if (value === 'ENTER') {
@@ -67,8 +68,7 @@ export const Keyboard = ({
         document.querySelector<HTMLDivElement>('.bottom-check')
 
       if (bottomCheck) {
-        const heightDiff =
-          document.documentElement.offsetHeight - window.innerHeight
+        const heightDiff = documentHeight.current - window.innerHeight
 
         document.body.style.height = `calc(100vh - ${heightDiff}px)`
       }
