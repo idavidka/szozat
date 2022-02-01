@@ -75,10 +75,10 @@ export const Keyboard = ({
     }
     resize()
     window.addEventListener('keyup', keyup)
-    window.addEventListener('resize', resize)
+    window.addEventListener('resize.keyboard', resize)
     return () => {
       window.removeEventListener('keyup', keyup)
-      window.removeEventListener('resize', resize)
+      window.removeEventListener('resize.keyboard', resize)
     }
   }, [onEnter, onDelete, onChar, onReplace])
 

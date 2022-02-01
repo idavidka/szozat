@@ -3,6 +3,8 @@ import {
   ChartBarIcon,
   PlusCircleIcon,
   RefreshIcon,
+  ViewGridAddIcon,
+  ViewGridIcon,
 } from '@heroicons/react/outline'
 import animateScrollTo from 'animated-scroll-to'
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
@@ -27,8 +29,10 @@ import {
   GameStats,
   loadDifficultyToLocalStorage,
   loadGameStateFromLocalStorage,
+  loadGridFullToLocalStorage,
   saveDifficultyToLocalStorage,
   saveGameStateToLocalStorage,
+  saveGridFullToLocalStorage,
 } from './lib/localStorage'
 import { CharValue, Word } from './lib/statuses'
 import { MAX_NUMBER_OF_GUESSES } from './constants/constants'
@@ -104,6 +108,32 @@ function App() {
   const [guesses, setGuesses] = useState<Word[]>([])
 
   const gridContainerRef = useRef<HTMLDivElement>(null)
+
+  const [gridFull, setGridFull] = useState(loadGridFullToLocalStorage())
+  const [gridSize, setGridSize] = useState({ width: 0, height: 0 })
+  useEffect(() => {
+    const handleResize = () => {
+      if (gridContainerRef.current == null) {
+        return
+      }
+      const gridContainerHeight = gridContainerRef.current.clientHeight
+      const gridWidth = Math.min(
+        Math.floor(
+          gridContainerHeight * (5 / MAX_NUMBER_OF_GUESSES[difficulty])
+        ),
+        350
+      )
+      const gridHeight = Math.floor(
+        (MAX_NUMBER_OF_GUESSES[difficulty] * gridWidth) / 5
+      )
+      setGridSize({ width: gridWidth, height: gridHeight })
+    }
+    window.addEventListener('resize.grid', handleResize)
+    handleResize()
+    return () => {
+      window.removeEventListener('resize.grid', handleResize)
+    }
+  }, [difficulty, setGridSize])
 
   const [stats, setStats] = useState(getLoadedStats(difficulty))
   const [globalStats, setGlobalStats] = useState()
@@ -352,6 +382,11 @@ function App() {
     }, NEW_MODAL_TIME_MS)
   }
 
+  const handleGridIcon = (full: boolean) => {
+    saveGridFullToLocalStorage(full)
+    setGridFull(full)
+  }
+
   const handleModalClose = () => {
     const fallbackModal = checkIsModalCallback()
 
@@ -459,6 +494,21 @@ function App() {
                 )
               }
             />
+            {gridFull ? (
+              <ViewGridIcon
+                className="h-6 w-6 cursor-pointer dark:text-gray-300"
+                onClick={() => {
+                  handleGridIcon(false)
+                }}
+              />
+            ) : (
+              <ViewGridAddIcon
+                className="h-6 w-6 cursor-pointer dark:text-gray-300"
+                onClick={() => {
+                  handleGridIcon(true)
+                }}
+              />
+            )}
           </div>
           <div
             ref={gridContainerRef}
@@ -470,6 +520,8 @@ function App() {
               guesses={guesses}
               currentGuess={currentGuess}
               day={day}
+              size={gridSize}
+              full={gridFull}
               difficulty={difficulty}
             />
           </div>

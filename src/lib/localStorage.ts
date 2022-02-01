@@ -3,8 +3,10 @@ import { isLocalhost } from '../constants/utils'
 import { Word } from './statuses'
 import { ThemeValue } from './theme'
 
+const idKey = 'id'
 const gameStateKey = 'gameState'
 const difficultyKey = 'difficulty'
+const gridFullKey = 'gridFull'
 const themeKey = 'colorTheme'
 
 type StoredGameState = {
@@ -49,6 +51,17 @@ const getItem: typeof localStorage.getItem = (key: string) => {
   return value && value !== 'NaN' ? decrypt(value) : null
 }
 
+export const saveGridFullToLocalStorage = (full: boolean) => {
+  setItem(gridFullKey, JSON.stringify({ full }))
+}
+
+export const loadGridFullToLocalStorage = (): boolean => {
+  const value = getItem(gridFullKey)
+
+  const full = value && value !== 'NaN' ? JSON.parse(value)?.full : false
+  return full ? !!full : false
+}
+
 export const saveDifficultyToLocalStorage = (difficulty: number) => {
   setItem(difficultyKey, JSON.stringify({ difficulty: difficulty.toString() }))
 }
@@ -89,14 +102,14 @@ export type GameStats = {
 }
 
 export const generateSessionId = () => {
-  const current = getItem('id')
+  const current = getItem(idKey)
 
   if (current) {
     return JSON.parse(current)
   }
 
   const id = Math.random().toString(36).substr(2, 10)
-  setItem('id', JSON.stringify({ id }))
+  setItem(idKey, JSON.stringify({ id }))
 
   return { id }
 }
