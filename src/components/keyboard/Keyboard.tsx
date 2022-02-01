@@ -71,7 +71,7 @@ export const Keyboard = ({
         const heightDiff =
           window.outerHeight - bottomCheck.offsetTop + bottomCheck.offsetHeight
 
-        document.body.style.height = `calc(100vh - ${heightDiff / 1.5}px)`
+        document.body.style.height = `calc(100vh - ${heightDiff / 2.3}px)`
       }
     }
     resize()
