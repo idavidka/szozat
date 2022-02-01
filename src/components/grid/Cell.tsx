@@ -20,6 +20,7 @@ export const Cell = ({ value, status, className, isPulsing }: Props) => {
       'bg-yellow-500 text-white border-yellow-500': status === 'present',
       'cell-animation': !!value,
       'animate-pulse': !value && isPulsing,
+      'bg-slate-200 dark:bg-slate-700 cursor-not-allowed': !value && !isPulsing,
     },
     className
   )
