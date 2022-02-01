@@ -100,7 +100,7 @@ export const InfoModal = ({
             <div
               className={`grid ${getGridColClassName(
                 difficulty
-              )} gap-1 mb-1 mt-4 mx-auto w-full ${getGridMaxWidthClassName(
+              )} gap-1 mb-1 mt-4 mx-auto w-full text-lg ${getGridMaxWidthClassName(
                 difficulty
               )}`}
             >

@@ -460,7 +460,7 @@ function App() {
       />
       <div className="bg-white dark:bg-gray-800 transition-all h-[100%]">
         <div
-          className="flex flex-col pt-8 w-[100%] h-[100%] max-w-[500px] mx-auto sm:px-6 lg:px-8"
+          className="flex flex-col px-2 pt-8 w-[100%] h-[100%] max-w-[500px] mx-auto sm:px-6 lg:px-8"
           style={{ boxSizing: 'border-box' }}
         >
           <div className="flex w-80 mx-auto items-center mb-8 relative z-20">

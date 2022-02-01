@@ -30,7 +30,7 @@ export const Cell = ({ value, status, className, isPulsing }: Props) => {
   )
 
   const classes = classnames(
-    'absolute w-[100%] h-[100%] flex items-center justify-center mx-0.5 text-lg font-bold'
+    'absolute w-[100%] h-[100%] flex items-center justify-center mx-0.5 font-bold'
   )
 
   const differenceMarkerClasses = classnames('absolute w-[100%] h-[100%]', {

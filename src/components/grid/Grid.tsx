@@ -34,18 +34,31 @@ export const Grid = ({
     'grid-flow-row': full,
   })
 
+  const rowHeight = size.height / MAX_NUMBER_OF_GUESSES[difficulty] - 5
+
+  const textSizeClasses = {
+    'text-xs': rowHeight < 19,
+    'text-sm': rowHeight >= 19 && rowHeight < 23,
+    'text-base': rowHeight >= 23 && rowHeight < 28,
+    'text-lg': rowHeight >= 28,
+  }
+
+  console.log('ASD', rowHeight)
   return (
     <div
-      className={`grid grid-rows-8 gap-1 mx-auto p-2 w-full ${getGridMaxWidthClassName(
-        difficulty
-      )} ${classes}`}
+      className={classNames(
+        'grid grid-rows-8 gap-1 mx-auto w-full',
+        {
+          'px-1': !full,
+        },
+        textSizeClasses,
+        `${getGridMaxWidthClassName(difficulty)} ${classes}`
+      )}
       style={
         full
           ? {
               height: `${size.height}px`,
-              gridAutoRows: `${
-                size.height / MAX_NUMBER_OF_GUESSES[difficulty] - 6
-              }px`,
+              gridAutoRows: `${rowHeight}px`,
             }
           : {}
       }
