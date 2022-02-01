@@ -62,8 +62,10 @@ export const generateEmojiGrid = (
         .map((letter, i) => {
           switch (status[i]) {
             case 'correct':
+            case 'correct-diff':
               return '🟩'
             case 'present':
+            case 'present-diff':
               return '🟨'
             default:
               return '⬜'

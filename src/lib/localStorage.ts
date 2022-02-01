@@ -95,6 +95,10 @@ export const saveStatsToLocalStorage = (
   setItem(`${gameStatKey}-${difficulty}`, JSON.stringify(gameStats))
 }
 
+export const sendStatsToAPI = (gameStats: GameStats, difficulty: number) => {
+  // console.log('ASD', process.env.REACT_APP_API_URL)
+}
+
 export const loadStatsFromLocalStorage = (difficulty: number) => {
   const stats =
     getItem(`${gameStatKey}-${difficulty}`) ??

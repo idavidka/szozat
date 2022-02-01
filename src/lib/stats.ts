@@ -4,6 +4,7 @@ import {
   GameStats,
   loadStatsFromLocalStorage,
   saveStatsToLocalStorage,
+  sendStatsToAPI,
 } from './localStorage'
 
 // In stats array elements 0-(N-1) are successes in 1-N trys
@@ -34,6 +35,8 @@ export const addStatsForCompletedGame = (
   stats.successRate = getSuccessRate(stats)
 
   saveStatsToLocalStorage(stats, difficulty)
+  sendStatsToAPI(stats, difficulty)
+
   return stats
 }
 

@@ -56,15 +56,6 @@ export const getStatuses = (
             : 'present-diff')
       }
     })
-    console.log(
-      'ASD1',
-      index,
-      solution,
-      solutionCount,
-      word,
-      wordCount,
-      charObj
-    )
   })
 
   return charObj
