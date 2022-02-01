@@ -5,9 +5,10 @@ type Props = {
   value?: string
   status?: CharStatus
   className?: string
+  isPulsing?: boolean
 }
 
-export const Cell = ({ value, status, className }: Props) => {
+export const Cell = ({ value, status, className, isPulsing }: Props) => {
   const containerClasses = classnames(
     'grow relative inline-flex justify-center border-solid border-2 rounded before:content-[""] before:block before:pb-[100%]',
     {
@@ -18,6 +19,7 @@ export const Cell = ({ value, status, className }: Props) => {
       'bg-green-500 text-white border-green-500': status === 'correct',
       'bg-yellow-500 text-white border-yellow-500': status === 'present',
       'cell-animation': !!value,
+      'animate-pulse': !value && isPulsing,
     },
     className
   )

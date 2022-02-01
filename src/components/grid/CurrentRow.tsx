@@ -12,13 +12,13 @@ export const CurrentRow = ({ guess, difficulty }: Props) => {
 
   return (
     <div
-      className={`grid ${getGridColClassName(difficulty)} gap-1 current-row`}
+      className={`grid ${getGridColClassName(difficulty)} gap-1  current-row`}
     >
       {guess.map((letter, i) => (
-        <Cell key={i} value={letter} />
+        <Cell key={i} value={letter} isPulsing />
       ))}
       {emptyCells.map((_, i) => (
-        <Cell key={i} />
+        <Cell key={i} isPulsing />
       ))}
     </div>
   )
