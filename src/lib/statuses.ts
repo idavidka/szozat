@@ -28,8 +28,10 @@ export const getStatuses = (
   const { solution } = getCurrentWord(day, difficulty)
   const charObj: { [key: string]: CharStatus } = {}
 
-  guesses.forEach((word) => {
-    console.log('ASD', solution, word, charObj)
+  const solutionCount = getLetterCount(solution)
+
+  guesses.forEach((word, index) => {
+    const wordCount = getLetterCount(word)
     word.forEach((letter, i) => {
       if (!solution.includes(letter)) {
         // make status absent
@@ -38,14 +40,31 @@ export const getStatuses = (
 
       if (letter === solution[i]) {
         //make status correct
-        return (charObj[letter] = 'absent')
+        return (charObj[letter] =
+          ['present', 'correct'].includes(charObj[letter]) ||
+          wordCount[letter] >= solutionCount[letter]
+            ? 'correct'
+            : 'correct-diff')
       }
 
       if (charObj[letter] !== 'correct') {
         //make status present
-        return (charObj[letter] = 'present')
+        return (charObj[letter] =
+          charObj[letter] === 'present' ||
+          wordCount[letter] >= solutionCount[letter]
+            ? 'present'
+            : 'present-diff')
       }
     })
+    console.log(
+      'ASD1',
+      index,
+      solution,
+      solutionCount,
+      word,
+      wordCount,
+      charObj
+    )
   })
 
   return charObj
@@ -68,9 +87,7 @@ export const getGuessStatuses = (
   guess.forEach((letter, i) => {
     if (letter === solution[i]) {
       statuses[i] =
-        solutionCount[letter] !== guessCount[letter]
-          ? 'correct-diff'
-          : 'correct'
+        solutionCount[letter] > guessCount[letter] ? 'correct-diff' : 'correct'
       solutionCharsTaken[i] = true
       return
     }
@@ -92,9 +109,7 @@ export const getGuessStatuses = (
 
     if (indexOfPresentChar > -1) {
       statuses[i] =
-        solutionCount[letter] !== guessCount[letter]
-          ? 'present-diff'
-          : 'present'
+        solutionCount[letter] > guessCount[letter] ? 'present-diff' : 'present'
       solutionCharsTaken[indexOfPresentChar] = true
       return
     } else {

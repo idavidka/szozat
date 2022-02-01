@@ -24,17 +24,11 @@ const hungarianWordsOnlyAlphabet = hungarianWords.filter((word) => {
 })
 // Split into letters
 const wordLetters = hungarianWordsOnlyAlphabet.map(getWordLetters)
-// Reduce the list to words which may have the given number of characters
-const candidateWordLetters = wordLetters.filter(
-  (word) => word.length === TARGET_WORD_LENGTH
-)
 
-// Save to file
-const jsonString = JSON.stringify(candidateWordLetters)
 fs.writeFileSync(
   `../src/constants/${OUTPUT.replace(
     /(-\d)?\.(json|txt)$/,
     ''
   )}-${TARGET_WORD_LENGTH}.json`,
-  jsonString
+  JSON.stringify(wordLetters)
 )

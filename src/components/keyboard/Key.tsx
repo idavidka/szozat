@@ -104,15 +104,27 @@ export const Key = ({
   disabled,
 }: KeyProps) => {
   const classes = classnames(
-    'flex items-center justify-center rounded mx-0.5 text-xs font-bold cursor-pointer select-none',
+    'flex relative items-center justify-center rounded mx-0.5 text-xs font-bold cursor-pointer select-none overflow-hidden',
     className ?? {
       'bg-slate-200 dark:bg-slate-500 hover:bg-slate-600 dark:hover:bg-slate-400 active:bg-slate-400 dark:text-slate-900':
         !status,
       'bg-slate-400 text-white': status === 'absent',
-      'bg-green-500 hover:bg-green-600 active:bg-green-700 text-white':
-        status === 'correct',
-      'bg-yellow-500 hover:bg-yellow-600 active:bg-yellow-700 text-white':
-        status === 'present',
+      'bg-green-500 hover:bg-green-600 active:bg-green-700 text-white': [
+        'correct',
+        'correct-diff',
+      ].includes(status ?? ''),
+      'bg-yellow-500 hover:bg-yellow-600 active:bg-yellow-700 text-white': [
+        'present',
+        'present-diff',
+      ].includes(status ?? ''),
+    }
+  )
+
+  const differenceMarkerClasses = classnames(
+    'absolute z-10 w-[100%] h-[100%]',
+    {
+      'bg-green-600': status === 'correct-diff',
+      'bg-yellow-600': status === 'present-diff',
     }
   )
 
@@ -130,7 +142,13 @@ export const Key = ({
           handleClick(value)
         }}
       >
-        {children || value}
+        {['present-diff', 'correct-diff'].includes(status ?? '') && (
+          <div
+            className={differenceMarkerClasses}
+            style={{ clipPath: 'polygon(100% 100%, 0% 100%, 100% 0)' }}
+          />
+        )}
+        <span className="relative z-20">{children || value}</span>
       </Button>
     )
   }
@@ -182,7 +200,13 @@ export const Key = ({
               handleClick(value)
             }}
           >
-            {children || value}
+            {['present-diff', 'correct-diff'].includes(status ?? '') && (
+              <div
+                className={differenceMarkerClasses}
+                style={{ clipPath: 'polygon(100% 100%, 0% 100%, 100% 0)' }}
+              />
+            )}
+            <span className="relative z-20">{children || value}</span>
           </Popover.Button>
         </>
       )}

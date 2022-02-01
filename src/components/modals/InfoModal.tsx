@@ -8,7 +8,7 @@ import {
   getGridMaxWidthClassName,
 } from '../../constants/utils'
 import { CONSONANT_CHAR_VALUES } from '../../lib/wordCommons'
-import { CharStatus, CharValue } from '../../lib/statuses'
+import { CharStatus } from '../../lib/statuses'
 
 type Props = {
   isOpen: boolean
