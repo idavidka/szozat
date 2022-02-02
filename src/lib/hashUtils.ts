@@ -1,6 +1,9 @@
+import { generateSessionId } from './localStorage'
+
+export const HASH_PARAM_KEY_ID = 'i'
+export const HASH_PARAM_KEY_DIFFICULTY = 'd'
 export const HASH_PARAM_KEY_SOLUTION = 's'
 export const HASH_PARAM_KEY_CREATOR = 'c'
-export const HASH_PARAM_KEY_DIFFICULTY = 'd'
 
 export const getHashParams = () => {
   const hash = window.location.hash.substring(1)
@@ -55,6 +58,19 @@ export const createCustomGameUrl = (
     { key: HASH_PARAM_KEY_SOLUTION, value: solutionValue },
     { key: HASH_PARAM_KEY_CREATOR, value: creatorValue },
     { key: HASH_PARAM_KEY_DIFFICULTY, value: difficulty.toString() },
+  ])
+  const fullUrl = `${urlBeginning}${
+    urlBeginning.endsWith('/') ? '' : '/'
+  }${hashString}`
+  return fullUrl
+}
+
+export const createCustomStatURl = () => {
+  const id = generateSessionId().id
+  const idValue = encodeHashParam(id)
+  const urlBeginning = window.location.href.split('#')[0]
+  const hashString = createHashString([
+    { key: HASH_PARAM_KEY_ID, value: idValue },
   ])
   const fullUrl = `${urlBeginning}${
     urlBeginning.endsWith('/') ? '' : '/'

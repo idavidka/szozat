@@ -22,7 +22,12 @@ import {
   isWordEqual,
   getCurrentWord,
 } from './lib/words'
-import { getStatsFromApi, sendStatsToAPI } from './lib/api'
+import {
+  getStateFromAPI,
+  getStatsFromAPI,
+  sendStateToAPI,
+  sendStatsToAPI,
+} from './lib/api'
 import { WIN_MESSAGES } from './constants/strings'
 import { addStatsForCompletedGame, loadStats, toStats } from './lib/stats'
 import {
@@ -33,6 +38,7 @@ import {
   saveDifficultyToLocalStorage,
   saveGameStateToLocalStorage,
   saveGridFullToLocalStorage,
+  StoredGameState,
 } from './lib/localStorage'
 import { CharValue, Word } from './lib/statuses'
 import { MAX_NUMBER_OF_GUESSES } from './constants/constants'
@@ -62,13 +68,20 @@ function App() {
   const [shareFailed, setShareFailed] = useState(false)
   const [isGameLost, setIsGameLost] = useState<Record<number, boolean>>({})
   const [successAlert, setSuccessAlert] = useState('')
+  const [userInteracted, setUserInteracted] = useState(false)
+  const [fetchSaved, setFetchSaved] = useState(false)
   const savedDificulty = useMemo(() => {
     return hashDifficulty ?? loadDifficultyToLocalStorage()
   }, [hashDifficulty])
   const [difficulty, setDifficulty] = useState(savedDificulty)
   const getLoadedState = useCallback(
-    (stateDifficulty) => loadGameStateFromLocalStorage(stateDifficulty),
-    []
+    (stateDifficulty) => {
+      const loadedState = loadGameStateFromLocalStorage(stateDifficulty)
+
+      return loadedState
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [fetchSaved]
   )
 
   const maxGuess = useMemo(
@@ -111,6 +124,46 @@ function App() {
     (statDifficulty) => loadStats(statDifficulty),
     []
   )
+  const [stats, setStats] = useState(getLoadedStats(difficulty))
+  const [globalStats, setGlobalStats] = useState()
+
+  useEffect(() => {
+    getStatsFromAPI().then((data) => setGlobalStats(data))
+    getStateFromAPI().then((data) => {
+      let statesSaved = false
+      Object.entries(data.state ?? {}).forEach(([d, s]) => {
+        const loopDifficulty = parseInt(d)
+        if (loopDifficulty >= 3 && loopDifficulty <= 9) {
+          saveGameStateToLocalStorage(s as StoredGameState, loopDifficulty)
+          statesSaved = true
+        }
+      })
+
+      if (data.difficulty >= 3 && data.difficulty <= 9) {
+        saveDifficultyToLocalStorage(data.difficulty as number)
+
+        if (statesSaved) {
+          setFetchSaved(true)
+          setIsModalOpen(false)
+        }
+      }
+    })
+  }, [])
+
+  const getGlobalStats = useCallback(
+    (statDifficulty): GameStats | undefined =>
+      toStats(difficulty, globalStats?.[statDifficulty]),
+
+    [difficulty, globalStats]
+  )
+
+  const saveStat = useCallback(
+    (gameStats: GameStats) => {
+      setStats(gameStats)
+      sendStatsToAPI(gameStats, difficulty).then((data) => setGlobalStats(data))
+    },
+    [difficulty]
+  )
 
   const [guesses, setGuesses] = useState<Word[]>([])
 
@@ -141,28 +194,6 @@ function App() {
       window.removeEventListener('resize.grid', handleResize)
     }
   }, [difficulty, setGridSize])
-
-  const [stats, setStats] = useState(getLoadedStats(difficulty))
-  const [globalStats, setGlobalStats] = useState()
-
-  useEffect(() => {
-    getStatsFromApi().then((data) => setGlobalStats(data))
-  }, [])
-
-  const getGlobalStats = useCallback(
-    (statDifficulty): GameStats | undefined =>
-      toStats(difficulty, globalStats?.[statDifficulty]),
-
-    [difficulty, globalStats]
-  )
-
-  const saveStat = useCallback(
-    (gameStats: GameStats) => {
-      setStats(gameStats)
-      sendStatsToAPI(gameStats, difficulty).then((data) => setGlobalStats(data))
-    },
-    [difficulty]
-  )
 
   const checkIsModalOpen = useCallback(
     (type: ModalId) => {
@@ -220,8 +251,13 @@ function App() {
 
   useEffect(() => {
     checkViewPort()
+    if (userInteracted) {
+      sendStateToAPI({ guesses, solution, day }, difficulty)
+    }
     saveGameStateToLocalStorage({ guesses, solution, day }, difficulty)
-  }, [guesses, solution, day, difficulty])
+  }, [guesses, solution, day, difficulty, userInteracted])
+
+  useEffect(() => {})
 
   useEffect(() => {
     if (isGameWon[difficulty]) {
@@ -249,6 +285,7 @@ function App() {
       !isGameWon[difficulty]
     ) {
       setCurrentGuess([...currentGuess, value])
+      setUserInteracted(true)
     }
   }
 
@@ -260,12 +297,14 @@ function App() {
       !isGameWon[difficulty]
     ) {
       setCurrentGuess([...currentGuess.slice(0, -1), value])
+      setUserInteracted(true)
     }
   }
 
   const onDelete = () => {
     checkViewPort()
     setCurrentGuess(currentGuess.slice(0, -1))
+    setUserInteracted(true)
   }
 
   const onEnter = () => {
@@ -304,6 +343,7 @@ function App() {
     ) {
       setGuesses([...guesses, currentGuess])
       setCurrentGuess([])
+      setUserInteracted(true)
 
       if (winningWord) {
         saveStat(addStatsForCompletedGame(stats, guesses.length, difficulty))

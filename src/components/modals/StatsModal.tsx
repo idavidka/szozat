@@ -10,6 +10,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { DifficultyList } from '../lists/DifficultyList'
 import { Tab } from '@headlessui/react'
 import classNames from 'classnames'
+import { createCustomStatURl } from '../../lib/hashUtils'
 
 type Props = {
   isOpen: boolean
@@ -87,6 +88,7 @@ export const StatsModal = ({
     },
     [day, statDifficulty]
   )
+  const statLink = createCustomStatURl()
 
   const stats = useMemo(() => {
     return {
@@ -137,6 +139,18 @@ export const StatsModal = ({
                     'focus:outline-none '
                   )}
                 >
+                  {details && (
+                    <>
+                      <p className="text-gray-500 dark:text-slate-200 pb-2 pt-5">
+                        Nyisd meg a játékaidat más eszközön is:
+                      </p>
+                      <p className="text-lg text-blue-500 dark:text-blue-900 pb-2 break-all">
+                        <a href={statLink} target="_blank" rel="noreferrer">
+                          {statLink}
+                        </a>
+                      </p>
+                    </>
+                  )}
                   <StatBar gameStats={stat} details={details} />
                   <h4 className="text-lg leading-6 font-medium">
                     A megoldások eloszlása

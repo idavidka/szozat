@@ -2,6 +2,7 @@ import { shuffle } from 'lodash'
 import { isLocalhost } from './utils'
 import { Word } from './statuses'
 import { ThemeValue } from './theme'
+import { getDecodedHashParam, HASH_PARAM_KEY_ID } from './hashUtils'
 
 const idKey = 'id'
 const gameStateKey = 'gameState'
@@ -9,7 +10,7 @@ const difficultyKey = 'difficulty'
 const gridFullKey = 'gridFull'
 const themeKey = 'colorTheme'
 
-type StoredGameState = {
+export type StoredGameState = {
   guesses: Word[]
   solution: Word
   day: number
@@ -102,13 +103,15 @@ export type GameStats = {
 }
 
 export const generateSessionId = () => {
+  const hashId = getDecodedHashParam(HASH_PARAM_KEY_ID)
+
   const current = getItem(idKey)
 
-  if (current) {
+  if (!hashId && current) {
     return JSON.parse(current)
   }
 
-  const id = Math.random().toString(36).substr(2, 10)
+  const id = hashId || Math.random().toString(36).substr(2, 10)
   setItem(idKey, JSON.stringify({ id }))
 
   return { id }

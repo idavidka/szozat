@@ -114,7 +114,7 @@ export const CreatePuzzleModal = ({
           <p className="text-gray-500 dark:text-slate-200 pb-2 pt-5">
             Íme a link a játékhoz:
           </p>
-          <p className="text-lg text-blue-500 dark:text-blue-500 pb-2 break-all">
+          <p className="text-lg text-blue-500 dark:text-blue-900 pb-2 break-all">
             <a href={gameLink} target="_blank" rel="noreferrer">
               {gameLink}
             </a>

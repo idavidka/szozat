@@ -20,8 +20,8 @@
         return $dir;
     }
 
-    function getFile($id) {
-        $file = getStatFolder().$id.'.json';
+    function getFile($id, $state = false) {
+        $file = getStatFolder().$id.($state ? '-state' : '').'.json';
 
         touch($file);
 
@@ -30,14 +30,14 @@
         return $content ? json_decode($content, true) : array();
     }
 
-    function setFile($id, $content) {
-        $file = getStatFolder().$id.'.json';
+    function setFile($id, $content, $state = false) {
+        $file = getStatFolder().$id.($state ? '-state' : '').'.json';
 
         return file_put_contents($file, json_encode($content));
     }
 
-    function getAllStat() { 
-        $files = glob(getStatFolder().'*.json');
+    function getAllStat($state = false) { 
+        $files = glob(getStatFolder().'*'.($state ? '-state' : '').'.json');
 
         $stats = array();
 
@@ -66,7 +66,31 @@
         return $stats;
     }
 
-    if(isset($_POST['id']) && isset($_POST['difficult']) && isset($_POST['totalCount']) && isset($_POST['failedCount']) && isset($_POST['distributions'])) {
+    if(isset($_POST['id'])&& isset($_POST['difficult'])&& isset($_POST['state'])) {
+        $id = $_POST['id'];
+        $difficult = (int)$_POST['difficult'];
+        $state = json_decode($_POST['state'], true);
+        $file = getFile($id, true);
+        
+        if(!isset($file['state'])) {
+            $file['state'] = array();
+        }
+
+        if(!isset($file[$difficult])) {
+            $file['state'][$difficult] = array();
+        }
+
+        $file['state'][$difficult] = $state;
+        $file['difficulty'] = $difficult;
+
+        if(setFile($id, $file,true)) {
+            print json_encode($file);
+            exit();
+        }
+    }  else if(isset($_GET['id']) == isset($_GET['state'])) {
+        print json_encode(getFile($_GET['id'], true));
+        exit();
+    } else if(isset($_POST['id']) && isset($_POST['difficult']) && isset($_POST['totalCount']) && isset($_POST['failedCount']) && isset($_POST['distributions'])) {
         $id = $_POST['id'];
         $difficult = (int)$_POST['difficult'];
         $totalCount = (int)$_POST['totalCount'];
@@ -102,7 +126,7 @@
                 }
             // }
         }
-    } else if(isset($_GET['stat'])) {
+    } else if(isset($_GET['id']) == isset($_GET['stat'])) {
         print json_encode(getAllStat());
         exit();
     }
