@@ -23,9 +23,9 @@ import {
   getCurrentWord,
 } from './lib/words'
 import {
+  debouncingStateToAPI,
   getStateFromAPI,
   getStatsFromAPI,
-  sendStateToAPI,
   sendStatsToAPI,
 } from './lib/api'
 import { WIN_MESSAGES } from './constants/strings'
@@ -137,7 +137,6 @@ function App() {
         const loadedDay = loadedState?.day
         const loadedGuesses = getLoadedGuesses()
 
-        console.log('ASD', loadedGuesses)
         setAppIsReloaded(true)
         setIsModalOpen(false)
         setDay(loadedDay ?? 0)
@@ -294,9 +293,8 @@ function App() {
 
   useEffect(() => {
     checkViewPort()
-    console.log('ASDD')
     if (userInteracted) {
-      sendStateToAPI({ guesses, solution, day }, difficulty)
+      debouncingStateToAPI({ guesses, solution, day }, difficulty)
       saveGameStateToLocalStorage({ guesses, solution, day }, difficulty)
     }
   }, [guesses, solution, day, difficulty, userInteracted])

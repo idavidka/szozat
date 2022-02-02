@@ -36,7 +36,8 @@ const decrypt = (value: string): string => {
 }
 
 const setItem: typeof localStorage.setItem = (key: string, value: string) => {
-  localStorage.setItem(key, true || isLocalhost() ? value : encrypt(value))
+  // localStorage.setItem(key, value)
+  localStorage.setItem(key, isLocalhost() ? value : encrypt(value))
 }
 
 const getItem: typeof localStorage.getItem = (key: string) => {
