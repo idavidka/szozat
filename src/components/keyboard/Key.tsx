@@ -148,7 +148,7 @@ export const Key = ({
             style={{ clipPath: 'polygon(100% 100%, 0% 100%, 100% 0)' }}
           />
         )}
-        <span className="relative z-20">{children || value}</span>
+        <span className="relative z-[15]">{children || value}</span>
       </Button>
     )
   }
@@ -206,7 +206,7 @@ export const Key = ({
                 style={{ clipPath: 'polygon(100% 100%, 0% 100%, 100% 0)' }}
               />
             )}
-            <span className="relative z-20">{children || value}</span>
+            <span className="relative z-[15]">{children || value}</span>
           </Popover.Button>
         </>
       )}
