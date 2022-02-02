@@ -21,7 +21,7 @@
     }
 
     function getFile($id, $state = false) {
-        $file = getStatFolder().$id.($state ? '-state' : '').'.json';
+        $file = getStatFolder().$id.($state ? '-state' : '-stat').'.json';
 
         touch($file);
 
@@ -31,13 +31,13 @@
     }
 
     function setFile($id, $content, $state = false) {
-        $file = getStatFolder().$id.($state ? '-state' : '').'.json';
+        $file = getStatFolder().$id.($state ? '-state' : '-stat').'.json';
 
         return file_put_contents($file, json_encode($content));
     }
 
     function getAllStat($state = false) { 
-        $files = glob(getStatFolder().'*'.($state ? '-state' : '').'.json');
+        $files = glob(getStatFolder().'*'.($state ? '-state' : '-stat').'.json');
 
         $stats = array();
 
@@ -66,7 +66,7 @@
         return $stats;
     }
 
-    if(isset($_POST['id'])&& isset($_POST['difficult'])&& isset($_POST['state'])) {
+    if(isset($_POST['id']) && isset($_POST['difficult'])&& isset($_POST['state'])) {
         $id = $_POST['id'];
         $difficult = (int)$_POST['difficult'];
         $state = json_decode($_POST['state'], true);
@@ -87,8 +87,10 @@
             print json_encode($file);
             exit();
         }
-    }  else if(isset($_GET['id']) == isset($_GET['state'])) {
-        print json_encode(getFile($_GET['id'], true));
+    }  else if(isset($_GET['id']) && isset($_GET['state'])) {
+        $state = getFile($_GET['id'], true);
+        $state['stats'] = getFile($_GET['id']);
+        print json_encode($state);
         exit();
     } else if(isset($_POST['id']) && isset($_POST['difficult']) && isset($_POST['totalCount']) && isset($_POST['failedCount']) && isset($_POST['distributions'])) {
         $id = $_POST['id'];
@@ -126,7 +128,7 @@
                 }
             // }
         }
-    } else if(isset($_GET['id']) == isset($_GET['stat'])) {
+    } else if(isset($_GET['id']) && isset($_GET['stat'])) {
         print json_encode(getAllStat());
         exit();
     }

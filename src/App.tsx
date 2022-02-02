@@ -38,6 +38,7 @@ import {
   saveDifficultyToLocalStorage,
   saveGameStateToLocalStorage,
   saveGridFullToLocalStorage,
+  saveStatsToLocalStorage,
   StoredGameState,
 } from './lib/localStorage'
 import { CharValue, Word } from './lib/statuses'
@@ -69,6 +70,8 @@ function App() {
   const [isGameLost, setIsGameLost] = useState<Record<number, boolean>>({})
   const [successAlert, setSuccessAlert] = useState('')
   const [userInteracted, setUserInteracted] = useState(false)
+  const [appToReload, setAppToReload] = useState(false)
+  const [appIsReloaded, setAppIsReloaded] = useState(false)
   const savedDificulty = useMemo(() => {
     return hashDifficulty ?? loadDifficultyToLocalStorage()
   }, [hashDifficulty])
@@ -78,10 +81,6 @@ function App() {
 
     return loadedState
   }, [])
-
-  useEffect(() => {
-    setDifficulty(savedDificulty)
-  }, [savedDificulty])
 
   const maxGuess = useMemo(
     () => MAX_NUMBER_OF_GUESSES[difficulty],
@@ -124,20 +123,59 @@ function App() {
     (statDifficulty) => loadStats(statDifficulty),
     []
   )
+
   const [stats, setStats] = useState(getLoadedStats(difficulty))
   const [globalStats, setGlobalStats] = useState()
+
+  const [, updateState] = useState<Record<string, string>>()
+  const forceUpdate = useCallback(() => updateState({}), [])
+  useEffect(() => {
+    if (!appIsReloaded) {
+      setTimeout(() => {
+        const loadedDifficulty = loadDifficultyToLocalStorage()
+        const loadedState = loadGameStateFromLocalStorage(loadedDifficulty)
+        const loadedDay = loadedState?.day
+        const loadedGuesses = getLoadedGuesses()
+
+        console.log('ASD', loadedGuesses)
+        setAppIsReloaded(true)
+        setIsModalOpen(false)
+        setDay(loadedDay ?? 0)
+        setDifficulty(loadedDifficulty)
+        if (loadedGuesses.length) {
+          setGuesses(getLoadedGuesses())
+        }
+        forceUpdate()
+      }, 1000)
+    }
+  }, [
+    appIsReloaded,
+    appToReload,
+    forceUpdate,
+    getLoadedGuesses,
+    getLoadedStats,
+  ])
 
   useEffect(() => {
     getStatsFromAPI().then((data) => setGlobalStats(data))
 
     setTimeout(() => {
       getStateFromAPI().then((data) => {
-        console.log('ASD', data)
         let statesSaved = false
         Object.entries(data?.state ?? {}).forEach(([d, s]) => {
           const loopDifficulty = parseInt(d)
           if (loopDifficulty >= 3 && loopDifficulty <= 9) {
             saveGameStateToLocalStorage(s as StoredGameState, loopDifficulty)
+            statesSaved = true
+          }
+        })
+        Object.entries(data?.stats ?? {}).forEach(([d, s]) => {
+          const loopDifficulty = parseInt(d)
+          if (loopDifficulty >= 3 && loopDifficulty <= 9) {
+            saveStatsToLocalStorage(
+              toStats(loopDifficulty, s as Record<string, number | number[]>),
+              loopDifficulty
+            )
             statesSaved = true
           }
         })
@@ -147,7 +185,7 @@ function App() {
 
           if (statesSaved && data?.state?.[data.difficulty]) {
             setTimeout(() => {
-              window.location.href = ''
+              setAppToReload(true)
             }, 300)
           }
         }
@@ -250,13 +288,13 @@ function App() {
   useEffect(() => {
     checkViewPort()
     !hashDifficulty && saveDifficultyToLocalStorage(difficulty)
-    console.log('ASD4', getLoadedGuesses())
     setGuesses(getLoadedGuesses())
     setStats(getLoadedStats(difficulty))
   }, [difficulty, getLoadedGuesses, getLoadedStats, hashDifficulty])
 
   useEffect(() => {
     checkViewPort()
+    console.log('ASDD')
     if (userInteracted) {
       sendStateToAPI({ guesses, solution, day }, difficulty)
       saveGameStateToLocalStorage({ guesses, solution, day }, difficulty)
@@ -394,12 +432,14 @@ function App() {
       previous: difficulty,
       current: value,
     })
+    setUserInteracted(true)
     setDifficulty(value)
     setCurrentGuess(currentGuess.slice(0, value))
   }
 
   const handleNewGame = () => {
     addGTM('event', 'newGame', { difficulty })
+    setUserInteracted(true)
     setIsGameLost({ [difficulty]: false })
     setIsGameWon({ [difficulty]: false })
     setGuesses([])
@@ -410,6 +450,7 @@ function App() {
 
   const handleManualEnd = () => {
     setIsModalOpen(false)
+    setUserInteracted(true)
     if (!isGameWon[difficulty]) {
       const emptyRow = times(difficulty, () => '-') as Word
       const newGuesses = [
