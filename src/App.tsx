@@ -69,21 +69,19 @@ function App() {
   const [isGameLost, setIsGameLost] = useState<Record<number, boolean>>({})
   const [successAlert, setSuccessAlert] = useState('')
   const [userInteracted, setUserInteracted] = useState(false)
-  const [fetchSaved, setFetchSaved] = useState(false)
   const savedDificulty = useMemo(() => {
     return hashDifficulty ?? loadDifficultyToLocalStorage()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hashDifficulty, fetchSaved])
+  }, [hashDifficulty])
   const [difficulty, setDifficulty] = useState(savedDificulty)
-  const getLoadedState = useCallback(
-    (stateDifficulty) => {
-      const loadedState = loadGameStateFromLocalStorage(stateDifficulty)
+  const getLoadedState = useCallback((stateDifficulty) => {
+    const loadedState = loadGameStateFromLocalStorage(stateDifficulty)
 
-      return loadedState
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [fetchSaved]
-  )
+    return loadedState
+  }, [])
+
+  useEffect(() => {
+    setDifficulty(savedDificulty)
+  }, [savedDificulty])
 
   const maxGuess = useMemo(
     () => MAX_NUMBER_OF_GUESSES[difficulty],
@@ -121,6 +119,7 @@ function App() {
     }
     return loaded.guesses
   }, [difficulty, getLoadedState, maxGuess, solution])
+
   const getLoadedStats = useCallback(
     (statDifficulty) => loadStats(statDifficulty),
     []
@@ -130,25 +129,30 @@ function App() {
 
   useEffect(() => {
     getStatsFromAPI().then((data) => setGlobalStats(data))
-    getStateFromAPI().then((data) => {
-      let statesSaved = false
-      Object.entries(data.state ?? {}).forEach(([d, s]) => {
-        const loopDifficulty = parseInt(d)
-        if (loopDifficulty >= 3 && loopDifficulty <= 9) {
-          saveGameStateToLocalStorage(s as StoredGameState, loopDifficulty)
-          statesSaved = true
+
+    setTimeout(() => {
+      getStateFromAPI().then((data) => {
+        console.log('ASD', data)
+        let statesSaved = false
+        Object.entries(data?.state ?? {}).forEach(([d, s]) => {
+          const loopDifficulty = parseInt(d)
+          if (loopDifficulty >= 3 && loopDifficulty <= 9) {
+            saveGameStateToLocalStorage(s as StoredGameState, loopDifficulty)
+            statesSaved = true
+          }
+        })
+
+        if (data.difficulty >= 3 && data.difficulty <= 9) {
+          saveDifficultyToLocalStorage(data.difficulty as number)
+
+          if (statesSaved && data?.state?.[data.difficulty]) {
+            setTimeout(() => {
+              window.location.href = ''
+            }, 300)
+          }
         }
       })
-
-      if (data.difficulty >= 3 && data.difficulty <= 9) {
-        saveDifficultyToLocalStorage(data.difficulty as number)
-
-        if (statesSaved) {
-          setFetchSaved(true)
-          setIsModalOpen(false)
-        }
-      }
-    })
+    }, 500)
   }, [])
 
   const getGlobalStats = useCallback(
@@ -246,6 +250,7 @@ function App() {
   useEffect(() => {
     checkViewPort()
     !hashDifficulty && saveDifficultyToLocalStorage(difficulty)
+    console.log('ASD4', getLoadedGuesses())
     setGuesses(getLoadedGuesses())
     setStats(getLoadedStats(difficulty))
   }, [difficulty, getLoadedGuesses, getLoadedStats, hashDifficulty])
@@ -254,8 +259,8 @@ function App() {
     checkViewPort()
     if (userInteracted) {
       sendStateToAPI({ guesses, solution, day }, difficulty)
+      saveGameStateToLocalStorage({ guesses, solution, day }, difficulty)
     }
-    saveGameStateToLocalStorage({ guesses, solution, day }, difficulty)
   }, [guesses, solution, day, difficulty, userInteracted])
 
   useEffect(() => {})
