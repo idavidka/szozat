@@ -9,6 +9,7 @@ type Props = {
   onDelete: () => void
   onEnter: () => void
   guesses: Word[]
+  currentGuess: Word
   day: number
   difficulty: number
   enabledOnEnter?: boolean
@@ -21,6 +22,7 @@ export const Keyboard = ({
   onReplace,
   onEnter,
   guesses,
+  currentGuess,
   day,
   difficulty,
   enabledOnEnter,
@@ -45,11 +47,21 @@ export const Keyboard = ({
       if (e.code === 'Enter') {
         onEnter()
       } else if (e.code === 'Backspace') {
-        onDelete()
+        const key = currentGuess?.[(currentGuess?.length ?? 0) - 1] ?? ''
+        const shorterKey = key.substring(0, key.length - 1)
+
+        if (!e.shiftKey && isCharValue(shorterKey)) {
+          onReplace(shorterKey)
+          lastKey.current = shorterKey
+        } else {
+          lastKey.current =
+            currentGuess?.[(currentGuess?.length ?? 0) - 2] ?? ''
+          onDelete()
+        }
       } else {
         const upperKey = e.key.toUpperCase()
         const key =
-          e.shiftKey && isCharValue(lastKey.current + upperKey)
+          !e.shiftKey && isCharValue(lastKey.current + upperKey)
             ? lastKey.current + upperKey
             : upperKey
         if (key.length === 1 && isCharValue(key)) {
@@ -80,7 +92,7 @@ export const Keyboard = ({
       window.removeEventListener('keyup', keyup)
       window.removeEventListener('resize.keyboard', resize)
     }
-  }, [onEnter, onDelete, onChar, onReplace])
+  }, [onEnter, onDelete, onChar, onReplace, currentGuess])
 
   return (
     <div>

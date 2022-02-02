@@ -130,9 +130,14 @@ export const InfoModal = ({
             szavak beírásához.
           </li>
           <li>
-            Dupla vagy tripla betűk beírásához nyomd meg hosszan a megfelelő
-            szimpla betűt vagy használd a számítógéped <b>[SHIFT]</b>{' '}
-            billentyűzejét.
+            Ha virtuális billentyűzeten szeretnél dupla vagy tripla betűt
+            beírni, használd a megfelelő betű gombját vagy nyomd meg hosszan az
+            adott szimpla betűt.
+          </li>
+          <li>
+            Ha a számítgéped billentyűzetén pötyögs és nem szeretnéd a dupla
+            vagy tripla betűt egybeírni, akkor az írás közben tartsd lenyomva a{' '}
+            <b>[SHIFT]</b> billentyűt.
           </li>
         </ul>
       </div>

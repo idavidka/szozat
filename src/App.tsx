@@ -626,6 +626,7 @@ function App() {
               onReplace={onReplace}
               onEnter={onEnter}
               guesses={guesses}
+              currentGuess={currentGuess}
               day={day}
               difficulty={difficulty}
               enabledOnEnter={currentGuess.length === difficulty}
