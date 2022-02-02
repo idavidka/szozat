@@ -123,8 +123,8 @@ export const Key = ({
   const differenceMarkerClasses = classnames(
     'absolute z-10 w-[100%] h-[100%]',
     {
-      'bg-green-600': status === 'correct-diff',
-      'bg-yellow-600': status === 'present-diff',
+      'bg-green-600 hover:bg-green-700': status === 'correct-diff',
+      'bg-yellow-600 hover:bg-yellow-700': status === 'present-diff',
     }
   )
 

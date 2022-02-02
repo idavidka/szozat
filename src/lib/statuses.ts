@@ -47,7 +47,7 @@ export const getStatuses = (
             : 'correct-diff')
       }
 
-      if (charObj[letter] !== 'correct') {
+      if (!['correct', 'correct-diff'].includes(charObj[letter])) {
         //make status present
         return (charObj[letter] =
           charObj[letter] === 'present' ||
