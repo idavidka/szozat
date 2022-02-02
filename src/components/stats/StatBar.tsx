@@ -22,7 +22,7 @@ const StatItem = ({
 
 export const StatBar = ({ gameStats, details }: Props) => {
   return (
-    <div className="flex justify-center my-2">
+    <div className="flex justify-center my-2 w-full">
       <StatItem label="Összes játék" value={gameStats.totalGames} />
       <StatItem label="Sikerráta" value={`${gameStats.successRate}%`} />
       {details && (
