@@ -13,6 +13,7 @@ import { reverse, shuffle } from 'lodash'
 type Arguments = ReturnType<typeof yargs.parse>
 const args: Arguments = yargs.parseSync(process.argv)
 const TARGET_WORD_LENGTH: number = (args?.length as number) ?? 5
+const GENERATE_SELECTED: boolean = args?.selected ? true : false
 const OUTPUT_LIST: string =
   (args?.output as string) ?? 'hungarian-word-letter-list.json'
 const OUTPUT_PUZZLE: string =
@@ -35,6 +36,24 @@ const hungarianWords = hungarianWordsText
 const hungarianWordsOnlyAlphabet = hungarianWords.filter((word) => {
   const wordUpperCase = word.toUpperCase()
 
+  return wordUpperCase.split('').every((letter) => CHAR_VALUES.includes(letter))
+})
+// Split into letters
+
+const shorterWords = hungarianWordsOnlyAlphabet.filter((word) => {
+  const wordLength = getWordLetters(word).length
+  return (
+    wordLength < TARGET_WORD_LENGTH &&
+    wordLength <
+      (TARGET_WORD_LENGTH <= 3 ? 3 : Math.ceil(TARGET_WORD_LENGTH / 2))
+  )
+})
+const words = hungarianWordsOnlyAlphabet.filter((word) => {
+  // exclude words not having same length
+  return getWordLetters(word).length === TARGET_WORD_LENGTH
+})
+const wordsExcludingUnnecessary = words.filter((word) => {
+  const wordUpperCase = word.toUpperCase()
   // exlude monograms
   if (
     new RegExp(`^[${CONSONANT_CHAR_VALUES.join('')}]+$`).test(wordUpperCase) ||
@@ -55,26 +74,11 @@ const hungarianWordsOnlyAlphabet = hungarianWords.filter((word) => {
     return false
   }
 
-  return wordUpperCase.split('').every((letter) => CHAR_VALUES.includes(letter))
-})
-// Split into letters
-
-const shorterWords = hungarianWordsOnlyAlphabet.filter((word) => {
-  const wordLength = getWordLetters(word).length
   return (
-    wordLength < TARGET_WORD_LENGTH &&
-    wordLength <
-      (TARGET_WORD_LENGTH <= 3 ? 3 : Math.ceil(TARGET_WORD_LENGTH / 2))
+    getWordLetters(word).length === TARGET_WORD_LENGTH && !names.includes(word)
   )
 })
-const words = hungarianWordsOnlyAlphabet.filter(
-  (word) => getWordLetters(word).length === TARGET_WORD_LENGTH
-)
-const wordsExcludingNames = words.filter(
-  (word) =>
-    getWordLetters(word).length === TARGET_WORD_LENGTH && !names.includes(word)
-)
-const shorterWordsInSelectedWords = wordsExcludingNames.filter((word) =>
+const shorterWordsInSelectedWords = wordsExcludingUnnecessary.filter((word) =>
   shorterWords.find(
     (shorterWord) =>
       word.includes(shorterWord + 'jé') ||
@@ -84,7 +88,7 @@ const shorterWordsInSelectedWords = wordsExcludingNames.filter((word) =>
   )
 )
 
-const wordsExcludingShortens = wordsExcludingNames.filter(
+const wordsExcludingShortens = wordsExcludingUnnecessary.filter(
   (word) => !shorterWordsInSelectedWords.includes(word)
 )
 
@@ -96,7 +100,7 @@ const selectedWordLetters = shuffle(reverse(shuffle(wordsExcludingShortens)))
 console.log('Result', {
   words: words.length,
   shorterWords: shorterWords.length,
-  wordsExcludingNames: wordsExcludingNames.length,
+  wordsExcludingNames: wordsExcludingUnnecessary.length,
   wordsExcludingShortens: wordsExcludingShortens.length,
   wordLetters: wordLetters.length,
   selectedWordLetters: selectedWordLetters.length,
@@ -112,17 +116,19 @@ fs.writeFileSync(
   jsonString
 )
 
-fs.writeFileSync(
-  `./src/selected/selected-${TARGET_WORD_LENGTH}.txt`,
-  selectedWordLetters
-    .map((selectedWordLetter) => selectedWordLetter.join(''))
-    .join('\n')
-)
+if (GENERATE_SELECTED) {
+  fs.writeFileSync(
+    `./src/selected/selected-${TARGET_WORD_LENGTH}.txt`,
+    selectedWordLetters
+      .map((selectedWordLetter) => selectedWordLetter.join(''))
+      .join('\n')
+  )
 
-fs.writeFileSync(
-  `../src/constants/${OUTPUT_PUZZLE.replace(
-    /(-\d)?\.(json|txt)$/,
-    ''
-  )}-${TARGET_WORD_LENGTH}.json`,
-  JSON.stringify(selectedWordLetters)
-)
+  fs.writeFileSync(
+    `../src/constants/${OUTPUT_PUZZLE.replace(
+      /(-\d)?\.(json|txt)$/,
+      ''
+    )}-${TARGET_WORD_LENGTH}.json`,
+    JSON.stringify(selectedWordLetters)
+  )
+}
