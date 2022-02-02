@@ -72,7 +72,8 @@ function App() {
   const [fetchSaved, setFetchSaved] = useState(false)
   const savedDificulty = useMemo(() => {
     return hashDifficulty ?? loadDifficultyToLocalStorage()
-  }, [hashDifficulty])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hashDifficulty, fetchSaved])
   const [difficulty, setDifficulty] = useState(savedDificulty)
   const getLoadedState = useCallback(
     (stateDifficulty) => {
