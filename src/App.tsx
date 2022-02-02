@@ -138,7 +138,9 @@ function App() {
         const loadedGuesses = getLoadedGuesses()
 
         setAppIsReloaded(true)
-        setIsModalOpen(false)
+        if (loadedState) {
+          setIsModalOpen(false)
+        }
         setDay(loadedDay ?? 0)
         setDifficulty(loadedDifficulty)
         if (loadedGuesses.length) {
