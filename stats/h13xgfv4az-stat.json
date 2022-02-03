@@ -1,0 +1,85 @@
+{
+    "5": {
+        "totalCount": 11,
+        "failedCount": 7,
+        "distributions": [
+            3,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+        ]
+    },
+    "3": {
+        "totalCount": 7,
+        "failedCount": 4,
+        "distributions": [
+            0,
+            0,
+            0,
+            1,
+            0,
+            7,
+            4
+        ]
+    },
+    "7": {
+        "totalCount": 1,
+        "failedCount": 0,
+        "distributions": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ]
+    },
+    "4": {
+        "totalCount": 1,
+        "failedCount": 0,
+        "distributions": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0
+        ]
+    },
+    "9": {
+        "totalCount": 1,
+        "failedCount": 0,
+        "distributions": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ]
+    }
+}
