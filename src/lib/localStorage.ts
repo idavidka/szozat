@@ -3,6 +3,7 @@ import { isLocalhost } from './utils'
 import { Word } from './statuses'
 import { ThemeValue } from './theme'
 import { getDecodedHashParam, HASH_PARAM_KEY_ID } from './hashUtils'
+import PKG from '../../package.json'
 
 const idKey = 'id'
 const gameStateKey = 'gameState'
@@ -35,13 +36,17 @@ const decrypt = (value: string): string => {
   )
 }
 
+const getKey = (key: string) => {
+  return key === 'id' ? key : `${key}-${PKG.version}`
+}
+
 const setItem: typeof localStorage.setItem = (key: string, value: string) => {
   // localStorage.setItem(key, value)
-  localStorage.setItem(key, isLocalhost() ? value : encrypt(value))
+  localStorage.setItem(getKey(key), isLocalhost() ? value : encrypt(value))
 }
 
 const getItem: typeof localStorage.getItem = (key: string) => {
-  const value = localStorage.getItem(key)
+  const value = localStorage.getItem(getKey(key))
 
   try {
     if (value) {

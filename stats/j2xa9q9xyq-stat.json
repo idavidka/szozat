@@ -1,16 +1,16 @@
 {
     "5": {
-        "totalCount": 24,
-        "failedCount": 8,
+        "totalCount": 32,
+        "failedCount": 12,
         "distributions": [
             0,
             1,
             2,
             3,
             4,
-            1,
             2,
-            3
+            4,
+            4
         ]
     },
     "3": {
@@ -51,15 +51,15 @@
         ]
     },
     "4": {
-        "totalCount": 4,
-        "failedCount": 2,
+        "totalCount": 9,
+        "failedCount": 6,
         "distributions": [
             0,
             0,
             0,
             0,
             0,
-            0,
+            1,
             0,
             2
         ]
