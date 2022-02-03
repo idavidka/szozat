@@ -4,7 +4,7 @@
 
     $httpOrigin = $_SERVER['HTTP_ORIGIN'];
 
-    if (in_array($httpOrigin, array('http://szozat.idavid.hu','https://szozat.idavid.hu','http://localhost:3000')))
+    if (in_array($httpOrigin, array('http://szozat.idavid.hu','https://szozat.idavid.hu','http://localhost:3000', 'http://192.168.0.18:3000')))
     {  
         header("Access-Control-Allow-Origin: $httpOrigin");
         header("Access-Control-Allow-Headers: *");

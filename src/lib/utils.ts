@@ -77,4 +77,5 @@ export const addGTM = (...props: any[]) => {
   // console.log(window.dataLayer)
 }
 
-export const isLocalhost = () => window.location.hostname === 'localhost'
+export const isLocalhost = () =>
+  ['localhost', '192.168.0.18'].includes(window.location.hostname)

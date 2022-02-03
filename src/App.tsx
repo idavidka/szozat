@@ -98,26 +98,30 @@ function App() {
     [day, difficulty]
   )
 
-  const getLoadedGuesses = useCallback(() => {
-    const loaded = getLoadedState(difficulty)
-    if (loaded == null) {
-      setIsModalOpen('info')
-    }
-    if (loaded == null || !isWordEqual(loaded.solution, solution)) {
-      return []
-    }
+  const getLoadedGuesses = useCallback(
+    (customState?: StoredGameState | null) => {
+      const loaded = customState ?? getLoadedState(difficulty)
+      if (loaded == null) {
+        setIsModalOpen('info')
+      }
 
-    const gameWasWon = loaded.guesses.some((guess) =>
-      isWordEqual(guess, solution)
-    )
-    if (gameWasWon) {
-      setIsGameWon({ [difficulty]: true })
-    }
-    if (loaded.guesses.length === maxGuess && !gameWasWon) {
-      setIsGameLost({ [difficulty]: true })
-    }
-    return loaded.guesses
-  }, [difficulty, getLoadedState, maxGuess, solution])
+      if (loaded == null || !isWordEqual(loaded.solution, solution)) {
+        return []
+      }
+
+      const gameWasWon = loaded.guesses.some((guess) =>
+        isWordEqual(guess, solution)
+      )
+      if (gameWasWon) {
+        setIsGameWon({ [difficulty]: true })
+      }
+      if (loaded.guesses.length === maxGuess && !gameWasWon) {
+        setIsGameLost({ [difficulty]: true })
+      }
+      return loaded.guesses
+    },
+    [difficulty, getLoadedState, maxGuess, solution]
+  )
 
   const getLoadedStats = useCallback(
     (statDifficulty) => loadStats(statDifficulty),
@@ -130,12 +134,11 @@ function App() {
   const [, updateState] = useState<Record<string, string>>()
   const forceUpdate = useCallback(() => updateState({}), [])
   useEffect(() => {
+    const loadedDifficulty = loadDifficultyToLocalStorage()
+    const loadedState = loadGameStateFromLocalStorage(loadedDifficulty)
     if (!appIsReloaded) {
       setTimeout(() => {
-        const loadedDifficulty = loadDifficultyToLocalStorage()
-        const loadedState = loadGameStateFromLocalStorage(loadedDifficulty)
         const loadedDay = loadedState?.day
-        const loadedGuesses = getLoadedGuesses()
 
         setAppIsReloaded(true)
         if (loadedState) {
@@ -143,8 +146,9 @@ function App() {
         }
         setDay(loadedDay ?? 0)
         setDifficulty(loadedDifficulty)
+        const loadedGuesses = getLoadedGuesses()
         if (loadedGuesses.length) {
-          setGuesses(getLoadedGuesses())
+          setGuesses(loadedGuesses)
         }
         forceUpdate()
       }, 1000)
@@ -152,6 +156,7 @@ function App() {
   }, [
     appIsReloaded,
     appToReload,
+    day,
     forceUpdate,
     getLoadedGuesses,
     getLoadedStats,
@@ -604,6 +609,11 @@ function App() {
               />
             )}
           </div>
+          {/* {isLocalhost() && (
+            <div className="dark:text-gray-300">
+              Nap {day}, Nehézség {difficulty}, Megfejtés {solution}
+            </div>
+          )} */}
           <div
             ref={gridContainerRef}
             className={`grow flex justify-center overflow-auto mx-auto w-full mb-5 min-h-[60px] ${getGridMaxWidthClassName(

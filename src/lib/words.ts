@@ -64,6 +64,7 @@ export const getWordFromUrl = (difficulty: number) => {
 export const getCurrentWord = (day: number, difficulty: number) => {
   const wordFromUrl = getWordFromUrl(difficulty)
   const wordOfDay = getWordOfDay(day, difficulty)
+  // console.log('Debug', difficulty, day, wordOfDay.solution)
   if (wordFromUrl !== undefined) {
     return {
       ...wordFromUrl,
