@@ -2,6 +2,8 @@ import classNames from 'classnames'
 import { getHashParams, HASH_PARAM_KEY_DIFFICULTY } from './hashUtils'
 import { CharValue, Word } from './statuses'
 
+export type GameType = 'random' | 'in-row'
+
 export const toWord = (word: string[]): Word => {
   return word.map((letter) => letter.toUpperCase() as CharValue)
 }

@@ -1,16 +1,1 @@
-{
-    "5": {
-        "totalCount": 2,
-        "failedCount": 0,
-        "distributions": [
-            0,
-            0,
-            0,
-            1,
-            1,
-            0,
-            0,
-            0
-        ]
-    }
-}
+{"5":{"totalCount":2,"failedCount":0,"distributions":[0,1,0,1,0,0,0,0]}}

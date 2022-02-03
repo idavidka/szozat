@@ -2,9 +2,9 @@ import {
   InformationCircleIcon,
   ChartBarIcon,
   PlusCircleIcon,
-  RefreshIcon,
   ViewGridAddIcon,
   ViewGridIcon,
+  PuzzleIcon,
 } from '@heroicons/react/outline'
 import animateScrollTo from 'animated-scroll-to'
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
@@ -16,6 +16,7 @@ import { InfoModal } from './components/modals/InfoModal'
 import { StatsModal } from './components/modals/StatsModal'
 import { NewGameModal } from './components/modals/NewGameModal'
 import { DifficultyList } from './components/lists/DifficultyList'
+import { Icon } from './components/icon/icon'
 import {
   isWordInWordList,
   isWinningWord,
@@ -49,6 +50,7 @@ import { CreatePuzzleModal } from './components/modals/CreatePuzzleModal'
 import { times } from 'lodash'
 import {
   addGTM,
+  GameType,
   getDifficultyFromUrl,
   getGridMaxWidthClassName,
 } from './lib/utils'
@@ -60,9 +62,12 @@ const NEW_MODAL_TIME_MS = 500
 function App() {
   const context = React.useContext(ThemeContext)
   const hashDifficulty = getDifficultyFromUrl()
+  const [gameType, setGameType] = useState<GameType>('in-row')
   const [currentGuess, setCurrentGuess] = useState<Word>([])
   const [isGameWon, setIsGameWon] = useState<Record<number, boolean>>({})
-  const [isModalOpen, setIsModalOpen] = useState<ModalType>(false)
+  const [isModalOpen, setIsModalOpenState] = useState<ModalType>(false)
+  const [isModalOpenRegistered, setIsModalOpenRegistered] =
+    useState<ModalType>(false)
   const [isNotEnoughLetters, setIsNotEnoughLetters] = useState(false)
   const [isWordNotFoundAlertOpen, setIsWordNotFoundAlertOpen] = useState(false)
   const [shareComplete, setShareComplete] = useState(false)
@@ -98,6 +103,11 @@ function App() {
     [day, difficulty]
   )
 
+  const setIsModalOpen = useCallback((type: ModalType) => {
+    type && setIsModalOpenRegistered(type)
+    setIsModalOpenState(type)
+  }, [])
+
   const getLoadedGuesses = useCallback(
     (customState?: StoredGameState | null) => {
       const loaded = customState ?? getLoadedState(difficulty)
@@ -120,7 +130,7 @@ function App() {
       }
       return loaded.guesses
     },
-    [difficulty, getLoadedState, maxGuess, solution]
+    [difficulty, getLoadedState, maxGuess, setIsModalOpen, solution]
   )
 
   const getLoadedStats = useCallback(
@@ -160,6 +170,7 @@ function App() {
     forceUpdate,
     getLoadedGuesses,
     getLoadedStats,
+    setIsModalOpen,
   ])
 
   useEffect(() => {
@@ -301,30 +312,38 @@ function App() {
   useEffect(() => {
     checkViewPort()
     if (userInteracted) {
-      debouncingStateToAPI({ guesses, solution, day }, difficulty)
-      saveGameStateToLocalStorage({ guesses, solution, day }, difficulty)
+      debouncingStateToAPI(
+        { guesses, solution, day, type: gameType },
+        difficulty
+      )
+      saveGameStateToLocalStorage(
+        { guesses, solution, day, type: gameType },
+        difficulty
+      )
     }
-  }, [guesses, solution, day, difficulty, userInteracted])
+  }, [guesses, solution, day, difficulty, userInteracted, gameType])
 
   useEffect(() => {})
 
   useEffect(() => {
-    if (isGameWon[difficulty]) {
+    setTimeout(() => {
+      if (!isGameWon[difficulty] && !isGameLost[difficulty]) {
+        return
+      }
+
       setSuccessAlert(
-        WIN_MESSAGES[Math.floor(Math.random() * WIN_MESSAGES.length)]
+        isGameWon[difficulty]
+          ? WIN_MESSAGES[Math.floor(Math.random() * WIN_MESSAGES.length)]
+          : ''
       )
-      setTimeout(() => {
-        setSuccessAlert('')
-        isModalOpen !== 'new-game' && setIsModalOpen('stat')
-      }, ALERT_TIME_MS)
-    }
-    if (isGameLost[difficulty]) {
-      setTimeout(() => {
-        isModalOpen !== 'new-game' && setIsModalOpen('stat')
-      }, ALERT_TIME_MS)
-    }
+
+      !(['new-game', 'new-game-confirm'] as ModalType[]).includes(
+        isModalOpenRegistered
+      ) && setIsModalOpen('stat')
+    }, ALERT_TIME_MS)
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isGameWon, isGameLost])
+  }, [isGameWon[difficulty], isGameLost[difficulty]])
 
   const onChar = (value: CharValue) => {
     checkViewPort()
@@ -442,14 +461,15 @@ function App() {
     setCurrentGuess(currentGuess.slice(0, value))
   }
 
-  const handleNewGame = () => {
+  const handleNewGame = (type: GameType) => {
     addGTM('event', 'newGame', { difficulty })
     setUserInteracted(true)
     setIsGameLost({ [difficulty]: false })
     setIsGameWon({ [difficulty]: false })
     setGuesses([])
     setCurrentGuess([])
-    setDay((prev) => prev + 1)
+    setGameType(type)
+    type === 'in-row' && setDay((prev) => prev + 1)
     setIsModalOpen(false)
   }
 
@@ -474,10 +494,10 @@ function App() {
       saveStat(addStatsForCompletedGame(stats, newGuesses.length, difficulty))
       setIsGameLost({ [difficulty]: true })
     }
-
+    setIsModalOpenRegistered('new-game')
     setTimeout(() => {
       setSuccessAlert('')
-      setIsModalOpen('stat')
+      setIsModalOpen('new-game')
     }, NEW_MODAL_TIME_MS)
   }
 
@@ -491,6 +511,7 @@ function App() {
 
     setIsModalOpen(false)
     if (fallbackModal) {
+      setIsModalOpenRegistered(fallbackModal)
       setTimeout(() => {
         setIsModalOpen(fallbackModal)
       }, NEW_MODAL_TIME_MS)
@@ -530,12 +551,14 @@ function App() {
         difficulty={difficulty}
       />
       <StatsModal
-        isOpen={checkIsModalOpen('stat')}
+        isOpen={checkIsModalOpen('stat') || checkIsModalOpen('new-game')}
         handleClose={handleModalClose}
+        isMinimal={isModalOpen === false || checkIsModalOpen('new-game')}
         guesses={guesses}
         day={day}
         difficulty={difficulty}
         isGameLost={isGameLost[difficulty]}
+        isGameWon={isGameWon[difficulty]}
         solution={isGameWon[difficulty] ? solution : undefined}
         handleShareCopySuccess={handleShareCopySuccess}
         handleShareFailure={handleShareFailure}
@@ -544,7 +567,7 @@ function App() {
         handleGlobalStats={getGlobalStats}
       />
       <NewGameModal
-        isOpen={checkIsModalOpen('new-game')}
+        isOpen={checkIsModalOpen('new-game-confirm')}
         handleClose={handleModalClose}
         handleFailure={handleManualEnd}
       />
@@ -562,52 +585,40 @@ function App() {
           className="flex flex-col px-2 pt-8 w-[100%] h-[100%] max-w-[500px] mx-auto sm:px-6 lg:px-8"
           style={{ boxSizing: 'border-box' }}
         >
-          <div className="flex w-80 mx-auto items-center mb-8 relative z-20">
-            <h1 className="text-xl grow font-bold dark:text-gray-300">
-              Szózat
-            </h1>
+          <div className="flex  mx-4 items-center mb-8 relative z-20">
+            <h1 className="text-xl font-bold dark:text-gray-300">Szózat</h1>
+            <Icon
+              component={InformationCircleIcon}
+              onClick={() => setIsModalOpen('info')}
+            />
             <DifficultyList
               selected={difficulty}
               onChange={handleDifficultyChange}
             />
-            <ThemeToggle />
-            <InformationCircleIcon
-              className="h-6 w-6 cursor-pointer dark:text-gray-300"
-              onClick={() => setIsModalOpen('info')}
+            <Icon component={ThemeToggle} />
+            <Icon
+              component={gridFull ? ViewGridIcon : ViewGridAddIcon}
+              onClick={() => handleGridIcon(!gridFull)}
+              isGroupEnd
             />
-            <ChartBarIcon
-              className="h-6 w-6 cursor-pointer dark:text-gray-300"
+            <Icon
+              component={ChartBarIcon}
               onClick={() => setIsModalOpen('stat')}
             />
-            <PlusCircleIcon
-              className="h-6 w-6 cursor-pointer dark:text-gray-300"
+            <Icon
+              component={PlusCircleIcon}
               onClick={() => setIsModalOpen('create-puzzle')}
             />
-            <RefreshIcon
-              className="h-6 w-6 cursor-pointer dark:text-gray-300"
+            <Icon
+              component={PuzzleIcon}
               onClick={() =>
                 setIsModalOpen(
                   isGameWon[difficulty] || isGameLost[difficulty]
-                    ? 'stat'
-                    : 'new-game'
+                    ? 'new-game'
+                    : 'new-game-confirm'
                 )
               }
             />
-            {gridFull ? (
-              <ViewGridIcon
-                className="h-6 w-6 cursor-pointer dark:text-gray-300"
-                onClick={() => {
-                  handleGridIcon(false)
-                }}
-              />
-            ) : (
-              <ViewGridAddIcon
-                className="h-6 w-6 cursor-pointer dark:text-gray-300"
-                onClick={() => {
-                  handleGridIcon(true)
-                }}
-              />
-            )}
           </div>
           {/* {isLocalhost() && (
             <div className="dark:text-gray-300">

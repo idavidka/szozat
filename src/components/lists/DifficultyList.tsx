@@ -30,7 +30,7 @@ export const DifficultyList = ({ selected, onChange }: Props) => {
     [selected]
   )
   return (
-    <div className="mr-2 relative w-[85px] h-[36px]">
+    <div className="mx-auto relative w-[85px] h-[36px]">
       <Listbox
         value={selected}
         onChange={(value: number) => {

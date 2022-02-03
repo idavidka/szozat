@@ -6,6 +6,7 @@ import { ThemeContext } from '../theme/ThemeContext'
 export type ModalId =
   | 'info'
   | 'new-game'
+  | 'new-game-confirm'
   | 'stat'
   | 'about'
   | 'create-puzzle'
