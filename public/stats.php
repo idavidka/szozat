@@ -33,7 +33,7 @@
     function setFile($id, $content, $state = false) {
         $file = getStatFolder().$id.($state ? '-state' : '-stat').'.json';
 
-        return file_put_contents($file, json_encode($content));
+        return file_put_contents($file, json_encode($content, JSON_UNESCAPED_UNICODE));
     }
 
     function getAllStat($state = false) { 
@@ -84,13 +84,13 @@
         $file['difficulty'] = $difficult;
 
         if(setFile($id, $file,true)) {
-            print json_encode($file);
+            print json_encode($file, JSON_UNESCAPED_UNICODE);
             exit();
         }
     }  else if(isset($_GET['id']) && isset($_GET['state'])) {
         $state = getFile($_GET['id'], true);
         $state['stats'] = getFile($_GET['id']);
-        print json_encode($state);
+        print json_encode($state, JSON_UNESCAPED_UNICODE);
         exit();
     } else if(isset($_POST['id']) && isset($_POST['difficult']) && isset($_POST['totalCount']) && isset($_POST['failedCount']) && isset($_POST['distributions'])) {
         $id = $_POST['id'];
@@ -124,15 +124,15 @@
                 }
 
                 if(setFile($id, $file)) {
-                    print json_encode(getAllStat());
+                    print json_encode(getAllStat(), JSON_UNESCAPED_UNICODE);
                     exit();
                 }
             // }
         }
     } else if(isset($_GET['id']) && isset($_GET['stat'])) {
-        print json_encode(getAllStat());
+        print json_encode(getAllStat(), JSON_UNESCAPED_UNICODE);
         exit();
     }
 
     header('Status: 400 Bad Request', TRUE);
-    print json_encode(array('error' => 'malformed'));
+    print json_encode(array('error' => 'malformed'), JSON_UNESCAPED_UNICODE);
