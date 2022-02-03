@@ -118,8 +118,9 @@
                 $file[$difficult]['totalCount'] = $totalCount;
                 $file[$difficult]['failedCount'] = $failedCount;
 
+                $old = $file[$difficult]['distributions'];
                 foreach($distributions as $i => $distribution) {
-                    $file[$difficult]['distributions'][$i] = (isset($file[$difficult]['distributions'][$i]) ? $file[$difficult]['distributions'][$i] : 0) +(int)$distribution; 
+                    $file[$difficult]['distributions'][$i] = (int)$distribution; 
                 }
 
                 if(setFile($id, $file)) {
