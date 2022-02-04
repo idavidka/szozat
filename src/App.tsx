@@ -83,12 +83,12 @@ function App() {
   // const [isModalOpen, setIsModalOpenState] = useState<ModalType>(false)
   // const [isModalOpenRegistered, setIsModalOpenRegistered] =
   //   useState<ModalType>(false)
-  // const [isNotEnoughLetters, setIsNotEnoughLetters] = useState(false)
-  // const [isWordNotFoundAlertOpen, setIsWordNotFoundAlertOpen] = useState(false)
+  const [isNotEnoughLetters, setIsNotEnoughLetters] = useState(false)
+  const [isWordNotFoundAlertOpen, setIsWordNotFoundAlertOpen] = useState(false)
   // const [shareComplete, setShareComplete] = useState(false)
   // const [shareFailed, setShareFailed] = useState(false)
-  // const [isGameLost, setIsGameLost] = useState<Record<number, boolean>>({})
-  // const [successAlert, setSuccessAlert] = useState('')
+  const [isGameLost, setIsGameLost] = useState<Record<number, boolean>>({})
+  const [successAlert, setSuccessAlert] = useState('')
   // const [userInteracted, setUserInteracted] = useState(false)
   // const [appToReload, setAppToReload] = useState(false)
   // const [appIsReloaded, setAppIsReloaded] = useState(false)
@@ -158,13 +158,12 @@ function App() {
   //   [difficulty, getLoadedState, maxGuess, setIsModalOpen, solution]
   // )
 
-  // const getLoadedStats = useCallback(
-  //   (statDifficulty) => loadStats(statDifficulty),
-  //   []
-  // )
+  const getLoadedStats = useCallback((statDifficulty) => {
+    // loadStats(statDifficulty)
+  }, [])
 
-  // const [stats, setStats] = useState(getLoadedStats(difficulty))
-  // const [globalStats, setGlobalStats] = useState()
+  const [stats, setStats] = useState(getLoadedStats(difficulty))
+  const [globalStats, setGlobalStats] = useState()
 
   // const [, updateState] = useState<Record<string, string>>()
   // const forceUpdate = useCallback(() => updateState({}), [])
@@ -237,12 +236,13 @@ function App() {
   //   }, 500)
   // }, [])
 
-  // const getGlobalStats = useCallback(
-  //   (statDifficulty): GameStats | undefined =>
-  //     toStats(difficulty, globalStats?.[statDifficulty]),
-
-  //   [difficulty, globalStats]
-  // )
+  const getGlobalStats = useCallback(
+    (statDifficulty): GameStats | undefined => {
+      //     toStats(difficulty, globalStats?.[statDifficulty])
+      return undefined
+    },
+    [difficulty]
+  )
 
   // const saveStat = useCallback(
   //   (gameStats: GameStats) => {
@@ -254,80 +254,78 @@ function App() {
 
   // const [guesses, setGuesses] = useState<Word[]>([])
 
-  // const gridContainerRef = useRef<HTMLDivElement>(null)
+  const gridContainerRef = useRef<HTMLDivElement>(null)
 
   // const [gridFull, setGridFull] = useState(loadGridFullToLocalStorage())
-  // const [gridSize, setGridSize] = useState({ width: 0, height: 0 })
-  // useEffect(() => {
-  //   const handleResize = () => {
-  //     if (gridContainerRef.current == null) {
-  //       return
-  //     }
-  //     const gridContainerHeight = gridContainerRef.current.clientHeight
-  //     const gridWidth = Math.min(
-  //       Math.floor(
-  //         gridContainerHeight * (5 / MAX_NUMBER_OF_GUESSES[difficulty])
-  //       ),
-  //       350
-  //     )
-  //     const gridHeight = Math.floor(
-  //       (MAX_NUMBER_OF_GUESSES[difficulty] * gridWidth) / 5
-  //     )
-  //     setGridSize({ width: gridWidth, height: gridHeight })
-  //   }
-  //   window.addEventListener('resize.grid', handleResize)
-  //   handleResize()
-  //   return () => {
-  //     window.removeEventListener('resize.grid', handleResize)
-  //   }
-  // }, [difficulty, setGridSize])
+  const [gridSize, setGridSize] = useState({ width: 0, height: 0 })
+  useEffect(() => {
+    const handleResize = () => {
+      if (gridContainerRef.current == null) {
+        return
+      }
+      const gridContainerHeight = gridContainerRef.current.clientHeight
+      const gridWidth = Math.min(
+        Math.floor(
+          gridContainerHeight * (5 / MAX_NUMBER_OF_GUESSES[difficulty])
+        ),
+        350
+      )
+      const gridHeight = Math.floor(
+        (MAX_NUMBER_OF_GUESSES[difficulty] * gridWidth) / 5
+      )
+      setGridSize({ width: gridWidth, height: gridHeight })
+    }
+    window.addEventListener('resize.grid', handleResize)
+    handleResize()
+    return () => {
+      window.removeEventListener('resize.grid', handleResize)
+    }
+  }, [difficulty, setGridSize])
 
-  // const checkIsModalOpen = useCallback(
-  //   (type: ModalId) => {
-  //     if (typeof isModalOpen === 'string' && isModalOpen === type) {
-  //       return true
-  //     }
+  const checkIsModalOpen = useCallback(
+    (type: ModalId) => {
+      //     if (typeof isModalOpen === 'string' && isModalOpen === type) {
+      //       return true
+      //     }
+      //     if (Array.isArray(isModalOpen) && isModalOpen?.[0] === type) {
+      //       return true
+      //     }
+      //     return false
 
-  //     if (Array.isArray(isModalOpen) && isModalOpen?.[0] === type) {
-  //       return true
-  //     }
+      return false
+    },
+    [isModalOpen]
+  )
+  const checkIsModalCallback = useCallback(() => {
+    //   if (Array.isArray(isModalOpen) && isModalOpen?.[1]) {
+    //     return isModalOpen?.[1]
+    //   }
+    //   return null
+  }, [isModalOpen])
 
-  //     return false
-  //   },
-  //   [isModalOpen]
-  // )
-  // const checkIsModalCallback = useCallback(() => {
-  //   if (Array.isArray(isModalOpen) && isModalOpen?.[1]) {
-  //     return isModalOpen?.[1]
-  //   }
-
-  //   return null
-  // }, [isModalOpen])
-
-  // const checkViewPort = () => {
-  //   const currentRow = gridContainerRef.current?.querySelector(
-  //     '.current-row'
-  //   ) as HTMLDivElement | null
-  //   const parent = gridContainerRef.current
-
-  //   if (parent && currentRow) {
-  //     if (parent.offsetTop > currentRow.offsetTop - parent.scrollTop) {
-  //       animateScrollTo(0)
-  //       animateScrollTo(currentRow.previousElementSibling ?? currentRow, {
-  //         elementToScroll: parent,
-  //       })
-  //     }
-  //     if (
-  //       parent.offsetTop + parent.offsetHeight <
-  //       currentRow.offsetTop + currentRow.offsetHeight - parent.scrollTop
-  //     ) {
-  //       animateScrollTo(0)
-  //       animateScrollTo(currentRow.previousElementSibling ?? currentRow, {
-  //         elementToScroll: parent,
-  //       })
-  //     }
-  //   }
-  // }
+  const checkViewPort = () => {
+    //   const currentRow = gridContainerRef.current?.querySelector(
+    //     '.current-row'
+    //   ) as HTMLDivElement | null
+    //   const parent = gridContainerRef.current
+    //   if (parent && currentRow) {
+    //     if (parent.offsetTop > currentRow.offsetTop - parent.scrollTop) {
+    //       animateScrollTo(0)
+    //       animateScrollTo(currentRow.previousElementSibling ?? currentRow, {
+    //         elementToScroll: parent,
+    //       })
+    //     }
+    //     if (
+    //       parent.offsetTop + parent.offsetHeight <
+    //       currentRow.offsetTop + currentRow.offsetHeight - parent.scrollTop
+    //     ) {
+    //       animateScrollTo(0)
+    //       animateScrollTo(currentRow.previousElementSibling ?? currentRow, {
+    //         elementToScroll: parent,
+    //       })
+    //     }
+    //   }
+  }
 
   // useEffect(() => {
   //   checkViewPort()
@@ -370,184 +368,174 @@ function App() {
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [isGameWon[difficulty], isGameLost[difficulty]])
 
-  // const onChar = (value: CharValue) => {
-  //   checkViewPort()
-  //   if (
-  //     currentGuess.length < difficulty &&
-  //     guesses.length < maxGuess &&
-  //     !isGameWon[difficulty]
-  //   ) {
-  //     setCurrentGuess([...currentGuess, value])
-  //     setUserInteracted(true)
-  //   }
-  // }
+  const onChar = (value: CharValue) => {
+    //   checkViewPort()
+    //   if (
+    //     currentGuess.length < difficulty &&
+    //     guesses.length < maxGuess &&
+    //     !isGameWon[difficulty]
+    //   ) {
+    //     setCurrentGuess([...currentGuess, value])
+    //     setUserInteracted(true)
+    //   }
+  }
 
-  // const onReplace = (value: CharValue) => {
-  //   checkViewPort()
-  //   if (
-  //     currentGuess.length - 1 < difficulty &&
-  //     guesses.length < maxGuess &&
-  //     !isGameWon[difficulty]
-  //   ) {
-  //     setCurrentGuess([...currentGuess.slice(0, -1), value])
-  //     setUserInteracted(true)
-  //   }
-  // }
+  const onReplace = (value: CharValue) => {
+    //   checkViewPort()
+    //   if (
+    //     currentGuess.length - 1 < difficulty &&
+    //     guesses.length < maxGuess &&
+    //     !isGameWon[difficulty]
+    //   ) {
+    //     setCurrentGuess([...currentGuess.slice(0, -1), value])
+    //     setUserInteracted(true)
+    //   }
+  }
 
-  // const onDelete = () => {
-  //   checkViewPort()
-  //   setCurrentGuess(currentGuess.slice(0, -1))
-  //   setUserInteracted(true)
-  // }
+  const onDelete = () => {
+    //   checkViewPort()
+    //   setCurrentGuess(currentGuess.slice(0, -1))
+    //   setUserInteracted(true)
+  }
 
-  // const onEnter = () => {
-  //   checkViewPort()
-  //   if (isGameWon[difficulty] || isGameLost[difficulty]) {
-  //     return
-  //   }
+  const onEnter = () => {
+    // checkViewPort()
+    // if (isGameWon[difficulty] || isGameLost[difficulty]) {
+    //   return
+    // }
+    // if (currentGuess.length !== difficulty) {
+    //   setIsNotEnoughLetters(true)
+    //   return setTimeout(() => {
+    //     setIsNotEnoughLetters(false)
+    //   }, ALERT_TIME_MS)
+    // }
+    // addGTM('event', 'guess', {
+    //   guess: currentGuess.join(''),
+    //   difficulty,
+    // })
+    // if (
+    //   !isWordInWordList(currentGuess, difficulty) &&
+    //   !isWordEqual(currentGuess, solution)
+    // ) {
+    //   setIsWordNotFoundAlertOpen(true)
+    //   return setTimeout(() => {
+    //     setIsWordNotFoundAlertOpen(false)
+    //   }, ALERT_TIME_MS)
+    // }
+    // const winningWord = isWinningWord(currentGuess, day, random, difficulty)
+    // if (
+    //   currentGuess.length === difficulty &&
+    //   guesses.length < maxGuess &&
+    //   !isGameWon[difficulty]
+    // ) {
+    //   setGuesses([...guesses, currentGuess])
+    //   setCurrentGuess([])
+    //   setUserInteracted(true)
+    //   if (winningWord) {
+    //     saveStat(addStatsForCompletedGame(stats, guesses.length, difficulty))
+    //     addGTM('event', 'win', {
+    //       guess: currentGuess.join(''),
+    //       difficulty,
+    //     })
+    //     return setIsGameWon({ [difficulty]: true })
+    //   }
+    //   if (guesses.length === maxGuess - 1) {
+    //     saveStat(
+    //       addStatsForCompletedGame(stats, guesses.length + 1, difficulty)
+    //     )
+    //     addGTM('event', 'lost', {
+    //       guesses: guesses.map((guess) => guess.join('')),
+    //       difficulty,
+    //     })
+    //     setIsGameLost({ [difficulty]: true })
+    //   }
+    // }
+  }
 
-  //   if (currentGuess.length !== difficulty) {
-  //     setIsNotEnoughLetters(true)
-  //     return setTimeout(() => {
-  //       setIsNotEnoughLetters(false)
-  //     }, ALERT_TIME_MS)
-  //   }
-  //   addGTM('event', 'guess', {
-  //     guess: currentGuess.join(''),
-  //     difficulty,
-  //   })
+  const handleShareCopySuccess = useCallback(() => {
+    // addGTM('event', 'copy', { status: 'success' })
+    // setShareComplete(true)
+    // setTimeout(() => {
+    //   setShareComplete(false)
+    // }, ALERT_TIME_MS)
+  }, [])
 
-  //   if (
-  //     !isWordInWordList(currentGuess, difficulty) &&
-  //     !isWordEqual(currentGuess, solution)
-  //   ) {
-  //     setIsWordNotFoundAlertOpen(true)
-  //     return setTimeout(() => {
-  //       setIsWordNotFoundAlertOpen(false)
-  //     }, ALERT_TIME_MS)
-  //   }
+  const handleShareFailure = useCallback(() => {
+    // addGTM('event', 'copy', { status: 'failed' })
+    // setShareFailed(true)
+    // setTimeout(() => {
+    //   setShareFailed(false)
+    // }, ALERT_TIME_MS)
+  }, [])
 
-  //   const winningWord = isWinningWord(currentGuess, day, random, difficulty)
+  const handleDifficultyChange = (value: number) => {
+    // addGTM('event', 'changeDifficulty', {
+    //   previous: difficulty,
+    //   current: value,
+    // })
+    // setUserInteracted(true)
+    // setDifficulty(value)
+    // setCurrentGuess(currentGuess.slice(0, value))
+  }
 
-  //   if (
-  //     currentGuess.length === difficulty &&
-  //     guesses.length < maxGuess &&
-  //     !isGameWon[difficulty]
-  //   ) {
-  //     setGuesses([...guesses, currentGuess])
-  //     setCurrentGuess([])
-  //     setUserInteracted(true)
+  const handleNewGame = (type: GameType) => {
+    // addGTM('event', 'newGame', { difficulty })
+    // setUserInteracted(true)
+    // setIsGameLost({ [difficulty]: false })
+    // setIsGameWon({ [difficulty]: false })
+    // setGuesses([])
+    // setCurrentGuess([])
+    // if (type === 'in-row') {
+    //   setRandom(-1)
+    //   setDay((prev) => prev + 1)
+    // } else {
+    //   getAllWords(difficulty)
+    //   setRandom(rand(0, getAllWords(difficulty).length - 1))
+    // }
+    // setIsModalOpen(false)
+  }
 
-  //     if (winningWord) {
-  //       saveStat(addStatsForCompletedGame(stats, guesses.length, difficulty))
-  //       addGTM('event', 'win', {
-  //         guess: currentGuess.join(''),
-  //         difficulty,
-  //       })
-  //       return setIsGameWon({ [difficulty]: true })
-  //     }
+  const handleManualEnd = () => {
+    // setIsModalOpen(false)
+    // setUserInteracted(true)
+    // if (!isGameWon[difficulty]) {
+    //   const emptyRow = times(difficulty, () => '-') as Word
+    //   const newGuesses = [
+    //     ...guesses,
+    //     emptyRow.map((letter, index) => currentGuess[index] ?? letter),
+    //   ].filter((guess) => guess.length)
+    //   for (let i = 0; i < maxGuess; i++) {
+    //     if (!newGuesses[i]) {
+    //       newGuesses[i] = [...emptyRow]
+    //     }
+    //   }
+    //   addGTM('event', 'giveUp', { difficulty, guesses: newGuesses })
+    //   setGuesses(newGuesses)
+    //   saveStat(addStatsForCompletedGame(stats, newGuesses.length, difficulty))
+    //   setIsGameLost({ [difficulty]: true })
+    // }
+    // setIsModalOpenRegistered('new-game')
+    // setTimeout(() => {
+    //   setSuccessAlert('')
+    //   setIsModalOpen('new-game')
+    // }, NEW_MODAL_TIME_MS)
+  }
 
-  //     if (guesses.length === maxGuess - 1) {
-  //       saveStat(
-  //         addStatsForCompletedGame(stats, guesses.length + 1, difficulty)
-  //       )
-  //       addGTM('event', 'lost', {
-  //         guesses: guesses.map((guess) => guess.join('')),
-  //         difficulty,
-  //       })
-  //       setIsGameLost({ [difficulty]: true })
-  //     }
-  //   }
-  // }
+  const handleGridIcon = (full: boolean) => {
+    //   saveGridFullToLocalStorage(full)
+    //   setGridFull(full)
+  }
 
-  // const handleShareCopySuccess = useCallback(() => {
-  //   addGTM('event', 'copy', { status: 'success' })
-  //   setShareComplete(true)
-  //   setTimeout(() => {
-  //     setShareComplete(false)
-  //   }, ALERT_TIME_MS)
-  // }, [])
-
-  // const handleShareFailure = useCallback(() => {
-  //   addGTM('event', 'copy', { status: 'failed' })
-  //   setShareFailed(true)
-  //   setTimeout(() => {
-  //     setShareFailed(false)
-  //   }, ALERT_TIME_MS)
-  // }, [])
-
-  // const handleDifficultyChange = (value: number) => {
-  //   addGTM('event', 'changeDifficulty', {
-  //     previous: difficulty,
-  //     current: value,
-  //   })
-  //   setUserInteracted(true)
-  //   setDifficulty(value)
-  //   setCurrentGuess(currentGuess.slice(0, value))
-  // }
-
-  // const handleNewGame = (type: GameType) => {
-  //   addGTM('event', 'newGame', { difficulty })
-  //   setUserInteracted(true)
-  //   setIsGameLost({ [difficulty]: false })
-  //   setIsGameWon({ [difficulty]: false })
-  //   setGuesses([])
-  //   setCurrentGuess([])
-
-  //   if (type === 'in-row') {
-  //     setRandom(-1)
-  //     setDay((prev) => prev + 1)
-  //   } else {
-  //     getAllWords(difficulty)
-  //     setRandom(rand(0, getAllWords(difficulty).length - 1))
-  //   }
-  //   setIsModalOpen(false)
-  // }
-
-  // const handleManualEnd = () => {
-  //   setIsModalOpen(false)
-  //   setUserInteracted(true)
-  //   if (!isGameWon[difficulty]) {
-  //     const emptyRow = times(difficulty, () => '-') as Word
-  //     const newGuesses = [
-  //       ...guesses,
-  //       emptyRow.map((letter, index) => currentGuess[index] ?? letter),
-  //     ].filter((guess) => guess.length)
-
-  //     for (let i = 0; i < maxGuess; i++) {
-  //       if (!newGuesses[i]) {
-  //         newGuesses[i] = [...emptyRow]
-  //       }
-  //     }
-  //     addGTM('event', 'giveUp', { difficulty, guesses: newGuesses })
-  //     setGuesses(newGuesses)
-
-  //     saveStat(addStatsForCompletedGame(stats, newGuesses.length, difficulty))
-  //     setIsGameLost({ [difficulty]: true })
-  //   }
-  //   setIsModalOpenRegistered('new-game')
-  //   setTimeout(() => {
-  //     setSuccessAlert('')
-  //     setIsModalOpen('new-game')
-  //   }, NEW_MODAL_TIME_MS)
-  // }
-
-  // const handleGridIcon = (full: boolean) => {
-  //   saveGridFullToLocalStorage(full)
-  //   setGridFull(full)
-  // }
-
-  // const handleModalClose = () => {
-  //   const fallbackModal = checkIsModalCallback()
-
-  //   setIsModalOpen(false)
-  //   if (fallbackModal) {
-  //     setIsModalOpenRegistered(fallbackModal)
-  //     setTimeout(() => {
-  //       setIsModalOpen(fallbackModal)
-  //     }, NEW_MODAL_TIME_MS)
-  //   }
-  // }
+  const handleModalClose = () => {
+    //   const fallbackModal = checkIsModalCallback()
+    //   setIsModalOpen(false)
+    //   if (fallbackModal) {
+    //     setIsModalOpenRegistered(fallbackModal)
+    //     setTimeout(() => {
+    //       setIsModalOpen(fallbackModal)
+    //     }, NEW_MODAL_TIME_MS)
+    //   }
+  }
 
   return (
     <div className={context.theme + ' h-[100%]'}>
@@ -621,7 +609,9 @@ function App() {
             <h1 className="text-xl font-bold dark:text-gray-300">Szózat</h1>
             <Icon
               component={InformationCircleIcon}
-              onClick={() => setIsModalOpen('info')}
+              onClick={() => {
+                // setIsModalOpen('info')
+              }}
             />
             <DifficultyList
               selected={difficulty}
@@ -629,27 +619,31 @@ function App() {
             />
             <Icon component={ThemeToggle} />
             <Icon
-              component={gridFull ? ViewGridIcon : ViewGridAddIcon}
-              onClick={() => handleGridIcon(!gridFull)}
+              component={grid === 'full' ? ViewGridIcon : ViewGridAddIcon}
+              onClick={() => handleGridIcon(grid === 'full')}
               isGroupEnd
             />
             <Icon
               component={ChartBarIcon}
-              onClick={() => setIsModalOpen('stat')}
+              onClick={() => {
+                // setIsModalOpen('stat')
+              }}
             />
             <Icon
               component={PlusCircleIcon}
-              onClick={() => setIsModalOpen('create-puzzle')}
+              onClick={() => {
+                // setIsModalOpen('create-puzzle')
+              }}
             />
             <Icon
               component={PuzzleIcon}
-              onClick={() =>
-                setIsModalOpen(
-                  isGameWon[difficulty] || isGameLost[difficulty]
-                    ? 'new-game'
-                    : 'new-game-confirm'
-                )
-              }
+              onClick={() => {
+                // setIsModalOpen(
+                //   isGameWon[difficulty] || isGameLost[difficulty]
+                //     ? 'new-game'
+                //     : 'new-game-confirm'
+                // )
+              }}
             />
           </div>
           {/* {isLocalhost() && (
@@ -669,7 +663,7 @@ function App() {
               day={day}
               random={random}
               size={gridSize}
-              full={gridFull}
+              full={grid === 'full'}
               difficulty={difficulty}
             />
           </div>
