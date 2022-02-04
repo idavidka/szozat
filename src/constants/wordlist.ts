@@ -9,13 +9,13 @@ import words7 from './hungarian-puzzles-7.json'
 import words8 from './hungarian-puzzles-8.json'
 import words9 from './hungarian-puzzles-9.json'
 
-import randomWords3 from './hungarian-word-letter-list-3.json'
-import randomWords4 from './hungarian-word-letter-list-4.json'
-import randomWords5 from './hungarian-word-letter-list-5.json'
-import randomWords6 from './hungarian-word-letter-list-6.json'
-import randomWords7 from './hungarian-word-letter-list-7.json'
-import randomWords8 from './hungarian-word-letter-list-8.json'
-import randomWords9 from './hungarian-word-letter-list-9.json'
+import randomWords3 from './hungarian-puzzles-all-3.json'
+import randomWords4 from './hungarian-puzzles-all-4.json'
+import randomWords5 from './hungarian-puzzles-all-5.json'
+import randomWords6 from './hungarian-puzzles-all-6.json'
+import randomWords7 from './hungarian-puzzles-all-7.json'
+import randomWords8 from './hungarian-puzzles-all-8.json'
+import randomWords9 from './hungarian-puzzles-all-9.json'
 
 const words: Record<number, string[][]> = {
   3: words3,

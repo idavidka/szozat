@@ -94,9 +94,10 @@ function App() {
   )
 
   const savedRandom = useMemo(
-    () => getLoadedState(difficulty)?.random ?? 0,
+    () => getLoadedState(difficulty)?.random ?? -1,
     [difficulty, getLoadedState]
   )
+
   const [random, setRandom] = useState(savedRandom)
 
   const savedDay = useMemo(
@@ -105,13 +106,13 @@ function App() {
   )
   const [day, setDay] = useState(savedDay)
 
-  const { solution } = useMemo(
-    () =>
-      random > -1
-        ? getRandomWord(random, difficulty)
-        : getCurrentWord(day, difficulty),
-    [day, difficulty, random]
-  )
+  const { solution } = useMemo(() => {
+    return random > -1
+      ? getRandomWord(random, difficulty)
+      : getCurrentWord(day, difficulty)
+  }, [day, difficulty, random])
+
+  console.log('ASD', solution)
 
   const setIsModalOpen = useCallback((type: ModalType) => {
     type && setIsModalOpenRegistered(type)
@@ -154,24 +155,26 @@ function App() {
   const [, updateState] = useState<Record<string, string>>()
   const forceUpdate = useCallback(() => updateState({}), [])
   useEffect(() => {
-    const loadedDifficulty = loadDifficultyToLocalStorage()
-    const loadedState = loadGameStateFromLocalStorage(loadedDifficulty)
-    if (!appIsReloaded) {
-      setTimeout(() => {
-        const loadedDay = loadedState?.day
+    if (appToReload) {
+      const loadedDifficulty = loadDifficultyToLocalStorage()
+      const loadedState = loadGameStateFromLocalStorage(loadedDifficulty)
+      if (!appIsReloaded) {
+        setTimeout(() => {
+          const loadedDay = loadedState?.day
 
-        setAppIsReloaded(true)
-        if (loadedState) {
-          setIsModalOpen(false)
-        }
-        setDay(loadedDay ?? 0)
-        setDifficulty(loadedDifficulty)
-        const loadedGuesses = getLoadedGuesses()
-        if (loadedGuesses.length) {
-          setGuesses(loadedGuesses)
-        }
-        forceUpdate()
-      }, 1000)
+          setAppIsReloaded(true)
+          if (loadedState) {
+            setIsModalOpen(false)
+          }
+          setDay(loadedDay ?? 0)
+          setDifficulty(loadedDifficulty)
+          const loadedGuesses = getLoadedGuesses()
+          if (loadedGuesses.length) {
+            setGuesses(loadedGuesses)
+          }
+          forceUpdate()
+        }, 1000)
+      }
     }
   }, [
     appIsReloaded,
@@ -335,6 +338,7 @@ function App() {
   useEffect(() => {
     setTimeout(() => {
       if (!isGameWon[difficulty] && !isGameLost[difficulty]) {
+        setSuccessAlert('')
         return
       }
 
