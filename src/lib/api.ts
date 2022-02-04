@@ -1,10 +1,7 @@
 import { debounce } from 'lodash'
-import { GameStats, StoredGameState, generateSessionId } from './localStorage'
+import { GameStats, GameState, generateSessionId } from './localStorage'
 
-export const sendStateToAPI = (
-  gameState: StoredGameState,
-  difficulty: number
-) => {
+export const sendStateToAPI = (gameState: GameState, difficulty: number) => {
   if (!process.env.REACT_APP_API_URL) {
     return Promise.reject()
   }

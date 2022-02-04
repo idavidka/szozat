@@ -11,7 +11,7 @@ const difficultyKey = 'difficulty'
 const gridFullKey = 'gridFull'
 const themeKey = 'colorTheme'
 
-export type StoredGameState = {
+export type GameState = {
   guesses: Word[]
   solution: Word
   day: number
@@ -85,7 +85,7 @@ export const loadDifficultyToLocalStorage = (): number => {
 }
 
 export const saveGameStateToLocalStorage = (
-  gameState: StoredGameState,
+  gameState: GameState,
   difficulty: number
 ) => {
   setItem(`${gameStateKey}-${difficulty}`, JSON.stringify(gameState))
@@ -95,7 +95,7 @@ export const loadGameStateFromLocalStorage = (difficulty: number) => {
   const state =
     getItem(`${gameStateKey}-${difficulty}`) ??
     (difficulty === 5 ? localStorage.getItem(gameStateKey) : undefined)
-  return state ? (JSON.parse(state) as StoredGameState) : null
+  return state ? (JSON.parse(state) as GameState) : null
 }
 
 const gameStatKey = 'gameStats'
