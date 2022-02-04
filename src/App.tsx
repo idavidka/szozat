@@ -112,8 +112,6 @@ function App() {
       : getCurrentWord(day, difficulty)
   }, [day, difficulty, random])
 
-  console.log('ASD', solution)
-
   const setIsModalOpen = useCallback((type: ModalType) => {
     type && setIsModalOpenRegistered(type)
     setIsModalOpenState(type)
@@ -348,6 +346,7 @@ function App() {
           : ''
       )
 
+      console.log('ASD', isModalOpenRegistered)
       !(['new-game', 'new-game-confirm'] as ModalType[]).includes(
         isModalOpenRegistered
       ) && setIsModalOpen('stat')
