@@ -346,7 +346,6 @@ function App() {
           : ''
       )
 
-      console.log('ASD', isModalOpenRegistered)
       !(['new-game', 'new-game-confirm'] as ModalType[]).includes(
         isModalOpenRegistered
       ) && setIsModalOpen('stat')
