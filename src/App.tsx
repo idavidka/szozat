@@ -22,6 +22,7 @@ import {
   isWinningWord,
   isWordEqual,
   getCurrentWord,
+  getRandomWord,
 } from './lib/words'
 import {
   debouncingStateToAPI,
@@ -47,7 +48,7 @@ import { MAX_NUMBER_OF_GUESSES } from './constants/constants'
 import { ThemeToggle } from './components/theme/ThemeToggle'
 import { ThemeContext } from './components/theme/ThemeContext'
 import { CreatePuzzleModal } from './components/modals/CreatePuzzleModal'
-import { times } from 'lodash'
+import { times, random as rand } from 'lodash'
 import {
   addGTM,
   GameType,
@@ -55,6 +56,7 @@ import {
   getGridMaxWidthClassName,
 } from './lib/utils'
 import { ModalId, ModalType } from './components/modals/BaseModal'
+import { getAllWords } from './constants/wordlist'
 
 const ALERT_TIME_MS = 2000
 const NEW_MODAL_TIME_MS = 500
@@ -62,7 +64,6 @@ const NEW_MODAL_TIME_MS = 500
 function App() {
   const context = React.useContext(ThemeContext)
   const hashDifficulty = getDifficultyFromUrl()
-  const [gameType, setGameType] = useState<GameType>('in-row')
   const [currentGuess, setCurrentGuess] = useState<Word>([])
   const [isGameWon, setIsGameWon] = useState<Record<number, boolean>>({})
   const [isModalOpen, setIsModalOpenState] = useState<ModalType>(false)
@@ -92,6 +93,12 @@ function App() {
     [difficulty]
   )
 
+  const savedRandom = useMemo(
+    () => getLoadedState(difficulty)?.random ?? 0,
+    [difficulty, getLoadedState]
+  )
+  const [random, setRandom] = useState(savedRandom)
+
   const savedDay = useMemo(
     () => getLoadedState(difficulty)?.day ?? 0,
     [difficulty, getLoadedState]
@@ -99,8 +106,11 @@ function App() {
   const [day, setDay] = useState(savedDay)
 
   const { solution } = useMemo(
-    () => getCurrentWord(day, difficulty),
-    [day, difficulty]
+    () =>
+      random > -1
+        ? getRandomWord(random, difficulty)
+        : getCurrentWord(day, difficulty),
+    [day, difficulty, random]
   )
 
   const setIsModalOpen = useCallback((type: ModalType) => {
@@ -312,16 +322,13 @@ function App() {
   useEffect(() => {
     checkViewPort()
     if (userInteracted) {
-      debouncingStateToAPI(
-        { guesses, solution, day, type: gameType },
-        difficulty
-      )
+      debouncingStateToAPI({ guesses, solution, day, random }, difficulty)
       saveGameStateToLocalStorage(
-        { guesses, solution, day, type: gameType },
+        { guesses, solution, day, random },
         difficulty
       )
     }
-  }, [guesses, solution, day, difficulty, userInteracted, gameType])
+  }, [guesses, solution, day, difficulty, userInteracted, random])
 
   useEffect(() => {})
 
@@ -402,7 +409,7 @@ function App() {
       }, ALERT_TIME_MS)
     }
 
-    const winningWord = isWinningWord(currentGuess, day, difficulty)
+    const winningWord = isWinningWord(currentGuess, day, random, difficulty)
 
     if (
       currentGuess.length === difficulty &&
@@ -468,8 +475,14 @@ function App() {
     setIsGameWon({ [difficulty]: false })
     setGuesses([])
     setCurrentGuess([])
-    setGameType(type)
-    type === 'in-row' && setDay((prev) => prev + 1)
+
+    if (type === 'in-row') {
+      setRandom(-1)
+      setDay((prev) => prev + 1)
+    } else {
+      getAllWords(difficulty)
+      setRandom(rand(0, getAllWords(difficulty).length - 1))
+    }
     setIsModalOpen(false)
   }
 
@@ -556,6 +569,7 @@ function App() {
         isMinimal={isModalOpen === false || checkIsModalOpen('new-game')}
         guesses={guesses}
         day={day}
+        random={random}
         difficulty={difficulty}
         isGameLost={isGameLost[difficulty]}
         isGameWon={isGameWon[difficulty]}
@@ -635,6 +649,7 @@ function App() {
               guesses={guesses}
               currentGuess={currentGuess}
               day={day}
+              random={random}
               size={gridSize}
               full={gridFull}
               difficulty={difficulty}
@@ -649,6 +664,7 @@ function App() {
               guesses={guesses}
               currentGuess={currentGuess}
               day={day}
+              random={random}
               difficulty={difficulty}
               enabledOnEnter={currentGuess.length === difficulty}
               enabledOnDelete={currentGuess.length > 0}

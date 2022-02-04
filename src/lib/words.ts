@@ -1,4 +1,4 @@
-import { getWords } from '../constants/wordlist'
+import { getAllWords, getWords } from '../constants/wordlist'
 import { getValidGuesses } from '../constants/validGuesses'
 import { CharValue, Word } from './statuses'
 import { isEqual } from 'lodash'
@@ -19,8 +19,16 @@ export const isWordInWordList = (word: Word, difficulty: number) => {
   )
 }
 
-export const isWinningWord = (word: Word, day: number, difficulty: number) => {
-  const { solution: currentSolution } = getCurrentWord(day, difficulty)
+export const isWinningWord = (
+  word: Word,
+  day: number,
+  random: number,
+  difficulty: number
+) => {
+  const { solution: currentSolution } =
+    random > -1
+      ? getRandomWord(random, difficulty)
+      : getCurrentWord(day, difficulty)
   return isWordEqual(currentSolution, word)
 }
 
@@ -41,6 +49,15 @@ export const getWordOfDay = (day: number, difficulty: number) => {
   }
 }
 
+export const getWordOfIndex = (index: number, difficulty: number) => {
+  const words = getAllWords(difficulty)
+
+  return {
+    solution: words[index],
+    solutionIndex: index,
+  }
+}
+
 export const getWordFromUrl = (difficulty: number) => {
   const customSolution = getDecodedHashParam(HASH_PARAM_KEY_SOLUTION)
   if (customSolution === undefined) {
@@ -58,6 +75,23 @@ export const getWordFromUrl = (difficulty: number) => {
   return {
     solution: customWord,
     solutionCreator: customCreator,
+  }
+}
+
+export const getRandomWord = (random: number, difficulty: number) => {
+  const wordFromUrl = getWordFromUrl(difficulty)
+  const wordOfIndex = getWordOfIndex(random, difficulty)
+  // console.log('Debug', difficulty, day, wordOfDay.solution)
+  if (wordFromUrl !== undefined) {
+    return {
+      ...wordFromUrl,
+      solutionIndex: undefined,
+      tomorrow: undefined,
+    }
+  }
+  return {
+    ...wordOfIndex,
+    solutionCreator: undefined,
   }
 }
 

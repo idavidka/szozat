@@ -21,6 +21,7 @@ type Props = {
   isGameLost: boolean
   isGameWon: boolean
   day: number
+  random: number
   difficulty: number
   solution?: Word
   handleShareCopySuccess: () => void
@@ -38,6 +39,7 @@ export const StatsModal = ({
   isGameWon,
   isMinimal,
   day,
+  random,
   solution,
   difficulty,
   handleShareCopySuccess,
@@ -57,6 +59,7 @@ export const StatsModal = ({
         guesses,
         isGameLost,
         day,
+        random,
         statDifficulty,
         solution
       )
@@ -70,6 +73,7 @@ export const StatsModal = ({
     guesses,
     isGameLost,
     day,
+    random,
     statDifficulty,
     solution,
     handleShareCopySuccess,
@@ -78,7 +82,14 @@ export const StatsModal = ({
 
   const renderShareText = useCallback(
     (guesses: Word[], lost: boolean, solution?: Word) => {
-      const text = getShareText(guesses, lost, day, statDifficulty, solution)
+      const text = getShareText(
+        guesses,
+        lost,
+        day,
+        random,
+        statDifficulty,
+        solution
+      )
       const rows = text.split('\n')
       return (
         <p className="text-xs text-left pt-5">
@@ -91,7 +102,7 @@ export const StatsModal = ({
         </p>
       )
     },
-    [day, statDifficulty]
+    [day, random, statDifficulty]
   )
   const statLink = createCustomStatURl()
 

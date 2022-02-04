@@ -1,5 +1,5 @@
 import { shuffle } from 'lodash'
-import { GameType, isLocalhost } from './utils'
+import { isLocalhost } from './utils'
 import { Word } from './statuses'
 import { ThemeValue } from './theme'
 import { getDecodedHashParam, HASH_PARAM_KEY_ID } from './hashUtils'
@@ -15,7 +15,7 @@ export type StoredGameState = {
   guesses: Word[]
   solution: Word
   day: number
-  type: GameType
+  random: number
 }
 
 const encrypt = (value: string): string => {

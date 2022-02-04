@@ -11,6 +11,7 @@ type Props = {
   currentGuess: Word
   size: { width: number; height: number }
   day: number
+  random: number
   difficulty: number
   full?: boolean
 }
@@ -19,6 +20,7 @@ export const Grid = ({
   guesses,
   currentGuess,
   day,
+  random,
   difficulty,
   size,
   full,
@@ -63,7 +65,13 @@ export const Grid = ({
       }
     >
       {guesses.map((guess, i) => (
-        <CompletedRow key={i} guess={guess} day={day} difficulty={difficulty} />
+        <CompletedRow
+          key={i}
+          guess={guess}
+          day={day}
+          random={random}
+          difficulty={difficulty}
+        />
       ))}
       {guesses.length < MAX_NUMBER_OF_GUESSES[difficulty] && (
         <CurrentRow guess={currentGuess} difficulty={difficulty} />

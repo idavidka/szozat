@@ -11,6 +11,7 @@ type Props = {
   guesses: Word[]
   currentGuess: Word
   day: number
+  random: number
   difficulty: number
   enabledOnEnter?: boolean
   enabledOnDelete?: boolean
@@ -24,11 +25,12 @@ export const Keyboard = ({
   guesses,
   currentGuess,
   day,
+  random,
   difficulty,
   enabledOnEnter,
   enabledOnDelete,
 }: Props) => {
-  const charStatuses = getStatuses(guesses, day, difficulty)
+  const charStatuses = getStatuses(guesses, day, random, difficulty)
   const lastKey = useRef('')
   const documentHeight = useRef(document.documentElement.offsetHeight)
 

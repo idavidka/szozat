@@ -1,4 +1,4 @@
-import { getCurrentWord, getLetterCount } from './words'
+import { getCurrentWord, getLetterCount, getRandomWord } from './words'
 import { CHAR_VALUES, MULTIPLE_CONSONANT_CHAR_VALUES } from './wordCommons'
 
 export type CharStatus =
@@ -23,9 +23,13 @@ export function isMultipleCharValue(value: string): value is CharValue {
 export const getStatuses = (
   guesses: Word[],
   day: number,
+  random: number,
   difficulty: number
 ): { [key: string]: CharStatus } => {
-  const { solution } = getCurrentWord(day, difficulty)
+  const { solution } =
+    random > -1
+      ? getRandomWord(random, difficulty)
+      : getCurrentWord(day, difficulty)
   const charObj: { [key: string]: CharStatus } = {}
 
   const solutionCount = getLetterCount(solution)
@@ -64,9 +68,13 @@ export const getStatuses = (
 export const getGuessStatuses = (
   guess: Word,
   day: number,
+  random: number,
   difficulty: number
 ): CharStatus[] => {
-  const { solution } = getCurrentWord(day, difficulty)
+  const { solution } =
+    random > -1
+      ? getRandomWord(random, difficulty)
+      : getCurrentWord(day, difficulty)
   const solutionCharsTaken = solution.map((_) => false)
 
   const statuses: CharStatus[] = Array.from(Array(guess.length))

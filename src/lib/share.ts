@@ -1,16 +1,21 @@
 import moment from 'moment'
 import { MAX_NUMBER_OF_GUESSES } from '../constants/constants'
 import { getGuessStatuses, Word } from './statuses'
-import { getCurrentWord } from './words'
+import { getCurrentWord, getRandomWord } from './words'
 
 export const getShareText = (
   guesses: Word[],
   lost: boolean,
   day: number,
+  random: number,
   difficulty: number,
   solution?: Word
 ) => {
-  const { solutionIndex, solutionCreator } = getCurrentWord(day, difficulty)
+  const { solutionIndex, solutionCreator } =
+    random > -1
+      ? getRandomWord(random, difficulty)
+      : getCurrentWord(day, difficulty)
+
   const identifier =
     solutionCreator !== undefined
       ? 'Egyéni feladvány: ' + solutionCreator
@@ -25,7 +30,7 @@ export const getShareText = (
     `/${MAX_NUMBER_OF_GUESSES[difficulty]}\n${
       solution ? `Megfejtés: ${solution?.join('')}` : ''
     }\n\n` +
-    generateEmojiGrid(guesses, day, difficulty) +
+    generateEmojiGrid(guesses, day, random, difficulty) +
     '\n\n' +
     window.location.href
   return text
@@ -35,10 +40,11 @@ export const shareStatus = async (
   guesses: Word[],
   lost: boolean,
   day: number,
+  random: number,
   difficulty: number,
   solution?: Word
 ) => {
-  const text = getShareText(guesses, lost, day, difficulty, solution)
+  const text = getShareText(guesses, lost, day, random, difficulty, solution)
   if (navigator?.share != null) {
     await navigator.share({ text })
     return { type: 'share' as const }
@@ -53,11 +59,12 @@ export const shareStatus = async (
 export const generateEmojiGrid = (
   guesses: Word[],
   day: number,
+  random: number,
   difficulty: number
 ) => {
   return guesses
     .map((guess) => {
-      const status = getGuessStatuses(guess, day, difficulty)
+      const status = getGuessStatuses(guess, day, random, difficulty)
       return guess
         .map((letter, i) => {
           switch (status[i]) {
