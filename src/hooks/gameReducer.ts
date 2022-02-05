@@ -48,6 +48,11 @@ export type Action =
   | { type: 'SET_DAY'; difficulty: State['difficulty']; day: number }
   | { type: 'SET_RANDOM'; difficulty: State['difficulty']; random: number }
   | {
+      type: 'UPDATE_SOLUTION'
+      difficulty: State['difficulty']
+      solution: Word
+    }
+  | {
       type: 'UPDATE_GUESSES'
       difficulty: State['difficulty']
       guesses: Word[]
@@ -181,6 +186,18 @@ export const gameReducer: Reducer<State, Action> = (state, action): State => {
           [action.difficulty]: {
             ...(state.game[action.difficulty] ?? {}),
             guesses: action.guesses,
+          } as GameState,
+        },
+      }
+    }
+    case 'UPDATE_SOLUTION': {
+      return {
+        ...state,
+        game: {
+          ...state.game,
+          [action.difficulty]: {
+            ...(state.game[action.difficulty] ?? {}),
+            solution: action.solution,
           } as GameState,
         },
       }

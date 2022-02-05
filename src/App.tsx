@@ -158,9 +158,13 @@ function App() {
   }, [context.theme, dispatch, theme])
 
   useEffect(() => {
-    if (!wordFromUrl || !isWordEqual(wordFromUrl.solution, solution)) {
-      //todo fix call depth
-      // dispatch({ type: 'UPDATE_GUESSES', difficulty, guesses: [] })
+    if (wordFromUrl && !isWordEqual(wordFromUrl.solution, solution)) {
+      dispatch({
+        type: 'UPDATE_SOLUTION',
+        difficulty,
+        solution: wordFromUrl.solution,
+      })
+      dispatch({ type: 'UPDATE_GUESSES', difficulty, guesses: [] })
       return
     }
 
