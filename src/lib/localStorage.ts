@@ -7,12 +7,11 @@ import PKG from '../../package.json'
 import { State } from '../hooks/gameReducer'
 
 export const gameKey = 'game'
-
-const idKey = 'id'
-const gameStateKey = 'gameState'
-const difficultyKey = 'difficulty'
-const gridFullKey = 'gridFull'
-const themeKey = 'colorTheme'
+export const idKey = 'id'
+export const gameStateKey = 'gameState'
+export const difficultyKey = 'difficulty'
+export const gridFullKey = 'gridFull'
+export const themeKey = 'colorTheme'
 
 export type GameState = {
   guesses: Word[]
@@ -44,12 +43,15 @@ export const getKey = (key: string) => {
   return key === 'id' ? key : `${key}-${PKG.version}`
 }
 
-const setItem: typeof localStorage.setItem = (key: string, value: string) => {
+export const setItem: typeof localStorage.setItem = (
+  key: string,
+  value: string
+) => {
   // localStorage.setItem(key, value)
   localStorage.setItem(getKey(key), isLocalhost() ? value : encrypt(value))
 }
 
-const getItem: typeof localStorage.getItem = (key: string) => {
+export const getItem: typeof localStorage.getItem = (key: string) => {
   const value = localStorage.getItem(getKey(key))
 
   try {

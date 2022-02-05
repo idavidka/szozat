@@ -25,12 +25,7 @@ import {
   getCurrentWord,
   getRandomWord,
 } from './lib/words'
-import {
-  debouncingStateToAPI,
-  getStateFromAPI,
-  getStatsFromAPI,
-  sendStatsToAPI,
-} from './lib/api'
+import { sendStateToAPI, getStateFromAPI } from './lib/api'
 import { WIN_MESSAGES } from './constants/strings'
 import { addStatsForCompletedGame, loadStats, toStats } from './lib/stats'
 import {
@@ -222,8 +217,14 @@ function App() {
     getStateFromAPI().then((data) => {
       //       let statesSaved = false
       Object.entries(data?.state ?? {}).forEach(([d, s]) => {
-        const loopDifficulty = parseInt(d)
+        const loopDifficulty = parseInt(d) as Difficulty
         if (loopDifficulty >= 3 && loopDifficulty <= 9) {
+          console.log('ASD', d, s)
+          dispatch({
+            type: 'UPDATE_STATE',
+            difficulty: loopDifficulty,
+            state: s as GameState,
+          })
           // saveGameStateToLocalStorage(s as GameState, loopDifficulty)
           // statesSaved = true
         }
@@ -345,16 +346,16 @@ function App() {
   //   setStats(getLoadedStats(difficulty))
   // }, [difficulty, getLoadedGuesses, getLoadedStats, hashDifficulty])
 
-  // useEffect(() => {
-  //   checkViewPort()
-  //   if (userInteracted) {
-  //     debouncingStateToAPI({ guesses, solution, day, random }, difficulty)
-  //     saveGameStateToLocalStorage(
-  //       { guesses, solution, day, random },
-  //       difficulty
-  //     )
-  //   }
-  // }, [guesses, solution, day, difficulty, userInteracted, random])
+  useEffect(() => {
+    //   checkViewPort()
+    //   if (userInteracted) {
+    sendStateToAPI(state)
+    //     saveGameStateToLocalStorage(
+    //       { guesses, solution, day, random },
+    //       difficulty
+    //     )
+    //   }
+  }, [state])
 
   // useEffect(() => {})
 

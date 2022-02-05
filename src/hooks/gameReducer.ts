@@ -7,14 +7,22 @@ import {
   HASH_PARAM_KEY_DIFFICULTY,
   HASH_PARAM_KEY_ID,
 } from '../lib/hashUtils'
-import { GameState, GameStats } from '../lib/localStorage'
+import {
+  gameKey,
+  GameState,
+  GameStats,
+  getItem,
+  idKey,
+} from '../lib/localStorage'
 import { ThemeValue } from '../lib/theme'
 import { getCurrentWord } from '../lib/words'
 
 export const createId = () => {
   const hashId = getDecodedHashParam(HASH_PARAM_KEY_ID)
 
-  const id = hashId || Math.random().toString(36).substr(2, 10)
+  const current = JSON.parse(getItem(idKey) ?? getItem(gameKey) ?? '{}')?.id
+
+  const id = hashId || current || Math.random().toString(36).substr(2, 10)
 
   return id
 }
@@ -47,6 +55,11 @@ export type Action =
   | {
       type: 'SET_DIFFICULTY'
       difficulty: State['difficulty']
+    }
+  | {
+      type: 'UPDATE_STATE'
+      difficulty: State['difficulty']
+      state: GameState
     }
 
 export const getInitialState = (difficulty: Difficulty): GameState => {
@@ -108,6 +121,12 @@ export const gameReducer: Reducer<State, Action> = (state, action): State => {
       return {
         ...state,
         difficulty: action.difficulty,
+      }
+    }
+    case 'UPDATE_STATE': {
+      return {
+        ...state,
+        game: { ...state.game, [action.difficulty]: action.state },
       }
     }
   }
