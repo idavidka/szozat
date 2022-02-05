@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import PKG from '../package.json'
 import {
   InformationCircleIcon,
   ChartBarIcon,
@@ -44,6 +43,8 @@ import {
   saveGridFullToLocalStorage,
   saveStatsToLocalStorage,
   GameState,
+  gameKey,
+  getKey,
 } from './lib/localStorage'
 import { CharValue, Word } from './lib/statuses'
 import { MAX_NUMBER_OF_GUESSES } from './constants/constants'
@@ -60,7 +61,14 @@ import {
 import { ModalId, ModalType } from './components/modals/BaseModal'
 import { getAllWords } from './constants/wordlist'
 import { usePersistedReducer } from './hooks/usePersistedReducer'
-import { gameReducer, initialState, State, Action } from './hooks/gameReducer'
+import {
+  gameReducer,
+  initialState,
+  State,
+  Action,
+  View,
+  Difficulty,
+} from './hooks/gameReducer'
 
 const ALERT_TIME_MS = 2000
 const NEW_MODAL_TIME_MS = 500
@@ -69,14 +77,22 @@ function App() {
   const { state, dispatch } = usePersistedReducer<State, Action>(
     gameReducer,
     initialState,
-    `game-${PKG.version}`
+    getKey(gameKey)
   )
+  const context = React.useContext(ThemeContext)
 
-  const { id, difficulty, theme, grid, game } = state
+  const { id, difficulty, theme, view, game } = state
 
   const { day, random, solution, guesses } = game[difficulty]
 
-  const context = React.useContext(ThemeContext)
+  useEffect(() => {
+    if (theme !== context.theme) {
+      dispatch({ type: 'SET_THEME', theme: context.theme })
+    }
+  }, [context.theme, dispatch, theme])
+
+  // new end
+
   const hashDifficulty = getDifficultyFromUrl()
   const [currentGuess, setCurrentGuess] = useState<Word>([])
   // const [isGameWon, setIsGameWon] = useState<Record<number, boolean>>({})
@@ -199,49 +215,47 @@ function App() {
   //   setIsModalOpen,
   // ])
 
-  // useEffect(() => {
-  //   getStatsFromAPI().then((data) => setGlobalStats(data))
+  useEffect(() => {
+    getStatsFromAPI().then((data) => setGlobalStats(data))
 
-  //   setTimeout(() => {
-  //     getStateFromAPI().then((data) => {
-  //       let statesSaved = false
-  //       Object.entries(data?.state ?? {}).forEach(([d, s]) => {
-  //         const loopDifficulty = parseInt(d)
-  //         if (loopDifficulty >= 3 && loopDifficulty <= 9) {
-  //           saveGameStateToLocalStorage(s as GameState, loopDifficulty)
-  //           statesSaved = true
-  //         }
-  //       })
-  //       Object.entries(data?.stats ?? {}).forEach(([d, s]) => {
-  //         const loopDifficulty = parseInt(d)
-  //         if (loopDifficulty >= 3 && loopDifficulty <= 9) {
-  //           saveStatsToLocalStorage(
-  //             toStats(loopDifficulty, s as Record<string, number | number[]>),
-  //             loopDifficulty
-  //           )
-  //           statesSaved = true
-  //         }
-  //       })
-
-  //       if (data.difficulty >= 3 && data.difficulty <= 9) {
-  //         saveDifficultyToLocalStorage(data.difficulty as number)
-
-  //         if (statesSaved && data?.state?.[data.difficulty]) {
-  //           setTimeout(() => {
-  //             setAppToReload(true)
-  //           }, 300)
-  //         }
-  //       }
-  //     })
-  //   }, 500)
-  // }, [])
+    //   setTimeout(() => {
+    getStateFromAPI().then((data) => {
+      //       let statesSaved = false
+      Object.entries(data?.state ?? {}).forEach(([d, s]) => {
+        const loopDifficulty = parseInt(d)
+        if (loopDifficulty >= 3 && loopDifficulty <= 9) {
+          // saveGameStateToLocalStorage(s as GameState, loopDifficulty)
+          // statesSaved = true
+        }
+      })
+      //       Object.entries(data?.stats ?? {}).forEach(([d, s]) => {
+      //         const loopDifficulty = parseInt(d)
+      //         if (loopDifficulty >= 3 && loopDifficulty <= 9) {
+      //           saveStatsToLocalStorage(
+      //             toStats(loopDifficulty, s as Record<string, number | number[]>),
+      //             loopDifficulty
+      //           )
+      //           statesSaved = true
+      //         }
+      //       })
+      //       if (data.difficulty >= 3 && data.difficulty <= 9) {
+      //         saveDifficultyToLocalStorage(data.difficulty as number)
+      //         if (statesSaved && data?.state?.[data.difficulty]) {
+      //           setTimeout(() => {
+      //             setAppToReload(true)
+      //           }, 300)
+      //         }
+      //       }
+    })
+    //   }, 500)
+  }, [])
 
   const getGlobalStats = useCallback(
     (statDifficulty): GameStats | undefined => {
       //     toStats(difficulty, globalStats?.[statDifficulty])
       return undefined
     },
-    [difficulty]
+    []
   )
 
   // const saveStat = useCallback(
@@ -282,26 +296,23 @@ function App() {
     }
   }, [difficulty, setGridSize])
 
-  const checkIsModalOpen = useCallback(
-    (type: ModalId) => {
-      //     if (typeof isModalOpen === 'string' && isModalOpen === type) {
-      //       return true
-      //     }
-      //     if (Array.isArray(isModalOpen) && isModalOpen?.[0] === type) {
-      //       return true
-      //     }
-      //     return false
+  const checkIsModalOpen = useCallback((type: ModalId) => {
+    //     if (typeof isModalOpen === 'string' && isModalOpen === type) {
+    //       return true
+    //     }
+    //     if (Array.isArray(isModalOpen) && isModalOpen?.[0] === type) {
+    //       return true
+    //     }
+    //     return false
 
-      return false
-    },
-    [isModalOpen]
-  )
+    return false
+  }, [])
   const checkIsModalCallback = useCallback(() => {
     //   if (Array.isArray(isModalOpen) && isModalOpen?.[1]) {
     //     return isModalOpen?.[1]
     //   }
     //   return null
-  }, [isModalOpen])
+  }, [])
 
   const checkViewPort = () => {
     //   const currentRow = gridContainerRef.current?.querySelector(
@@ -468,7 +479,7 @@ function App() {
     // }, ALERT_TIME_MS)
   }, [])
 
-  const handleDifficultyChange = (value: number) => {
+  const handleDifficultyChange = (value: Difficulty) => {
     // addGTM('event', 'changeDifficulty', {
     //   previous: difficulty,
     //   current: value,
@@ -476,6 +487,7 @@ function App() {
     // setUserInteracted(true)
     // setDifficulty(value)
     // setCurrentGuess(currentGuess.slice(0, value))
+    dispatch({ type: 'SET_DIFFICULTY', difficulty: value })
   }
 
   const handleNewGame = (type: GameType) => {
@@ -521,9 +533,10 @@ function App() {
     // }, NEW_MODAL_TIME_MS)
   }
 
-  const handleGridIcon = (full: boolean) => {
+  const handleGridIcon = (newView: View) => {
     //   saveGridFullToLocalStorage(full)
     //   setGridFull(full)
+    dispatch({ type: 'SET_VIEW', view: newView })
   }
 
   const handleModalClose = () => {
@@ -539,7 +552,7 @@ function App() {
 
   return (
     <div className={context.theme + ' h-[100%]'}>
-      <Alert message="Nincs elég betű" isOpen={isNotEnoughLetters} />
+      {/* <Alert message="Nincs elég betű" isOpen={isNotEnoughLetters} />
       <Alert
         message="Nem találtunk ilyen szót"
         isOpen={isWordNotFoundAlertOpen}
@@ -599,7 +612,7 @@ function App() {
         isOpen={checkIsModalOpen('create-puzzle')}
         handleClose={handleModalClose}
         difficulty={difficulty}
-      />
+      /> */}
       <div className="bg-white dark:bg-gray-800 transition-all h-[100%]">
         <div
           className="flex flex-col px-2 pt-8 w-[100%] h-[100%] max-w-[500px] mx-auto sm:px-6 lg:px-8"
@@ -619,8 +632,10 @@ function App() {
             />
             <Icon component={ThemeToggle} />
             <Icon
-              component={grid === 'full' ? ViewGridIcon : ViewGridAddIcon}
-              onClick={() => handleGridIcon(grid === 'full')}
+              component={view === 'full' ? ViewGridIcon : ViewGridAddIcon}
+              onClick={() =>
+                handleGridIcon(view === 'full' ? 'compact' : 'full')
+              }
               isGroupEnd
             />
             <Icon
@@ -663,7 +678,7 @@ function App() {
               day={day}
               random={random}
               size={gridSize}
-              full={grid === 'full'}
+              full={view === 'full'}
               difficulty={difficulty}
             />
           </div>

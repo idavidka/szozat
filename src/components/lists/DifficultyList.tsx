@@ -1,19 +1,22 @@
 import { Fragment, useMemo, useRef } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import { SelectorIcon } from '@heroicons/react/solid'
+import { Difficulty } from '../../hooks/gameReducer'
 
 type Props = {
   selected: number
-  onChange: (selected: number) => void
+  onChange: (selected: Difficulty) => void
 }
 
-const defaultDifficulty = {
+type DifficultyMap = { id: Difficulty; label: string; className?: string }
+
+const defaultDifficulty: DifficultyMap = {
   id: 5,
   label: '5 betű',
   className: 'text-amber-900 bg-amber-100',
 }
 
-const options: { id: number; label: string; className?: string }[] = [
+const options: DifficultyMap[] = [
   { id: 3, label: '3 betű', className: 'text-sky-900 bg-sky-100' },
   { id: 4, label: '4 betű', className: 'text-lime-900 bg-lime-100' },
   defaultDifficulty,
@@ -33,7 +36,7 @@ export const DifficultyList = ({ selected, onChange }: Props) => {
     <div className="mx-auto relative w-[85px] h-[36px]">
       <Listbox
         value={selected}
-        onChange={(value: number) => {
+        onChange={(value: Difficulty) => {
           if (document.activeElement?.nodeName === 'LI') {
             ;(document.activeElement as HTMLLIElement).blur()
             buttonRef?.current?.blur()

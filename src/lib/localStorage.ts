@@ -4,6 +4,9 @@ import { Word } from './statuses'
 import { ThemeValue } from './theme'
 import { getDecodedHashParam, HASH_PARAM_KEY_ID } from './hashUtils'
 import PKG from '../../package.json'
+import { State } from '../hooks/gameReducer'
+
+export const gameKey = 'game'
 
 const idKey = 'id'
 const gameStateKey = 'gameState'
@@ -37,7 +40,7 @@ const decrypt = (value: string): string => {
   )
 }
 
-const getKey = (key: string) => {
+export const getKey = (key: string) => {
   return key === 'id' ? key : `${key}-${PKG.version}`
 }
 
@@ -139,9 +142,13 @@ export const loadStatsFromLocalStorage = (difficulty: number) => {
 }
 
 export const loadInitialTheme = (): ThemeValue => {
-  const savedTheme = getItem(themeKey)
-  if (typeof savedTheme === 'string') {
-    return savedTheme as ThemeValue
+  const gameState = getItem(gameKey)
+  if (gameState) {
+    const savedTheme = (JSON.parse(gameState) as State)?.theme
+
+    if (savedTheme) {
+      return savedTheme as ThemeValue
+    }
   }
 
   const userMedia = window.matchMedia('(prefers-color-scheme: dark)')

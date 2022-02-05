@@ -7,9 +7,9 @@ import {
   HASH_PARAM_KEY_DIFFICULTY,
   HASH_PARAM_KEY_ID,
 } from '../lib/hashUtils'
-import { Word } from '../lib/statuses'
-import { getDifficultyFromUrl } from '../lib/utils'
-import { usePersistedReducer } from './usePersistedReducer'
+import { GameState, GameStats } from '../lib/localStorage'
+import { ThemeValue } from '../lib/theme'
+import { getCurrentWord } from '../lib/words'
 
 export const createId = () => {
   const hashId = getDecodedHashParam(HASH_PARAM_KEY_ID)
@@ -30,58 +30,36 @@ export const createDifficulty = (): Difficulty => {
 }
 
 export type Difficulty = 3 | 4 | 5 | 6 | 7 | 8 | 9
+export type View = 'full' | 'compact'
 
 export type State = {
   id: string
   difficulty: Difficulty
-  theme: 'dark' | 'light'
-  grid: 'full' | 'compact'
+  theme: ThemeValue
+  view: View
   stats: Record<Difficulty, GameStats>
   game: Record<Difficulty, GameState>
 }
 
 export type Action =
+  | { type: 'SET_THEME'; theme: ThemeValue }
+  | { type: 'SET_VIEW'; view: View }
   | {
-      type: 'ADD_GUESS'
-      guess: Word
-    }
-  | {
-      type: 'CHANGE_DIFFICULTY'
+      type: 'SET_DIFFICULTY'
       difficulty: State['difficulty']
     }
-  | ({
-      type: 'NEW_GAME'
-    } & (
-      | {
-          day: number
-        }
-      | { random: number }
-    ))
 
-export type GameState = {
-  guesses: Word[]
-  solution: Word | undefined
-  day: number
-  random: number
+export const getInitialState = (difficulty: Difficulty): GameState => {
+  const { solution } = getCurrentWord(0, difficulty)
+  return {
+    day: 0,
+    random: -1,
+    solution,
+    guesses: [],
+  }
 }
 
-export type GameStats = {
-  winDistribution: number[]
-  gamesFailed: number
-  currentStreak: number
-  bestStreak: number
-  totalGames: number
-  successRate: number
-}
-
-const initialGame: GameState = {
-  day: 0,
-  random: -1,
-  solution: undefined,
-  guesses: [],
-}
-
-export const getInitialStat = (difficulty: Difficulty): GameStats => {
+export const getInitialStats = (difficulty: Difficulty): GameStats => {
   return {
     winDistribution: times(MAX_NUMBER_OF_GUESSES[difficulty], () => 0),
     gamesFailed: 0,
@@ -96,30 +74,37 @@ export const initialState: State = {
   id: createId(),
   difficulty: createDifficulty(),
   theme: 'light',
-  grid: 'full',
+  view: 'full',
   stats: {
-    3: getInitialStat(3),
-    4: getInitialStat(4),
-    5: getInitialStat(5),
-    6: getInitialStat(6),
-    7: getInitialStat(7),
-    8: getInitialStat(8),
-    9: getInitialStat(9),
+    3: getInitialStats(3),
+    4: getInitialStats(4),
+    5: getInitialStats(5),
+    6: getInitialStats(6),
+    7: getInitialStats(7),
+    8: getInitialStats(8),
+    9: getInitialStats(9),
   },
   game: {
-    3: initialGame,
-    4: initialGame,
-    5: initialGame,
-    6: initialGame,
-    7: initialGame,
-    8: initialGame,
-    9: initialGame,
+    3: getInitialState(3),
+    4: getInitialState(4),
+    5: getInitialState(5),
+    6: getInitialState(6),
+    7: getInitialState(7),
+    8: getInitialState(8),
+    9: getInitialState(9),
   },
 }
 
-export const gameReducer: Reducer<State, Action> = (state, action) => {
+export const gameReducer: Reducer<State, Action> = (state, action): State => {
   switch (action.type) {
-    case 'CHANGE_DIFFICULTY': {
+    case 'SET_THEME': {
+      return { ...state, theme: action.theme }
+    }
+    case 'SET_VIEW': {
+      console.log('ASD', { ...state, view: action.view })
+      return { ...state, view: action.view }
+    }
+    case 'SET_DIFFICULTY': {
       return {
         ...state,
         difficulty: action.difficulty,
