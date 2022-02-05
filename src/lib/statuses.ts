@@ -1,5 +1,6 @@
 import { getCurrentWord, getLetterCount, getRandomWord } from './words'
 import { CHAR_VALUES, MULTIPLE_CONSONANT_CHAR_VALUES } from './wordCommons'
+import { Difficulty } from '../hooks/gameReducer'
 
 export type CharStatus =
   | 'absent'
@@ -24,7 +25,7 @@ export const getStatuses = (
   guesses: Word[],
   day: number,
   random: number,
-  difficulty: number
+  difficulty: Difficulty
 ): { [key: string]: CharStatus } => {
   const { solution } =
     random > -1
@@ -69,7 +70,7 @@ export const getGuessStatuses = (
   guess: Word,
   day: number,
   random: number,
-  difficulty: number
+  difficulty: Difficulty
 ): CharStatus[] => {
   const { solution } =
     random > -1

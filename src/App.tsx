@@ -24,10 +24,20 @@ import {
   isWordEqual,
   getCurrentWord,
   getRandomWord,
+  getWordFromUrl,
 } from './lib/words'
-import { sendStateToAPI, getStateFromAPI } from './lib/api'
+import {
+  debouncingStateToAPI,
+  getStateFromAPI,
+  getStatsFromAPI,
+} from './lib/api'
 import { WIN_MESSAGES } from './constants/strings'
-import { addStatsForCompletedGame, loadStats, toStats } from './lib/stats'
+import {
+  addStatsForCompletedGame,
+  getDefaultStats,
+  loadStats,
+  toStats,
+} from './lib/stats'
 import {
   GameStats,
   loadDifficultyToLocalStorage,
@@ -63,6 +73,7 @@ import {
   Action,
   View,
   Difficulty,
+  getInitialState,
 } from './hooks/gameReducer'
 
 const ALERT_TIME_MS = 2000
@@ -76,31 +87,26 @@ function App() {
   )
   const context = React.useContext(ThemeContext)
 
-  const { id, difficulty, theme, view, game } = state
+  const { id, difficulty, theme, view, game, stats, info } = state
 
-  const { day, random, solution, guesses } = game[difficulty]
-
-  useEffect(() => {
-    if (theme !== context.theme) {
-      dispatch({ type: 'SET_THEME', theme: context.theme })
-    }
-  }, [context.theme, dispatch, theme])
+  const { day, random, solution, guesses } =
+    game?.[difficulty] ?? getInitialState(difficulty)
 
   // new end
 
-  const hashDifficulty = getDifficultyFromUrl()
+  // const hashDifficulty = getDifficultyFromUrl()
   const [currentGuess, setCurrentGuess] = useState<Word>([])
-  // const [isGameWon, setIsGameWon] = useState<Record<number, boolean>>({})
-  // const [isModalOpen, setIsModalOpenState] = useState<ModalType>(false)
-  // const [isModalOpenRegistered, setIsModalOpenRegistered] =
-  //   useState<ModalType>(false)
+  const [isGameWon, setIsGameWon] = useState<Record<number, boolean>>({})
+  const [isGameLost, setIsGameLost] = useState<Record<number, boolean>>({})
+  const [isModalOpen, setIsModalOpenState] = useState<ModalType>(false)
+  const [isModalOpenRegistered, setIsModalOpenRegistered] =
+    useState<ModalType>(false)
   const [isNotEnoughLetters, setIsNotEnoughLetters] = useState(false)
   const [isWordNotFoundAlertOpen, setIsWordNotFoundAlertOpen] = useState(false)
-  // const [shareComplete, setShareComplete] = useState(false)
-  // const [shareFailed, setShareFailed] = useState(false)
-  const [isGameLost, setIsGameLost] = useState<Record<number, boolean>>({})
+  const [shareComplete, setShareComplete] = useState(false)
+  const [shareFailed, setShareFailed] = useState(false)
   const [successAlert, setSuccessAlert] = useState('')
-  // const [userInteracted, setUserInteracted] = useState(false)
+  const [userInteracted, setUserInteracted] = useState(false)
   // const [appToReload, setAppToReload] = useState(false)
   // const [appIsReloaded, setAppIsReloaded] = useState(false)
   // const savedDificulty = useMemo(() => {
@@ -113,10 +119,10 @@ function App() {
   //   return loadedState
   // }, [])
 
-  // const maxGuess = useMemo(
-  //   () => MAX_NUMBER_OF_GUESSES[difficulty],
-  //   [difficulty]
-  // )
+  const maxGuess = useMemo(
+    () => MAX_NUMBER_OF_GUESSES[difficulty],
+    [difficulty]
+  )
 
   // const savedRandom = useMemo(
   //   () => getLoadedState(difficulty)?.random ?? -1,
@@ -137,12 +143,42 @@ function App() {
   //     : getCurrentWord(day, difficulty)
   // }, [day, difficulty, random])
 
-  // console.log('ASD', solution)
+  const wordFromUrl = useMemo(() => getWordFromUrl(difficulty), [difficulty])
+  console.log('ASD', day, random, wordFromUrl, solution)
 
-  // const setIsModalOpen = useCallback((type: ModalType) => {
-  //   type && setIsModalOpenRegistered(type)
-  //   setIsModalOpenState(type)
-  // }, [])
+  const setIsModalOpen = useCallback((type: ModalType) => {
+    type && setIsModalOpenRegistered(type)
+    setIsModalOpenState(type)
+  }, [])
+
+  useEffect(() => {
+    if (theme !== context.theme) {
+      dispatch({ type: 'SET_THEME', theme: context.theme })
+    }
+  }, [context.theme, dispatch, theme])
+
+  useEffect(() => {
+    if (!wordFromUrl || !isWordEqual(wordFromUrl.solution, solution)) {
+      //todo fix call depth
+      // dispatch({ type: 'UPDATE_GUESSES', difficulty, guesses: [] })
+      return
+    }
+
+    const gameWasWon = guesses.some((guess) => isWordEqual(guess, solution))
+    if (gameWasWon) {
+      setIsGameWon({ [difficulty]: true })
+    }
+    if (guesses.length === maxGuess && !gameWasWon) {
+      setIsGameLost({ [difficulty]: true })
+    }
+  }, [difficulty, dispatch, guesses, maxGuess, solution, wordFromUrl])
+
+  useEffect(() => {
+    if (!info?.[difficulty]) {
+      setIsModalOpen('info')
+      dispatch({ type: 'SET_INFO', difficulty, seen: true })
+    }
+  }, [difficulty, dispatch, info, setIsModalOpen])
 
   // const getLoadedGuesses = useCallback(
   //   (customState?: GameState | null) => {
@@ -169,11 +205,11 @@ function App() {
   //   [difficulty, getLoadedState, maxGuess, setIsModalOpen, solution]
   // )
 
-  const getLoadedStats = useCallback((statDifficulty) => {
-    // loadStats(statDifficulty)
-  }, [])
+  // const getLoadedStats = useCallback((statDifficulty) => {
+  //   loadStats(statDifficulty)
+  // }, [])
 
-  const [stats, setStats] = useState(getLoadedStats(difficulty))
+  // const [stats, setStats] = useState(getLoadedStats(difficulty))
   const [globalStats, setGlobalStats] = useState()
 
   // const [, updateState] = useState<Record<string, string>>()
@@ -213,51 +249,15 @@ function App() {
   useEffect(() => {
     getStatsFromAPI().then((data) => setGlobalStats(data))
 
-    //   setTimeout(() => {
     getStateFromAPI().then((data) => {
-      //       let statesSaved = false
-      Object.entries(data?.state ?? {}).forEach(([d, s]) => {
-        const loopDifficulty = parseInt(d) as Difficulty
-        if (loopDifficulty >= 3 && loopDifficulty <= 9) {
-          console.log('ASD', d, s)
-          dispatch({
-            type: 'UPDATE_STATE',
-            difficulty: loopDifficulty,
-            state: s as GameState,
-          })
-          // saveGameStateToLocalStorage(s as GameState, loopDifficulty)
-          // statesSaved = true
-        }
-      })
-      //       Object.entries(data?.stats ?? {}).forEach(([d, s]) => {
-      //         const loopDifficulty = parseInt(d)
-      //         if (loopDifficulty >= 3 && loopDifficulty <= 9) {
-      //           saveStatsToLocalStorage(
-      //             toStats(loopDifficulty, s as Record<string, number | number[]>),
-      //             loopDifficulty
-      //           )
-      //           statesSaved = true
-      //         }
-      //       })
-      //       if (data.difficulty >= 3 && data.difficulty <= 9) {
-      //         saveDifficultyToLocalStorage(data.difficulty as number)
-      //         if (statesSaved && data?.state?.[data.difficulty]) {
-      //           setTimeout(() => {
-      //             setAppToReload(true)
-      //           }, 300)
-      //         }
-      //       }
+      if (data) {
+        dispatch({
+          type: 'UPDATE_STATE',
+          state: data,
+        })
+      }
     })
-    //   }, 500)
-  }, [])
-
-  const getGlobalStats = useCallback(
-    (statDifficulty): GameStats | undefined => {
-      //     toStats(difficulty, globalStats?.[statDifficulty])
-      return undefined
-    },
-    []
-  )
+  }, [dispatch])
 
   // const saveStat = useCallback(
   //   (gameStats: GameStats) => {
@@ -297,22 +297,23 @@ function App() {
     }
   }, [difficulty, setGridSize])
 
-  const checkIsModalOpen = useCallback((type: ModalId) => {
-    //     if (typeof isModalOpen === 'string' && isModalOpen === type) {
-    //       return true
-    //     }
-    //     if (Array.isArray(isModalOpen) && isModalOpen?.[0] === type) {
-    //       return true
-    //     }
-    //     return false
-
-    return false
-  }, [])
+  const checkIsModalOpen = useCallback(
+    (type: ModalId) => {
+      if (typeof isModalOpen === 'string' && isModalOpen === type) {
+        return true
+      }
+      if (Array.isArray(isModalOpen) && isModalOpen?.[0] === type) {
+        return true
+      }
+      return false
+    },
+    [isModalOpen]
+  )
   const checkIsModalCallback = useCallback(() => {
-    //   if (Array.isArray(isModalOpen) && isModalOpen?.[1]) {
-    //     return isModalOpen?.[1]
-    //   }
-    //   return null
+    if (Array.isArray(isModalOpen) && isModalOpen?.[1]) {
+      return isModalOpen?.[1]
+    }
+    return null
   }, [])
 
   const checkViewPort = () => {
@@ -347,38 +348,34 @@ function App() {
   // }, [difficulty, getLoadedGuesses, getLoadedStats, hashDifficulty])
 
   useEffect(() => {
-    //   checkViewPort()
-    //   if (userInteracted) {
-    sendStateToAPI(state)
-    //     saveGameStateToLocalStorage(
-    //       { guesses, solution, day, random },
-    //       difficulty
-    //     )
-    //   }
-  }, [state])
+    checkViewPort()
+    if (userInteracted && !wordFromUrl) {
+      debouncingStateToAPI(state)
+    }
+  }, [state, userInteracted, wordFromUrl])
 
   // useEffect(() => {})
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     if (!isGameWon[difficulty] && !isGameLost[difficulty]) {
-  //       setSuccessAlert('')
-  //       return
-  //     }
+  useEffect(() => {
+    setTimeout(() => {
+      if (!isGameWon[difficulty] && !isGameLost[difficulty]) {
+        setSuccessAlert('')
+        return
+      }
 
-  //     setSuccessAlert(
-  //       isGameWon[difficulty]
-  //         ? WIN_MESSAGES[Math.floor(Math.random() * WIN_MESSAGES.length)]
-  //         : ''
-  //     )
+      setSuccessAlert(
+        isGameWon[difficulty]
+          ? WIN_MESSAGES[Math.floor(Math.random() * WIN_MESSAGES.length)]
+          : ''
+      )
 
-  //     !(['new-game', 'new-game-confirm'] as ModalType[]).includes(
-  //       isModalOpenRegistered
-  //     ) && setIsModalOpen('stat')
-  //   }, ALERT_TIME_MS)
+      !(['new-game', 'new-game-confirm'] as ModalType[]).includes(
+        isModalOpenRegistered
+      ) && setIsModalOpen('stat')
+    }, ALERT_TIME_MS)
 
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [isGameWon[difficulty], isGameLost[difficulty]])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isGameWon[difficulty], isGameLost[difficulty]])
 
   const onChar = (value: CharValue) => {
     //   checkViewPort()
@@ -473,65 +470,72 @@ function App() {
   }, [])
 
   const handleShareFailure = useCallback(() => {
-    // addGTM('event', 'copy', { status: 'failed' })
-    // setShareFailed(true)
-    // setTimeout(() => {
-    //   setShareFailed(false)
-    // }, ALERT_TIME_MS)
+    addGTM('event', 'copy', { status: 'failed' })
+    setShareFailed(true)
+    setTimeout(() => {
+      setShareFailed(false)
+    }, ALERT_TIME_MS)
   }, [])
 
   const handleDifficultyChange = (value: Difficulty) => {
-    // addGTM('event', 'changeDifficulty', {
-    //   previous: difficulty,
-    //   current: value,
-    // })
-    // setUserInteracted(true)
-    // setDifficulty(value)
-    // setCurrentGuess(currentGuess.slice(0, value))
+    addGTM('event', 'changeDifficulty', {
+      previous: difficulty,
+      current: value,
+    })
+    setUserInteracted(true)
     dispatch({ type: 'SET_DIFFICULTY', difficulty: value })
   }
 
   const handleNewGame = (type: GameType) => {
-    // addGTM('event', 'newGame', { difficulty })
-    // setUserInteracted(true)
-    // setIsGameLost({ [difficulty]: false })
-    // setIsGameWon({ [difficulty]: false })
-    // setGuesses([])
-    // setCurrentGuess([])
-    // if (type === 'in-row') {
-    //   setRandom(-1)
-    //   setDay((prev) => prev + 1)
-    // } else {
-    //   getAllWords(difficulty)
-    //   setRandom(rand(0, getAllWords(difficulty).length - 1))
-    // }
-    // setIsModalOpen(false)
+    addGTM('event', 'newGame', { difficulty })
+    setUserInteracted(true)
+    setIsGameLost({ [difficulty]: false })
+    setIsGameWon({ [difficulty]: false })
+    dispatch({ type: 'UPDATE_GUESSES', difficulty, guesses: [] })
+    dispatch({ type: 'UPDATE_CURRENT_GUESS', difficulty, currentGuess: [] })
+    if (type === 'in-row') {
+      dispatch({ type: 'SET_RANDOM', difficulty, random: -1 })
+      dispatch({ type: 'SET_DAY', difficulty, day: day + 1 })
+    } else {
+      getAllWords(difficulty)
+      dispatch({
+        type: 'SET_RANDOM',
+        difficulty,
+        random: rand(0, getAllWords(difficulty).length - 1),
+      })
+    }
+    setSuccessAlert('')
+    setIsModalOpen(false)
   }
 
   const handleManualEnd = () => {
-    // setIsModalOpen(false)
-    // setUserInteracted(true)
-    // if (!isGameWon[difficulty]) {
-    //   const emptyRow = times(difficulty, () => '-') as Word
-    //   const newGuesses = [
-    //     ...guesses,
-    //     emptyRow.map((letter, index) => currentGuess[index] ?? letter),
-    //   ].filter((guess) => guess.length)
-    //   for (let i = 0; i < maxGuess; i++) {
-    //     if (!newGuesses[i]) {
-    //       newGuesses[i] = [...emptyRow]
-    //     }
-    //   }
-    //   addGTM('event', 'giveUp', { difficulty, guesses: newGuesses })
-    //   setGuesses(newGuesses)
-    //   saveStat(addStatsForCompletedGame(stats, newGuesses.length, difficulty))
-    //   setIsGameLost({ [difficulty]: true })
-    // }
-    // setIsModalOpenRegistered('new-game')
-    // setTimeout(() => {
-    //   setSuccessAlert('')
-    //   setIsModalOpen('new-game')
-    // }, NEW_MODAL_TIME_MS)
+    setIsModalOpen(false)
+    setUserInteracted(true)
+    if (!isGameWon[difficulty]) {
+      const emptyRow = times(difficulty, () => '-') as Word
+      const newGuesses = [
+        ...guesses,
+        // emptyRow.map((letter, index) => currentGuess[index] ?? letter),
+      ].filter((guess) => guess.length)
+      for (let i = 0; i < maxGuess; i++) {
+        if (!newGuesses[i]) {
+          newGuesses[i] = [...emptyRow]
+        }
+      }
+      addGTM('event', 'giveUp', { difficulty, guesses: newGuesses })
+      // setGuesses(newGuesses)
+      console.log(
+        'ASD',
+        addStatsForCompletedGame(stats, newGuesses.length, difficulty)
+      )
+      // saveStat()
+      setIsGameLost({ [difficulty]: true })
+    }
+    setIsModalOpenRegistered('new-game')
+    setTimeout(() => {
+      setSuccessAlert('')
+      setIsModalOpen('new-game')
+    }, NEW_MODAL_TIME_MS)
   }
 
   const handleGridIcon = (newView: View) => {
@@ -541,19 +545,19 @@ function App() {
   }
 
   const handleModalClose = () => {
-    //   const fallbackModal = checkIsModalCallback()
-    //   setIsModalOpen(false)
-    //   if (fallbackModal) {
-    //     setIsModalOpenRegistered(fallbackModal)
-    //     setTimeout(() => {
-    //       setIsModalOpen(fallbackModal)
-    //     }, NEW_MODAL_TIME_MS)
-    //   }
+    const fallbackModal = checkIsModalCallback()
+    setIsModalOpen(false)
+    if (fallbackModal) {
+      setIsModalOpenRegistered(fallbackModal)
+      setTimeout(() => {
+        setIsModalOpen(fallbackModal)
+      }, NEW_MODAL_TIME_MS)
+    }
   }
 
   return (
     <div className={context.theme + ' h-[100%]'}>
-      {/* <Alert message="Nincs elég betű" isOpen={isNotEnoughLetters} />
+      <Alert message="Nincs elég betű" isOpen={isNotEnoughLetters} />
       <Alert
         message="Nem találtunk ilyen szót"
         isOpen={isWordNotFoundAlertOpen}
@@ -597,8 +601,8 @@ function App() {
         handleShareCopySuccess={handleShareCopySuccess}
         handleShareFailure={handleShareFailure}
         handleNewGameClick={handleNewGame}
-        handleStats={getLoadedStats}
-        handleGlobalStats={getGlobalStats}
+        stats={stats}
+        globalStats={globalStats}
       />
       <NewGameModal
         isOpen={checkIsModalOpen('new-game-confirm')}
@@ -613,7 +617,7 @@ function App() {
         isOpen={checkIsModalOpen('create-puzzle')}
         handleClose={handleModalClose}
         difficulty={difficulty}
-      /> */}
+      />
       <div className="bg-white dark:bg-gray-800 transition-all h-[100%]">
         <div
           className="flex flex-col px-2 pt-8 w-[100%] h-[100%] max-w-[500px] mx-auto sm:px-6 lg:px-8"
@@ -624,7 +628,7 @@ function App() {
             <Icon
               component={InformationCircleIcon}
               onClick={() => {
-                // setIsModalOpen('info')
+                setIsModalOpen('info')
               }}
             />
             <DifficultyList
@@ -642,23 +646,23 @@ function App() {
             <Icon
               component={ChartBarIcon}
               onClick={() => {
-                // setIsModalOpen('stat')
+                setIsModalOpen('stat')
               }}
             />
             <Icon
               component={PlusCircleIcon}
               onClick={() => {
-                // setIsModalOpen('create-puzzle')
+                setIsModalOpen('create-puzzle')
               }}
             />
             <Icon
               component={PuzzleIcon}
               onClick={() => {
-                // setIsModalOpen(
-                //   isGameWon[difficulty] || isGameLost[difficulty]
-                //     ? 'new-game'
-                //     : 'new-game-confirm'
-                // )
+                setIsModalOpen(
+                  isGameWon[difficulty] || isGameLost[difficulty]
+                    ? 'new-game'
+                    : 'new-game-confirm'
+                )
               }}
             />
           </div>

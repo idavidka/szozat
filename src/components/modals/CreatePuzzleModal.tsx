@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react'
+import { Difficulty } from '../../hooks/gameReducer'
 import { createCustomGameUrl } from '../../lib/hashUtils'
 import { getWordLetters } from '../../lib/hungarianWordUtils'
 import { Word } from '../../lib/statuses'
@@ -7,7 +8,7 @@ import { BaseModal } from './BaseModal'
 
 type Props = {
   isOpen: boolean
-  difficulty: number
+  difficulty: Difficulty
   handleClose: () => void
 }
 

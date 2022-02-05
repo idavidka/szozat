@@ -12,6 +12,8 @@ import { Tab } from '@headlessui/react'
 import classNames from 'classnames'
 import { createCustomStatURl } from '../../lib/hashUtils'
 import { GameType } from '../../lib/utils'
+import { Difficulty } from '../../hooks/gameReducer'
+import { toStats } from '../../lib/stats'
 
 type Props = {
   isOpen: boolean
@@ -22,13 +24,13 @@ type Props = {
   isGameWon: boolean
   day: number
   random: number
-  difficulty: number
+  difficulty: Difficulty
   solution?: Word
+  stats: Record<Difficulty, GameStats>
+  globalStats: Record<Difficulty, GameStats> | undefined
   handleShareCopySuccess: () => void
   handleShareFailure: () => void
   handleNewGameClick: (type: GameType) => void
-  handleStats: (difficulty: number) => GameStats
-  handleGlobalStats: (difficulty: number) => GameStats | undefined
 }
 
 export const StatsModal = ({
@@ -42,16 +44,16 @@ export const StatsModal = ({
   random,
   solution,
   difficulty,
+  stats,
+  globalStats,
   handleShareCopySuccess,
   handleShareFailure,
   handleNewGameClick,
-  handleStats,
-  handleGlobalStats,
 }: Props) => {
-  const [statDifficulty, setStatDifficulty] = useState(difficulty)
+  const [statDifficulty, setStatDifficulty] = useState<Difficulty>(difficulty)
   useEffect(() => {
     setStatDifficulty(difficulty)
-  }, [difficulty, isOpen, handleStats])
+  }, [difficulty, isOpen])
 
   const handleShareClick = useCallback(async () => {
     try {
@@ -106,18 +108,18 @@ export const StatsModal = ({
   )
   const statLink = createCustomStatURl()
 
-  const stats = useMemo(() => {
+  const statsTabs = useMemo(() => {
     return {
       Saját: {
-        stat: handleStats(statDifficulty),
+        stat: toStats(statDifficulty, stats),
         details: true,
       },
       Világ: {
-        stat: handleGlobalStats(statDifficulty),
+        stat: toStats(statDifficulty, globalStats),
         details: false,
       },
     }
-  }, [handleGlobalStats, handleStats, statDifficulty])
+  }, [globalStats, statDifficulty, stats])
 
   const getSolutionDetails = useCallback(() => {
     return (
@@ -186,7 +188,7 @@ export const StatsModal = ({
       {!isMinimal && (
         <Tab.Group>
           <Tab.List className="flex p-1 space-x-1 bg-blue-900/20 rounded-xl">
-            {Object.entries(stats).map(
+            {Object.entries(statsTabs).map(
               ([category, { stat }], index) =>
                 stat && (
                   <Tab
@@ -207,7 +209,7 @@ export const StatsModal = ({
             )}
           </Tab.List>
           <Tab.Panels className="mt-2">
-            {Object.values(stats).map(
+            {Object.values(statsTabs).map(
               ({ stat, details }, index) =>
                 stat && (
                   <Tab.Panel

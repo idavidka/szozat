@@ -1,17 +1,17 @@
 import { debounce } from 'lodash'
 import { State } from '../hooks/gameReducer'
-import { GameStats, generateSessionId } from './localStorage'
+import { createId } from './localStorage'
 
 export const sendStateToAPI = (state: State) => {
   if (!process.env.REACT_APP_API_URL) {
     return Promise.reject()
   }
 
-  const sessionId = generateSessionId()
+  const sessionId = createId()
   const url = `${window.location.protocol}//${process.env.REACT_APP_API_URL}`
 
   const data = new FormData()
-  data.append('id', sessionId.id)
+  data.append('id', sessionId)
   data.append('state', JSON.stringify(state))
   return fetch(url, {
     method: 'POST',
@@ -27,7 +27,7 @@ export const getStateFromAPI = () => {
   const url = `${window.location.protocol}//${process.env.REACT_APP_API_URL}`
   const params = new URLSearchParams()
   params.append('state', 'true')
-  params.append('id', generateSessionId().id)
+  params.append('id', createId())
 
   params.toString()
   return fetch(`${url}?${params.toString()}`, {
@@ -35,13 +35,13 @@ export const getStateFromAPI = () => {
   }).then((response) => response.json())
 }
 
-// export const debouncingStateToAPI = debounce(
-//   (...params: Parameters<typeof sendStateToAPI>) => sendStateToAPI(...params),
-//   100,
-//   { trailing: true }
-// )
+export const debouncingStateToAPI = debounce(
+  (...params: Parameters<typeof sendStateToAPI>) => sendStateToAPI(...params),
+  100,
+  { trailing: true }
+)
 
-// export const sendStatsToAPI = (gameStats: GameStats, difficulty: number) => {
+// export const sendStatsToAPI = (gameStats: GameStats, difficulty: Difficulty) => {
 //   if (!process.env.REACT_APP_API_URL) {
 //     return Promise.reject()
 //   }
@@ -61,18 +61,18 @@ export const getStateFromAPI = () => {
 //   }).then((response) => response.json())
 // }
 
-// export const getStatsFromAPI = () => {
-//   if (!process.env.REACT_APP_API_URL) {
-//     return Promise.reject()
-//   }
+export const getStatsFromAPI = () => {
+  if (!process.env.REACT_APP_API_URL) {
+    return Promise.reject()
+  }
 
-//   const url = `${window.location.protocol}//${process.env.REACT_APP_API_URL}`
-//   const params = new URLSearchParams()
-//   params.append('global', 'true')
-//   params.append('id', generateSessionId().id)
+  const url = `${window.location.protocol}//${process.env.REACT_APP_API_URL}`
+  const params = new URLSearchParams()
+  params.append('global', 'true')
+  params.append('id', createId())
 
-//   params.toString()
-//   return fetch(`${url}?${params.toString()}`, {
-//     method: 'GET',
-//   }).then((response) => response.json())
-// }
+  params.toString()
+  return fetch(`${url}?${params.toString()}`, {
+    method: 'GET',
+  }).then((response) => response.json())
+}

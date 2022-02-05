@@ -2,6 +2,7 @@ import { KeyValue } from '../../lib/keyboard'
 import { CharValue, getStatuses, Word, isCharValue } from '../../lib/statuses'
 import { Key } from './Key'
 import { useEffect, useRef } from 'react'
+import { Difficulty } from '../../hooks/gameReducer'
 
 type Props = {
   onChar: (value: CharValue) => void
@@ -12,7 +13,7 @@ type Props = {
   currentGuess: Word
   day: number
   random: number
-  difficulty: number
+  difficulty: Difficulty
   enabledOnEnter?: boolean
   enabledOnDelete?: boolean
 }

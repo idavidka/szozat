@@ -1,5 +1,6 @@
 import moment from 'moment'
 import { MAX_NUMBER_OF_GUESSES } from '../constants/constants'
+import { Difficulty } from '../hooks/gameReducer'
 import { getGuessStatuses, Word } from './statuses'
 import { getCurrentWord, getRandomWord } from './words'
 
@@ -8,7 +9,7 @@ export const getShareText = (
   lost: boolean,
   day: number,
   random: number,
-  difficulty: number,
+  difficulty: Difficulty,
   solution?: Word
 ) => {
   const { solutionIndex, solutionCreator } =
@@ -41,7 +42,7 @@ export const shareStatus = async (
   lost: boolean,
   day: number,
   random: number,
-  difficulty: number,
+  difficulty: Difficulty,
   solution?: Word
 ) => {
   const text = getShareText(guesses, lost, day, random, difficulty, solution)
@@ -60,7 +61,7 @@ export const generateEmojiGrid = (
   guesses: Word[],
   day: number,
   random: number,
-  difficulty: number
+  difficulty: Difficulty
 ) => {
   return guesses
     .map((guess) => {

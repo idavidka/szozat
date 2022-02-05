@@ -8,34 +8,17 @@ import {
   HASH_PARAM_KEY_ID,
 } from '../lib/hashUtils'
 import {
+  createDifficulty,
+  createId,
   gameKey,
   GameState,
   GameStats,
   getItem,
   idKey,
 } from '../lib/localStorage'
+import { Word } from '../lib/statuses'
 import { ThemeValue } from '../lib/theme'
-import { getCurrentWord } from '../lib/words'
-
-export const createId = () => {
-  const hashId = getDecodedHashParam(HASH_PARAM_KEY_ID)
-
-  const current = JSON.parse(getItem(idKey) ?? getItem(gameKey) ?? '{}')?.id
-
-  const id = hashId || current || Math.random().toString(36).substr(2, 10)
-
-  return id
-}
-
-export const createDifficulty = (): Difficulty => {
-  const difficulty = parseInt(getHashParams()[HASH_PARAM_KEY_DIFFICULTY] ?? '')
-
-  return (
-    difficulty && !isNaN(difficulty) && difficulty >= 3 && difficulty <= 9
-      ? difficulty
-      : 5
-  ) as Difficulty
-}
+import { getCurrentWord, getRandomWord } from '../lib/words'
 
 export type Difficulty = 3 | 4 | 5 | 6 | 7 | 8 | 9
 export type View = 'full' | 'compact'
@@ -45,6 +28,7 @@ export type State = {
   difficulty: Difficulty
   theme: ThemeValue
   view: View
+  info: Record<Difficulty, boolean>
   stats: Record<Difficulty, GameStats>
   game: Record<Difficulty, GameState>
 }
@@ -57,9 +41,25 @@ export type Action =
       difficulty: State['difficulty']
     }
   | {
-      type: 'UPDATE_STATE'
+      type: 'SET_INFO'
       difficulty: State['difficulty']
-      state: GameState
+      seen: boolean
+    }
+  | { type: 'SET_DAY'; difficulty: State['difficulty']; day: number }
+  | { type: 'SET_RANDOM'; difficulty: State['difficulty']; random: number }
+  | {
+      type: 'UPDATE_GUESSES'
+      difficulty: State['difficulty']
+      guesses: Word[]
+    }
+  | {
+      type: 'UPDATE_CURRENT_GUESS'
+      difficulty: State['difficulty']
+      currentGuess: Word
+    }
+  | {
+      type: 'UPDATE_STATE'
+      state: State
     }
 
 export const getInitialState = (difficulty: Difficulty): GameState => {
@@ -69,6 +69,7 @@ export const getInitialState = (difficulty: Difficulty): GameState => {
     random: -1,
     solution,
     guesses: [],
+    currentGuess: [],
   }
 }
 
@@ -88,6 +89,15 @@ export const initialState: State = {
   difficulty: createDifficulty(),
   theme: 'light',
   view: 'full',
+  info: {
+    3: false,
+    4: false,
+    5: false,
+    6: false,
+    7: false,
+    8: false,
+    9: false,
+  },
   stats: {
     3: getInitialStats(3),
     4: getInitialStats(4),
@@ -109,12 +119,12 @@ export const initialState: State = {
 }
 
 export const gameReducer: Reducer<State, Action> = (state, action): State => {
+  console.log('ASD', action)
   switch (action.type) {
     case 'SET_THEME': {
       return { ...state, theme: action.theme }
     }
     case 'SET_VIEW': {
-      console.log('ASD', { ...state, view: action.view })
       return { ...state, view: action.view }
     }
     case 'SET_DIFFICULTY': {
@@ -123,10 +133,82 @@ export const gameReducer: Reducer<State, Action> = (state, action): State => {
         difficulty: action.difficulty,
       }
     }
+    case 'SET_INFO': {
+      return {
+        ...state,
+        info: {
+          ...state.info,
+          [action.difficulty]: action.seen,
+        },
+      }
+    }
+    case 'SET_DAY': {
+      return {
+        ...state,
+        game: {
+          ...state.game,
+          [action.difficulty]: {
+            ...(state.game[action.difficulty] ?? {}),
+            solution: getCurrentWord(action.day, state.difficulty).solution,
+            day: action.day,
+          } as GameState,
+        },
+      }
+    }
+    case 'SET_RANDOM': {
+      return {
+        ...state,
+        game: {
+          ...state.game,
+          [action.difficulty]: {
+            ...(state.game[action.difficulty] ?? {}),
+            ...(action.random > -1
+              ? {
+                  solution: getRandomWord(action.random, state.difficulty)
+                    .solution,
+                }
+              : {}),
+            random: action.random,
+          } as GameState,
+        },
+      }
+    }
+    case 'UPDATE_GUESSES': {
+      return {
+        ...state,
+        game: {
+          ...state.game,
+          [action.difficulty]: {
+            ...(state.game[action.difficulty] ?? {}),
+            guesses: action.guesses,
+          } as GameState,
+        },
+      }
+    }
+    case 'UPDATE_CURRENT_GUESS': {
+      return {
+        ...state,
+        game: {
+          ...state.game,
+          [action.difficulty]: {
+            ...(state.game[action.difficulty] ?? {}),
+            currentGuess: action.currentGuess,
+          } as GameState,
+        },
+      }
+    }
     case 'UPDATE_STATE': {
       return {
         ...state,
-        game: { ...state.game, [action.difficulty]: action.state },
+        ...action.state,
+        game: {
+          ...state.game,
+          ...(action.state.game ?? {}),
+        },
+        stats: {
+          ...state.stats,
+          ...(action.state.stats ?? {}),
+        },
       }
     }
   }

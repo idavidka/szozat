@@ -8,12 +8,13 @@ import {
   HASH_PARAM_KEY_CREATOR,
   HASH_PARAM_KEY_SOLUTION,
 } from './hashUtils'
+import { Difficulty } from '../hooks/gameReducer'
 
 export const isWordEqual = (word1: Word, word2: Word) => {
   return isEqual(word1, word2)
 }
 
-export const isWordInWordList = (word: Word, difficulty: number) => {
+export const isWordInWordList = (word: Word, difficulty: Difficulty) => {
   return getValidGuesses(difficulty).some((validWord) =>
     isWordEqual(word, validWord)
   )
@@ -23,7 +24,7 @@ export const isWinningWord = (
   word: Word,
   day: number,
   random: number,
-  difficulty: number
+  difficulty: Difficulty
 ) => {
   const { solution: currentSolution } =
     random > -1
@@ -32,7 +33,7 @@ export const isWinningWord = (
   return isWordEqual(currentSolution, word)
 }
 
-export const getWordOfDay = (day: number, difficulty: number) => {
+export const getWordOfDay = (day: number, difficulty: Difficulty) => {
   const words = getWords(difficulty)
   // January 1, 2022 Game Epoch
   const epochMs = new Date('January 1, 2022 00:00:00').valueOf()
@@ -49,7 +50,7 @@ export const getWordOfDay = (day: number, difficulty: number) => {
   }
 }
 
-export const getWordOfIndex = (index: number, difficulty: number) => {
+export const getWordOfIndex = (index: number, difficulty: Difficulty) => {
   const words = getAllWords(difficulty)
 
   return {
@@ -58,7 +59,7 @@ export const getWordOfIndex = (index: number, difficulty: number) => {
   }
 }
 
-export const getWordFromUrl = (difficulty: number) => {
+export const getWordFromUrl = (difficulty: Difficulty) => {
   const customSolution = getDecodedHashParam(HASH_PARAM_KEY_SOLUTION)
   if (customSolution === undefined) {
     return undefined
@@ -78,34 +79,34 @@ export const getWordFromUrl = (difficulty: number) => {
   }
 }
 
-export const getRandomWord = (random: number, difficulty: number) => {
-  const wordFromUrl = getWordFromUrl(difficulty)
+export const getRandomWord = (random: number, difficulty: Difficulty) => {
+  // const wordFromUrl = getWordFromUrl(difficulty)
   const wordOfIndex = getWordOfIndex(random, difficulty)
   // console.log('Debug', difficulty, day, wordOfDay.solution)
-  if (wordFromUrl !== undefined) {
-    return {
-      ...wordFromUrl,
-      solutionIndex: undefined,
-      tomorrow: undefined,
-    }
-  }
+  // if (wordFromUrl !== undefined) {
+  //   return {
+  //     ...wordFromUrl,
+  //     solutionIndex: undefined,
+  //     tomorrow: undefined,
+  //   }
+  // }
   return {
     ...wordOfIndex,
     solutionCreator: undefined,
   }
 }
 
-export const getCurrentWord = (day: number, difficulty: number) => {
-  const wordFromUrl = getWordFromUrl(difficulty)
+export const getCurrentWord = (day: number, difficulty: Difficulty) => {
+  // const wordFromUrl = getWordFromUrl(difficulty)
   const wordOfDay = getWordOfDay(day, difficulty)
   // console.log('Debug', difficulty, day, wordOfDay.solution)
-  if (wordFromUrl !== undefined) {
-    return {
-      ...wordFromUrl,
-      solutionIndex: undefined,
-      tomorrow: undefined,
-    }
-  }
+  // if (wordFromUrl !== undefined) {
+  //   return {
+  //     ...wordFromUrl,
+  //     solutionIndex: undefined,
+  //     tomorrow: undefined,
+  //   }
+  // }
   return {
     ...wordOfDay,
     solutionCreator: undefined,

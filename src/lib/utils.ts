@@ -1,4 +1,5 @@
 import classNames from 'classnames'
+import { Difficulty } from '../hooks/gameReducer'
 import { getHashParams, HASH_PARAM_KEY_DIFFICULTY } from './hashUtils'
 import { CharValue, Word } from './statuses'
 
@@ -40,7 +41,7 @@ export const getDifficultyFromUrl = (): number | undefined => {
   return difficulty ? parseInt(difficulty) : undefined
 }
 
-export const getGridColClassName = (difficulty: number) => {
+export const getGridColClassName = (difficulty: Difficulty) => {
   // workaround for tailwindcss parsing if classname is a literal template
   const className = classNames({
     'grid-cols-3': difficulty === 3,
@@ -55,7 +56,7 @@ export const getGridColClassName = (difficulty: number) => {
   return className
 }
 
-export const getGridMaxWidthClassName = (difficulty: number) => {
+export const getGridMaxWidthClassName = (difficulty: Difficulty) => {
   // workaround for tailwindcss parsing if classname is a literal template
   const className = classNames({
     'max-w-[240px]': difficulty === 3,

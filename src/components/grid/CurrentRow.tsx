@@ -1,10 +1,11 @@
 import { getGridColClassName } from '../../lib/utils'
 import { Word } from '../../lib/statuses'
 import { Cell } from './Cell'
+import { Difficulty } from '../../hooks/gameReducer'
 
 type Props = {
   guess: Word
-  difficulty: number
+  difficulty: Difficulty
 }
 
 export const CurrentRow = ({ guess, difficulty }: Props) => {

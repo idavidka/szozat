@@ -9,12 +9,13 @@ import {
   getGridMaxWidthClassName,
 } from '../../lib/utils'
 import { CharStatus } from '../../lib/statuses'
+import { Difficulty } from '../../hooks/gameReducer'
 
 type Props = {
   isOpen: boolean
   handleClose: () => void
   handleModal: (state: ModalType) => void
-  difficulty: number
+  difficulty: Difficulty
 }
 
 export const InfoModal = ({

@@ -1,5 +1,6 @@
 import { isNil, times } from 'lodash'
 import { MAX_NUMBER_OF_GUESSES } from '../constants/constants'
+import { Difficulty } from '../hooks/gameReducer'
 import {
   GameStats,
   loadStatsFromLocalStorage,
@@ -9,12 +10,12 @@ import {
 // In stats array elements 0-(N-1) are successes in 1-N trys
 
 export const addStatsForCompletedGame = (
-  gameStats: GameStats,
+  gameStats: Record<Difficulty, GameStats>,
   count: number,
-  difficulty: number
+  difficulty: Difficulty
 ) => {
   // Count is number of incorrect guesses before end.
-  const stats = { ...gameStats }
+  const stats = { ...gameStats[difficulty] }
 
   stats.totalGames += 1
 
@@ -33,12 +34,12 @@ export const addStatsForCompletedGame = (
 
   stats.successRate = getSuccessRate(stats)
 
-  saveStatsToLocalStorage(stats, difficulty)
+  // saveStatsToLocalStorage(stats, difficulty)
 
   return stats
 }
 
-export const getDefaultStats = (difficulty: number): GameStats => {
+export const getDefaultStats = (difficulty: Difficulty): GameStats => {
   return {
     winDistribution: times(MAX_NUMBER_OF_GUESSES[difficulty], () => 0),
     gamesFailed: 0,
@@ -50,33 +51,21 @@ export const getDefaultStats = (difficulty: number): GameStats => {
 }
 
 export const toStats = (
-  difficulty: number,
-  stat?: Record<string, number | number[]>
+  difficulty: Difficulty,
+  stats?: Record<Difficulty, GameStats>
 ): GameStats => {
-  const newStat = { ...getDefaultStats(difficulty) }
+  const stat = stats?.[difficulty]
 
   if (!stat) {
-    return newStat
+    return getDefaultStats(difficulty)
   }
 
-  if (!isNil(stat.failedCount) && typeof stat.failedCount === 'number') {
-    newStat.gamesFailed = stat.failedCount
-  }
+  stat.successRate = getSuccessRate(stat)
 
-  if (!isNil(stat.totalCount) && typeof stat.totalCount === 'number') {
-    newStat.totalGames = stat.totalCount
-  }
-
-  if (!isNil(stat.distributions) && Array.isArray(stat.distributions)) {
-    newStat.winDistribution = stat.distributions
-  }
-
-  newStat.successRate = getSuccessRate(newStat)
-
-  return newStat
+  return stat
 }
 
-export const loadStats = (difficulty: number) => {
+export const loadStats = (difficulty: Difficulty) => {
   return loadStatsFromLocalStorage(difficulty) || getDefaultStats(difficulty)
 }
 

@@ -5,6 +5,7 @@ import { Word } from '../../lib/statuses'
 import { CompletedRow } from './CompletedRow'
 import { CurrentRow } from './CurrentRow'
 import { EmptyRow } from './EmptyRow'
+import { Difficulty } from '../../hooks/gameReducer'
 
 type Props = {
   guesses: Word[]
@@ -12,7 +13,7 @@ type Props = {
   size: { width: number; height: number }
   day: number
   random: number
-  difficulty: number
+  difficulty: Difficulty
   full?: boolean
 }
 

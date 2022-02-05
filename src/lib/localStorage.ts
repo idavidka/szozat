@@ -2,9 +2,14 @@ import { shuffle } from 'lodash'
 import { isLocalhost } from './utils'
 import { Word } from './statuses'
 import { ThemeValue } from './theme'
-import { getDecodedHashParam, HASH_PARAM_KEY_ID } from './hashUtils'
+import {
+  getDecodedHashParam,
+  getHashParams,
+  HASH_PARAM_KEY_DIFFICULTY,
+  HASH_PARAM_KEY_ID,
+} from './hashUtils'
 import PKG from '../../package.json'
-import { State } from '../hooks/gameReducer'
+import { Difficulty, State } from '../hooks/gameReducer'
 
 export const gameKey = 'game'
 export const idKey = 'id'
@@ -15,6 +20,7 @@ export const themeKey = 'colorTheme'
 
 export type GameState = {
   guesses: Word[]
+  currentGuess: Word
   solution: Word
   day: number
   random: number
@@ -75,7 +81,7 @@ export const loadGridFullToLocalStorage = (): boolean => {
   return full ? !!full : false
 }
 
-export const saveDifficultyToLocalStorage = (difficulty: number) => {
+export const saveDifficultyToLocalStorage = (difficulty: Difficulty) => {
   setItem(difficultyKey, JSON.stringify({ difficulty: difficulty.toString() }))
 }
 
@@ -91,12 +97,12 @@ export const loadDifficultyToLocalStorage = (): number => {
 
 export const saveGameStateToLocalStorage = (
   gameState: GameState,
-  difficulty: number
+  difficulty: Difficulty
 ) => {
   setItem(`${gameStateKey}-${difficulty}`, JSON.stringify(gameState))
 }
 
-export const loadGameStateFromLocalStorage = (difficulty: number) => {
+export const loadGameStateFromLocalStorage = (difficulty: Difficulty) => {
   const state =
     getItem(`${gameStateKey}-${difficulty}`) ??
     (difficulty === 5 ? localStorage.getItem(gameStateKey) : undefined)
@@ -114,29 +120,34 @@ export type GameStats = {
   successRate: number
 }
 
-export const generateSessionId = () => {
+export const createId = () => {
   const hashId = getDecodedHashParam(HASH_PARAM_KEY_ID)
 
-  const current = getItem(idKey)
+  const current = JSON.parse(getItem(idKey) ?? getItem(gameKey) ?? '{}')?.id
 
-  if (!hashId && current) {
-    return JSON.parse(current)
-  }
+  const id = hashId || current || Math.random().toString(36).substr(2, 10)
 
-  const id = hashId || Math.random().toString(36).substr(2, 10)
-  setItem(idKey, JSON.stringify({ id }))
+  return id
+}
 
-  return { id }
+export const createDifficulty = (): Difficulty => {
+  const difficulty = parseInt(getHashParams()[HASH_PARAM_KEY_DIFFICULTY] ?? '')
+
+  return (
+    difficulty && !isNaN(difficulty) && difficulty >= 3 && difficulty <= 9
+      ? difficulty
+      : 5
+  ) as Difficulty
 }
 
 export const saveStatsToLocalStorage = (
   gameStats: GameStats,
-  difficulty: number
+  difficulty: Difficulty
 ) => {
   setItem(`${gameStatKey}-${difficulty}`, JSON.stringify(gameStats))
 }
 
-export const loadStatsFromLocalStorage = (difficulty: number) => {
+export const loadStatsFromLocalStorage = (difficulty: Difficulty) => {
   const stats =
     getItem(`${gameStatKey}-${difficulty}`) ??
     (difficulty === 5 ? getItem(gameStatKey) : undefined)

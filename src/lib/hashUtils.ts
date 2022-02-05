@@ -1,4 +1,5 @@
-import { generateSessionId } from './localStorage'
+import { Difficulty } from '../hooks/gameReducer'
+import { createId } from './localStorage'
 
 export const HASH_PARAM_KEY_ID = 'i'
 export const HASH_PARAM_KEY_DIFFICULTY = 'd'
@@ -49,7 +50,7 @@ export const getDecodedHashParam = (key: string) => {
 export const createCustomGameUrl = (
   solution: string,
   creator: string,
-  difficulty: number
+  difficulty: Difficulty
 ) => {
   const solutionValue = encodeHashParam(solution)
   const creatorValue = encodeHashParam(creator)
@@ -66,7 +67,7 @@ export const createCustomGameUrl = (
 }
 
 export const createCustomStatURl = () => {
-  const id = generateSessionId().id
+  const id = createId()
   const idValue = encodeHashParam(id)
   const urlBeginning = window.location.href.split('#')[0]
   const hashString = createHashString([

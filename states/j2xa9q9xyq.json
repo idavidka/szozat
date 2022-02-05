@@ -1,1 +1,286 @@
-{"id":"j2xa9q9xyq","difficulty":5,"theme":"dark","view":"full","stats":{"3":{"winDistribution":[0,0,0,0,0,0,0],"gamesFailed":0,"currentStreak":0,"bestStreak":0,"totalGames":0,"successRate":0},"4":{"winDistribution":[0,0,0,0,0,0,0,0],"gamesFailed":0,"currentStreak":0,"bestStreak":0,"totalGames":0,"successRate":0},"5":{"winDistribution":[0,0,0,0,0,0,0,0],"gamesFailed":0,"currentStreak":0,"bestStreak":0,"totalGames":0,"successRate":0},"6":{"winDistribution":[0,0,0,0,0,0,0,0,0,0],"gamesFailed":0,"currentStreak":0,"bestStreak":0,"totalGames":0,"successRate":0},"7":{"winDistribution":[0,0,0,0,0,0,0,0,0,0,0,0],"gamesFailed":0,"currentStreak":0,"bestStreak":0,"totalGames":0,"successRate":0},"8":{"winDistribution":[0,0,0,0,0,0,0,0,0,0,0,0,0,0],"gamesFailed":0,"currentStreak":0,"bestStreak":0,"totalGames":0,"successRate":0},"9":{"winDistribution":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"gamesFailed":0,"currentStreak":0,"bestStreak":0,"totalGames":0,"successRate":0}},"game":{"3":{"guesses":[],"solution":["NY","A","L"],"day":35},"4":{"guesses":[],"solution":["I","G","E","N"],"day":35},"5":{"guesses":[],"solution":["S","V","E","R","T"],"day":68,"random":-1},"6":{"guesses":[["A","R","A","NY","O","S"],["L","E","P","E","D","Ő"],["SZ","U","N","D","Í","T"],["K","Ü","L","Ö","N","C"],["GY","É","M","Á","N","T"],["V","I","GY","O","R","I"],["P","I","L","I","S","I"],["S","P","I","C","L","I"]],"solution":["S","P","I","C","L","I"],"day":68,"random":4601},"7":{"guesses":[],"solution":["M","O","R","D","V","I","N"],"day":10},"8":{"guesses":[],"solution":["R","U","C","A","Ö","R","Ö","M"],"day":28},"9":{"guesses":[],"solution":["S","P","E","K","U","L","Á","N","S"],"day":66}}}
+{
+    "id": "j2xa9q9xyq",
+    "difficulty": 6,
+    "theme": "dark",
+    "view": "full",
+    "stats": {
+        "3": {
+            "winDistribution": [
+                0,
+                0,
+                0,
+                1,
+                1,
+                0,
+                2
+            ],
+            "totalGames": 9,
+            "gamesFailed": 5
+        },
+        "4": {
+            "winDistribution": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                2
+            ],
+            "totalGames": 9,
+            "gamesFailed": 6
+        },
+        "5": {
+            "winDistribution": [
+                2,
+                5,
+                4,
+                6,
+                10,
+                4,
+                7,
+                9
+            ],
+            "totalGames": 75,
+            "gamesFailed": 28
+        },
+        "6": {
+            "winDistribution": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                1,
+                0
+            ],
+            "totalGames": 2,
+            "gamesFailed": 0
+        },
+        "7": {
+            "winDistribution": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "gamesFailed": 0,
+            "currentStreak": 0,
+            "bestStreak": 0,
+            "totalGames": 0,
+            "successRate": 0
+        },
+        "8": {
+            "winDistribution": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "gamesFailed": 0,
+            "currentStreak": 0,
+            "bestStreak": 0,
+            "totalGames": 0,
+            "successRate": 0
+        },
+        "9": {
+            "winDistribution": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0
+            ],
+            "totalGames": 4,
+            "gamesFailed": 2
+        }
+    },
+    "game": {
+        "3": {
+            "guesses": [],
+            "solution": [
+                "NY",
+                "A",
+                "L"
+            ],
+            "day": 35
+        },
+        "4": {
+            "guesses": [],
+            "solution": [
+                "I",
+                "G",
+                "E",
+                "N"
+            ],
+            "day": 35
+        },
+        "5": {
+            "guesses": [],
+            "solution": [
+                "S",
+                "V",
+                "E",
+                "R",
+                "T"
+            ],
+            "day": 68,
+            "random": -1
+        },
+        "6": {
+            "guesses": [
+                [
+                    "A",
+                    "R",
+                    "A",
+                    "NY",
+                    "O",
+                    "S"
+                ],
+                [
+                    "L",
+                    "E",
+                    "P",
+                    "E",
+                    "D",
+                    "Ő"
+                ],
+                [
+                    "SZ",
+                    "U",
+                    "N",
+                    "D",
+                    "Í",
+                    "T"
+                ],
+                [
+                    "K",
+                    "Ü",
+                    "L",
+                    "Ö",
+                    "N",
+                    "C"
+                ],
+                [
+                    "GY",
+                    "É",
+                    "M",
+                    "Á",
+                    "N",
+                    "T"
+                ],
+                [
+                    "V",
+                    "I",
+                    "GY",
+                    "O",
+                    "R",
+                    "I"
+                ],
+                [
+                    "P",
+                    "I",
+                    "L",
+                    "I",
+                    "S",
+                    "I"
+                ],
+                [
+                    "S",
+                    "P",
+                    "I",
+                    "C",
+                    "L",
+                    "I"
+                ]
+            ],
+            "solution": [
+                "S",
+                "P",
+                "I",
+                "C",
+                "L",
+                "I"
+            ],
+            "day": 68,
+            "random": 4601
+        },
+        "7": {
+            "guesses": [],
+            "solution": [
+                "M",
+                "O",
+                "R",
+                "D",
+                "V",
+                "I",
+                "N"
+            ],
+            "day": 10
+        },
+        "8": {
+            "guesses": [],
+            "solution": [
+                "R",
+                "U",
+                "C",
+                "A",
+                "Ö",
+                "R",
+                "Ö",
+                "M"
+            ],
+            "day": 28
+        },
+        "9": {
+            "guesses": [],
+            "solution": [
+                "S",
+                "P",
+                "E",
+                "K",
+                "U",
+                "L",
+                "Á",
+                "N",
+                "S"
+            ],
+            "day": 66
+        }
+    }
+}

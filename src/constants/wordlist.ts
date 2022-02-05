@@ -1,3 +1,4 @@
+import { Difficulty } from '../hooks/gameReducer'
 import { Word } from '../lib/statuses'
 import { toWord } from '../lib/utils'
 
@@ -37,8 +38,8 @@ const randomWords: Record<number, string[][]> = {
   9: randomWords9,
 }
 
-export const getWords = (difficulty: number): Word[] =>
+export const getWords = (difficulty: Difficulty): Word[] =>
   (words[difficulty] ?? words[5]).map(toWord)
 
-export const getAllWords = (difficulty: number): Word[] =>
+export const getAllWords = (difficulty: Difficulty): Word[] =>
   (randomWords[difficulty] ?? randomWords[5]).map(toWord)

@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { Transition } from '@headlessui/react'
 import classNames from 'classnames'
 
@@ -17,9 +17,15 @@ export const Alert = ({ isOpen, message, variant = 'warning' }: Props) => {
     }
   )
 
+  const [state, setState] = useState(isOpen)
+
+  useEffect(() => {
+    setState(isOpen)
+  }, [isOpen])
+
   return (
     <Transition
-      show={isOpen}
+      show={state}
       as={Fragment}
       enter="ease-out duration-300 transition"
       enterFrom="opacity-0"
@@ -28,7 +34,7 @@ export const Alert = ({ isOpen, message, variant = 'warning' }: Props) => {
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
     >
-      <div className={classes}>
+      <div className={classes} onClick={() => setState(false)}>
         <div className="p-4">
           <p className="text-sm text-center font-medium text-gray-900">
             {message}

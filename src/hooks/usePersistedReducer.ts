@@ -29,7 +29,8 @@ export const usePersistedReducer = <State, Action>(
       const stringifiedState = JSON.stringify(state)
       localStorage.setItem(storageKey, stringifiedState)
     }
-  }, [state, prevState, storageKey])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state, storageKey])
 
   return { state, dispatch }
 }

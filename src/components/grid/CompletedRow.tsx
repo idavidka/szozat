@@ -1,12 +1,13 @@
 import { getGridColClassName } from '../../lib/utils'
 import { getGuessStatuses, Word } from '../../lib/statuses'
 import { Cell } from './Cell'
+import { Difficulty } from '../../hooks/gameReducer'
 
 type Props = {
   guess: Word
   day: number
   random: number
-  difficulty: number
+  difficulty: Difficulty
 }
 
 export const CompletedRow = ({ guess, day, random, difficulty }: Props) => {
