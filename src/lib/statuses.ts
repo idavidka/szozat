@@ -76,6 +76,11 @@ export const getGuessStatuses = (
     random > -1
       ? getRandomWord(random, difficulty)
       : getCurrentWord(day, difficulty)
+
+  if (!solution) {
+    return []
+  }
+
   const solutionCharsTaken = solution.map((_) => false)
 
   const statuses: CharStatus[] = Array.from(Array(guess.length))

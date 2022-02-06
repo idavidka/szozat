@@ -120,7 +120,7 @@
     
 
         if(setFile($id, $state)) {
-            print json_encode($state, JSON_UNESCAPED_UNICODE);
+            print json_encode(getAllStat(), JSON_UNESCAPED_UNICODE);
             exit();
         }
     }  else if(isset($_GET['id']) && isset($_GET['state'])) {

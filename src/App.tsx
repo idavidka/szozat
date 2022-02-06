@@ -29,6 +29,7 @@ import {
   debouncingStateToAPI,
   getGlobalStatsFromAPI,
   getStateFromAPI,
+  sendStateToAPI,
 } from './lib/api'
 import { WIN_MESSAGES } from './constants/strings'
 import { addStatsForCompletedGame } from './lib/stats'
@@ -38,7 +39,7 @@ import { MAX_NUMBER_OF_GUESSES } from './constants/constants'
 import { ThemeToggle } from './components/theme/ThemeToggle'
 import { ThemeContext } from './components/theme/ThemeContext'
 import { CreatePuzzleModal } from './components/modals/CreatePuzzleModal'
-import { times, random as rand } from 'lodash'
+import { times, random as rand, debounce } from 'lodash'
 import { addGTM, GameType, getGridMaxWidthClassName } from './lib/utils'
 import { ModalId, ModalType } from './components/modals/BaseModal'
 import { getAllWords } from './constants/wordlist'
@@ -225,9 +226,12 @@ function App() {
   useEffect(() => {
     checkViewPort()
     if (userInteracted && !solutionCreator) {
-      debouncingStateToAPI(state)
+      sendStateToAPI(state)?.then((data) => {
+        setGlobalStats(data)
+      })
     }
-  }, [state, userInteracted, solutionCreator])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state, userInteracted])
 
   useEffect(() => {
     if (!isGameWon[difficulty] && !isGameLost[difficulty]) {
