@@ -15,6 +15,7 @@ type Props = {
   random: number
   difficulty: Difficulty
   full?: boolean
+  showCurrentRow?: boolean
 }
 
 export const Grid = ({
@@ -25,11 +26,16 @@ export const Grid = ({
   difficulty,
   size,
   full,
+  showCurrentRow,
 }: Props) => {
   const empties =
     guesses.length < MAX_NUMBER_OF_GUESSES[difficulty] - 1
       ? Array.from(
-          Array(MAX_NUMBER_OF_GUESSES[difficulty] - 1 - guesses.length)
+          Array(
+            MAX_NUMBER_OF_GUESSES[difficulty] -
+              (showCurrentRow ? 1 : 0) -
+              guesses.length
+          )
         )
       : []
 
@@ -74,7 +80,7 @@ export const Grid = ({
           difficulty={difficulty}
         />
       ))}
-      {guesses.length < MAX_NUMBER_OF_GUESSES[difficulty] && (
+      {guesses.length < MAX_NUMBER_OF_GUESSES[difficulty] && showCurrentRow && (
         <CurrentRow guess={currentGuess} difficulty={difficulty} />
       )}
       {empties.map((_, i) => (

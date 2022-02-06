@@ -15,7 +15,6 @@ export const isWordEqual = (word1: Word, word2: Word) => {
 }
 
 export const isWordInWordList = (word: Word, difficulty: Difficulty) => {
-  console.log('ASD word', word, difficulty, getValidGuesses(difficulty))
   return getValidGuesses(difficulty).some((validWord) =>
     isWordEqual(word, validWord)
   )

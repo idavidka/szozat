@@ -358,25 +358,23 @@ function App() {
   }, [state, userInteracted, wordFromUrl])
 
   useEffect(() => {
+    if (!isGameWon[difficulty] && !isGameLost[difficulty]) {
+      setSuccessAlert('')
+      return
+    }
+
+    setSuccessAlert(
+      isGameWon[difficulty]
+        ? WIN_MESSAGES[Math.floor(Math.random() * WIN_MESSAGES.length)]
+        : ''
+    )
     setTimeout(() => {
-      if (!isGameWon[difficulty] && !isGameLost[difficulty]) {
-        setSuccessAlert('')
-        return
-      }
-
-      setSuccessAlert(
-        isGameWon[difficulty]
-          ? WIN_MESSAGES[Math.floor(Math.random() * WIN_MESSAGES.length)]
-          : ''
-      )
-
       !(['new-game', 'new-game-confirm'] as ModalType[]).includes(
         isModalOpenRegistered
       ) && setIsModalOpen('stat')
     }, ALERT_TIME_MS)
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isGameWon[difficulty], isGameLost[difficulty]])
+  }, [isGameLost, isGameWon])
 
   const onChar = (value: CharValue) => {
     checkViewPort()
@@ -541,6 +539,7 @@ function App() {
     }
     setSuccessAlert('')
     setIsModalOpen(false)
+    setIsModalOpenRegistered(false)
   }
 
   const handleManualEnd = () => {
@@ -548,8 +547,12 @@ function App() {
     setUserInteracted(true)
     if (!isGameWon[difficulty]) {
       const emptyRow = times(difficulty, () => '-') as Word
+      const newCurrentGuess = emptyRow.map(
+        (letter, index) => currentGuess[index] ?? letter
+      )
       const newGuesses = [
         ...guesses,
+        newCurrentGuess,
         // emptyRow.map((letter, index) => currentGuess[index] ?? letter),
       ].filter((guess) => guess.length)
       for (let i = 0; i < maxGuess; i++) {
@@ -557,7 +560,9 @@ function App() {
           newGuesses[i] = [...emptyRow]
         }
       }
+
       addGTM('event', 'giveUp', { difficulty, guesses: newGuesses })
+      dispatch({ type: 'UPDATE_GUESSES', difficulty, guesses: newGuesses })
       dispatch({
         type: 'UPDATE_STATS',
         difficulty,
@@ -579,6 +584,7 @@ function App() {
   const handleModalClose = () => {
     const fallbackModal = checkIsModalCallback()
     setIsModalOpen(false)
+    setIsModalOpenRegistered(false)
     if (fallbackModal) {
       setIsModalOpenRegistered(fallbackModal)
       setTimeout(() => {
@@ -717,6 +723,7 @@ function App() {
               size={gridSize}
               full={view === 'full'}
               difficulty={difficulty}
+              showCurrentRow={!isGameWon[difficulty]}
             />
           </div>
           <div className="pb-5">
