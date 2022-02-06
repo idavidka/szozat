@@ -27,8 +27,8 @@ import {
 } from './lib/words'
 import {
   debouncingStateToAPI,
+  getGlobalStatsFromAPI,
   getStateFromAPI,
-  getStatsFromAPI,
 } from './lib/api'
 import { WIN_MESSAGES } from './constants/strings'
 import { addStatsForCompletedGame } from './lib/stats'
@@ -70,8 +70,8 @@ function App() {
     day,
     random,
     solution: loadedSolution,
-    guesses,
-    currentGuess,
+    guesses = [],
+    currentGuess = [],
   } = game?.[difficulty] ?? getInitialState(difficulty)
 
   const [globalStats, setGlobalStats] = useState()
@@ -143,7 +143,7 @@ function App() {
   }, [difficulty, dispatch, info, setIsModalOpen])
 
   useEffect(() => {
-    getStatsFromAPI().then((data) => setGlobalStats(data))
+    getGlobalStatsFromAPI().then((data) => setGlobalStats(data))
 
     getStateFromAPI().then((data) => {
       if (data) {
