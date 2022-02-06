@@ -63,6 +63,11 @@ export type Action =
       currentGuess: Word
     }
   | {
+      type: 'UPDATE_STATS'
+      difficulty: State['difficulty']
+      stats: GameStats
+    }
+  | {
       type: 'UPDATE_STATE'
       state: State
     }
@@ -211,6 +216,15 @@ export const gameReducer: Reducer<State, Action> = (state, action): State => {
             ...(state.game[action.difficulty] ?? {}),
             currentGuess: action.currentGuess,
           } as GameState,
+        },
+      }
+    }
+    case 'UPDATE_STATS': {
+      return {
+        ...state,
+        stats: {
+          ...state.stats,
+          [action.difficulty]: action.stats,
         },
       }
     }

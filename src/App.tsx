@@ -89,13 +89,13 @@ function App() {
 
   const { id, difficulty, theme, view, game, stats, info } = state
 
-  const { day, random, solution, guesses } =
+  const { day, random, solution, guesses, currentGuess } =
     game?.[difficulty] ?? getInitialState(difficulty)
 
   // new end
 
   // const hashDifficulty = getDifficultyFromUrl()
-  const [currentGuess, setCurrentGuess] = useState<Word>([])
+  // const [currentGuess, setCurrentGuess] = useState<Word>([])
   const [isGameWon, setIsGameWon] = useState<Record<number, boolean>>({})
   const [isGameLost, setIsGameLost] = useState<Record<number, boolean>>({})
   const [isModalOpen, setIsModalOpenState] = useState<ModalType>(false)
@@ -144,7 +144,6 @@ function App() {
   // }, [day, difficulty, random])
 
   const wordFromUrl = useMemo(() => getWordFromUrl(difficulty), [difficulty])
-  console.log('ASD', day, random, wordFromUrl, solution)
 
   const setIsModalOpen = useCallback((type: ModalType) => {
     type && setIsModalOpenRegistered(type)
@@ -318,30 +317,30 @@ function App() {
       return isModalOpen?.[1]
     }
     return null
-  }, [])
+  }, [isModalOpen])
 
   const checkViewPort = () => {
-    //   const currentRow = gridContainerRef.current?.querySelector(
-    //     '.current-row'
-    //   ) as HTMLDivElement | null
-    //   const parent = gridContainerRef.current
-    //   if (parent && currentRow) {
-    //     if (parent.offsetTop > currentRow.offsetTop - parent.scrollTop) {
-    //       animateScrollTo(0)
-    //       animateScrollTo(currentRow.previousElementSibling ?? currentRow, {
-    //         elementToScroll: parent,
-    //       })
-    //     }
-    //     if (
-    //       parent.offsetTop + parent.offsetHeight <
-    //       currentRow.offsetTop + currentRow.offsetHeight - parent.scrollTop
-    //     ) {
-    //       animateScrollTo(0)
-    //       animateScrollTo(currentRow.previousElementSibling ?? currentRow, {
-    //         elementToScroll: parent,
-    //       })
-    //     }
-    //   }
+    const currentRow = gridContainerRef.current?.querySelector(
+      '.current-row'
+    ) as HTMLDivElement | null
+    const parent = gridContainerRef.current
+    if (parent && currentRow) {
+      if (parent.offsetTop > currentRow.offsetTop - parent.scrollTop) {
+        animateScrollTo(0)
+        animateScrollTo(currentRow.previousElementSibling ?? currentRow, {
+          elementToScroll: parent,
+        })
+      }
+      if (
+        parent.offsetTop + parent.offsetHeight <
+        currentRow.offsetTop + currentRow.offsetHeight - parent.scrollTop
+      ) {
+        animateScrollTo(0)
+        animateScrollTo(currentRow.previousElementSibling ?? currentRow, {
+          elementToScroll: parent,
+        })
+      }
+    }
   }
 
   // useEffect(() => {
@@ -357,8 +356,6 @@ function App() {
       debouncingStateToAPI(state)
     }
   }, [state, userInteracted, wordFromUrl])
-
-  // useEffect(() => {})
 
   useEffect(() => {
     setTimeout(() => {
@@ -382,87 +379,121 @@ function App() {
   }, [isGameWon[difficulty], isGameLost[difficulty]])
 
   const onChar = (value: CharValue) => {
-    //   checkViewPort()
-    //   if (
-    //     currentGuess.length < difficulty &&
-    //     guesses.length < maxGuess &&
-    //     !isGameWon[difficulty]
-    //   ) {
-    //     setCurrentGuess([...currentGuess, value])
-    //     setUserInteracted(true)
-    //   }
+    checkViewPort()
+    if (
+      currentGuess.length < difficulty &&
+      guesses.length < maxGuess &&
+      !isGameWon[difficulty]
+    ) {
+      setUserInteracted(true)
+
+      dispatch({
+        type: 'UPDATE_CURRENT_GUESS',
+        difficulty,
+        currentGuess: [...currentGuess, value],
+      })
+    }
   }
 
   const onReplace = (value: CharValue) => {
-    //   checkViewPort()
-    //   if (
-    //     currentGuess.length - 1 < difficulty &&
-    //     guesses.length < maxGuess &&
-    //     !isGameWon[difficulty]
-    //   ) {
-    //     setCurrentGuess([...currentGuess.slice(0, -1), value])
-    //     setUserInteracted(true)
-    //   }
+    checkViewPort()
+    if (
+      currentGuess.length - 1 < difficulty &&
+      guesses.length < maxGuess &&
+      !isGameWon[difficulty]
+    ) {
+      setUserInteracted(true)
+
+      dispatch({
+        type: 'UPDATE_CURRENT_GUESS',
+        difficulty,
+        currentGuess: [...currentGuess.slice(0, -1), value],
+      })
+    }
   }
 
   const onDelete = () => {
-    //   checkViewPort()
-    //   setCurrentGuess(currentGuess.slice(0, -1))
-    //   setUserInteracted(true)
+    checkViewPort()
+    if (currentGuess.length - 1 >= 0 && !isGameWon[difficulty]) {
+      setUserInteracted(true)
+
+      dispatch({
+        type: 'UPDATE_CURRENT_GUESS',
+        difficulty,
+        currentGuess: [...currentGuess.slice(0, -1)],
+      })
+    }
   }
 
   const onEnter = () => {
-    // checkViewPort()
-    // if (isGameWon[difficulty] || isGameLost[difficulty]) {
-    //   return
-    // }
-    // if (currentGuess.length !== difficulty) {
-    //   setIsNotEnoughLetters(true)
-    //   return setTimeout(() => {
-    //     setIsNotEnoughLetters(false)
-    //   }, ALERT_TIME_MS)
-    // }
-    // addGTM('event', 'guess', {
-    //   guess: currentGuess.join(''),
-    //   difficulty,
-    // })
-    // if (
-    //   !isWordInWordList(currentGuess, difficulty) &&
-    //   !isWordEqual(currentGuess, solution)
-    // ) {
-    //   setIsWordNotFoundAlertOpen(true)
-    //   return setTimeout(() => {
-    //     setIsWordNotFoundAlertOpen(false)
-    //   }, ALERT_TIME_MS)
-    // }
-    // const winningWord = isWinningWord(currentGuess, day, random, difficulty)
-    // if (
-    //   currentGuess.length === difficulty &&
-    //   guesses.length < maxGuess &&
-    //   !isGameWon[difficulty]
-    // ) {
-    //   setGuesses([...guesses, currentGuess])
-    //   setCurrentGuess([])
-    //   setUserInteracted(true)
-    //   if (winningWord) {
-    //     saveStat(addStatsForCompletedGame(stats, guesses.length, difficulty))
-    //     addGTM('event', 'win', {
-    //       guess: currentGuess.join(''),
-    //       difficulty,
-    //     })
-    //     return setIsGameWon({ [difficulty]: true })
-    //   }
-    //   if (guesses.length === maxGuess - 1) {
-    //     saveStat(
-    //       addStatsForCompletedGame(stats, guesses.length + 1, difficulty)
-    //     )
-    //     addGTM('event', 'lost', {
-    //       guesses: guesses.map((guess) => guess.join('')),
-    //       difficulty,
-    //     })
-    //     setIsGameLost({ [difficulty]: true })
-    //   }
-    // }
+    checkViewPort()
+    if (isGameWon[difficulty] || isGameLost[difficulty]) {
+      return
+    }
+
+    if (currentGuess.length !== difficulty) {
+      setIsNotEnoughLetters(true)
+      return setTimeout(() => {
+        setIsNotEnoughLetters(false)
+      }, ALERT_TIME_MS)
+    }
+
+    addGTM('event', 'guess', {
+      guess: currentGuess.join(''),
+      difficulty,
+    })
+    if (
+      !isWordInWordList(currentGuess, difficulty) &&
+      !isWordEqual(currentGuess, solution)
+    ) {
+      setIsWordNotFoundAlertOpen(true)
+      return setTimeout(() => {
+        setIsWordNotFoundAlertOpen(false)
+      }, ALERT_TIME_MS)
+    }
+
+    const winningWord = isWinningWord(currentGuess, day, random, difficulty)
+    if (
+      currentGuess.length === difficulty &&
+      guesses.length < maxGuess &&
+      !isGameWon[difficulty]
+    ) {
+      dispatch({
+        type: 'UPDATE_GUESSES',
+        difficulty,
+        guesses: [...guesses, currentGuess],
+      })
+      dispatch({ type: 'UPDATE_CURRENT_GUESS', difficulty, currentGuess: [] })
+      if (winningWord) {
+        dispatch({
+          type: 'UPDATE_STATS',
+          difficulty,
+          stats: addStatsForCompletedGame(stats, guesses.length, difficulty),
+        })
+        addGTM('event', 'win', {
+          guess: currentGuess.join(''),
+          difficulty,
+        })
+        return setIsGameWon({ [difficulty]: true })
+      }
+
+      if (guesses.length === maxGuess - 1) {
+        dispatch({
+          type: 'UPDATE_STATS',
+          difficulty,
+          stats: addStatsForCompletedGame(
+            stats,
+            guesses.length + 1,
+            difficulty
+          ),
+        })
+        addGTM('event', 'lost', {
+          guesses: guesses.map((guess) => guess.join('')),
+          difficulty,
+        })
+        setIsGameLost({ [difficulty]: true })
+      }
+    }
   }
 
   const handleShareCopySuccess = useCallback(() => {
@@ -527,12 +558,11 @@ function App() {
         }
       }
       addGTM('event', 'giveUp', { difficulty, guesses: newGuesses })
-      // setGuesses(newGuesses)
-      console.log(
-        'ASD',
-        addStatsForCompletedGame(stats, newGuesses.length, difficulty)
-      )
-      // saveStat()
+      dispatch({
+        type: 'UPDATE_STATS',
+        difficulty,
+        stats: addStatsForCompletedGame(stats, newGuesses.length, difficulty),
+      })
       setIsGameLost({ [difficulty]: true })
     }
     setIsModalOpenRegistered('new-game')
@@ -543,8 +573,6 @@ function App() {
   }
 
   const handleGridIcon = (newView: View) => {
-    //   saveGridFullToLocalStorage(full)
-    //   setGridFull(full)
     dispatch({ type: 'SET_VIEW', view: newView })
   }
 
