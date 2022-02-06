@@ -1,11 +1,6 @@
-import { isNil, times } from 'lodash'
+import { times } from 'lodash'
 import { MAX_NUMBER_OF_GUESSES } from '../constants/constants'
-import { Difficulty } from '../hooks/gameReducer'
-import {
-  GameStats,
-  loadStatsFromLocalStorage,
-  saveStatsToLocalStorage,
-} from './localStorage'
+import { Difficulty, GameStats } from '../hooks/gameReducer'
 
 // In stats array elements 0-(N-1) are successes in 1-N trys
 
@@ -33,8 +28,6 @@ export const addStatsForCompletedGame = (
   }
 
   stats.successRate = getSuccessRate(stats)
-
-  // saveStatsToLocalStorage(stats, difficulty)
 
   return stats
 }
@@ -65,9 +58,9 @@ export const toStats = (
   return stat
 }
 
-export const loadStats = (difficulty: Difficulty) => {
-  return loadStatsFromLocalStorage(difficulty) || getDefaultStats(difficulty)
-}
+// export const loadStats = (difficulty: Difficulty) => {
+//   return loadStatsFromLocalStorage(difficulty) || getDefaultStats(difficulty)
+// }
 
 const getSuccessRate = (gameStats: GameStats) => {
   const { totalGames, gamesFailed } = gameStats

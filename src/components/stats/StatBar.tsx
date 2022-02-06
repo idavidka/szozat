@@ -1,4 +1,4 @@
-import { GameStats } from '../../lib/localStorage'
+import { GameStats } from '../../hooks/gameReducer'
 
 type Props = {
   gameStats: GameStats

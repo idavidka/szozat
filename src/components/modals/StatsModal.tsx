@@ -1,7 +1,6 @@
 import Countdown from 'react-countdown'
 import { StatBar } from '../stats/StatBar'
 import { Histogram } from '../stats/Histogram'
-import { GameStats } from '../../lib/localStorage'
 import { getShareText, shareStatus } from '../../lib/share'
 import { solutionCreator, tomorrow } from '../../lib/words'
 import { BaseModal } from './BaseModal'
@@ -12,7 +11,7 @@ import { Tab } from '@headlessui/react'
 import classNames from 'classnames'
 import { createCustomStatURl } from '../../lib/hashUtils'
 import { GameType } from '../../lib/utils'
-import { Difficulty } from '../../hooks/gameReducer'
+import { Difficulty, GameStats } from '../../hooks/gameReducer'
 import { toStats } from '../../lib/stats'
 
 type Props = {

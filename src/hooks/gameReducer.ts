@@ -1,21 +1,7 @@
-import { times } from 'lodash'
+import { omit, times } from 'lodash'
 import { Reducer } from 'react'
 import { MAX_NUMBER_OF_GUESSES } from '../constants/constants'
-import {
-  getDecodedHashParam,
-  getHashParams,
-  HASH_PARAM_KEY_DIFFICULTY,
-  HASH_PARAM_KEY_ID,
-} from '../lib/hashUtils'
-import {
-  createDifficulty,
-  createId,
-  gameKey,
-  GameState,
-  GameStats,
-  getItem,
-  idKey,
-} from '../lib/localStorage'
+import { createDifficulty, createId } from '../lib/localStorage'
 import { Word } from '../lib/statuses'
 import { ThemeValue } from '../lib/theme'
 import { isLocalhost } from '../lib/utils'
@@ -23,6 +9,23 @@ import { getCurrentWord, getRandomWord } from '../lib/words'
 
 export type Difficulty = 3 | 4 | 5 | 6 | 7 | 8 | 9
 export type View = 'full' | 'compact'
+
+export type GameState = {
+  guesses: Word[]
+  currentGuess: Word
+  solution: Word
+  day: number
+  random: number
+}
+
+export type GameStats = {
+  winDistribution: number[]
+  gamesFailed: number
+  currentStreak: number
+  bestStreak: number
+  totalGames: number
+  successRate: number
+}
 
 export type State = {
   id: string
@@ -62,6 +65,13 @@ export type Action =
       type: 'UPDATE_CURRENT_GUESS'
       difficulty: State['difficulty']
       currentGuess: Word
+    }
+  | {
+      type: 'UPDATE_GAME'
+      difficulty: State['difficulty']
+      solution?: Word
+      guesses?: Word[]
+      currentGuess?: Word
     }
   | {
       type: 'UPDATE_STATS'
@@ -226,6 +236,18 @@ export const gameReducer: Reducer<State, Action> = (state, action): State => {
         stats: {
           ...state.stats,
           [action.difficulty]: action.stats,
+        },
+      }
+    }
+    case 'UPDATE_GAME': {
+      return {
+        ...state,
+        game: {
+          ...state.game,
+          [action.difficulty]: {
+            ...(state.game[action.difficulty] ?? {}),
+            ...omit(action, 'type', 'difficulty'),
+          },
         },
       }
     }

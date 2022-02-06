@@ -80,16 +80,16 @@ export const getWordFromUrl = (difficulty: Difficulty) => {
 }
 
 export const getRandomWord = (random: number, difficulty: Difficulty) => {
-  // const wordFromUrl = getWordFromUrl(difficulty)
+  const wordFromUrl = getWordFromUrl(difficulty)
   const wordOfIndex = getWordOfIndex(random, difficulty)
   // console.log('Debug', difficulty, day, wordOfDay.solution)
-  // if (wordFromUrl !== undefined) {
-  //   return {
-  //     ...wordFromUrl,
-  //     solutionIndex: undefined,
-  //     tomorrow: undefined,
-  //   }
-  // }
+  if (wordFromUrl !== undefined) {
+    return {
+      ...wordFromUrl,
+      solutionIndex: undefined,
+      tomorrow: undefined,
+    }
+  }
   return {
     ...wordOfIndex,
     solutionCreator: undefined,
@@ -97,16 +97,16 @@ export const getRandomWord = (random: number, difficulty: Difficulty) => {
 }
 
 export const getCurrentWord = (day: number, difficulty: Difficulty) => {
-  // const wordFromUrl = getWordFromUrl(difficulty)
+  const wordFromUrl = getWordFromUrl(difficulty)
   const wordOfDay = getWordOfDay(day, difficulty)
   // console.log('Debug', difficulty, day, wordOfDay.solution)
-  // if (wordFromUrl !== undefined) {
-  //   return {
-  //     ...wordFromUrl,
-  //     solutionIndex: undefined,
-  //     tomorrow: undefined,
-  //   }
-  // }
+  if (wordFromUrl !== undefined) {
+    return {
+      ...wordFromUrl,
+      solutionIndex: undefined,
+      tomorrow: undefined,
+    }
+  }
   return {
     ...wordOfDay,
     solutionCreator: undefined,

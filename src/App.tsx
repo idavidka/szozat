@@ -24,7 +24,6 @@ import {
   isWordEqual,
   getCurrentWord,
   getRandomWord,
-  getWordFromUrl,
 } from './lib/words'
 import {
   debouncingStateToAPI,
@@ -32,37 +31,15 @@ import {
   getStatsFromAPI,
 } from './lib/api'
 import { WIN_MESSAGES } from './constants/strings'
-import {
-  addStatsForCompletedGame,
-  getDefaultStats,
-  loadStats,
-  toStats,
-} from './lib/stats'
-import {
-  GameStats,
-  loadDifficultyToLocalStorage,
-  loadGameStateFromLocalStorage,
-  loadGridFullToLocalStorage,
-  saveDifficultyToLocalStorage,
-  saveGameStateToLocalStorage,
-  saveGridFullToLocalStorage,
-  saveStatsToLocalStorage,
-  GameState,
-  gameKey,
-  getKey,
-} from './lib/localStorage'
+import { addStatsForCompletedGame } from './lib/stats'
+import { gameKey, getKey } from './lib/localStorage'
 import { CharValue, Word } from './lib/statuses'
 import { MAX_NUMBER_OF_GUESSES } from './constants/constants'
 import { ThemeToggle } from './components/theme/ThemeToggle'
 import { ThemeContext } from './components/theme/ThemeContext'
 import { CreatePuzzleModal } from './components/modals/CreatePuzzleModal'
 import { times, random as rand } from 'lodash'
-import {
-  addGTM,
-  GameType,
-  getDifficultyFromUrl,
-  getGridMaxWidthClassName,
-} from './lib/utils'
+import { addGTM, GameType, getGridMaxWidthClassName } from './lib/utils'
 import { ModalId, ModalType } from './components/modals/BaseModal'
 import { getAllWords } from './constants/wordlist'
 import { usePersistedReducer } from './hooks/usePersistedReducer'
@@ -87,15 +64,17 @@ function App() {
   )
   const context = React.useContext(ThemeContext)
 
-  const { id, difficulty, theme, view, game, stats, info } = state
+  const { difficulty, theme, view, game, stats, info } = state
 
-  const { day, random, solution, guesses, currentGuess } =
-    game?.[difficulty] ?? getInitialState(difficulty)
+  const {
+    day,
+    random,
+    solution: loadedSolution,
+    guesses,
+    currentGuess,
+  } = game?.[difficulty] ?? getInitialState(difficulty)
 
-  // new end
-
-  // const hashDifficulty = getDifficultyFromUrl()
-  // const [currentGuess, setCurrentGuess] = useState<Word>([])
+  const [globalStats, setGlobalStats] = useState()
   const [isGameWon, setIsGameWon] = useState<Record<number, boolean>>({})
   const [isGameLost, setIsGameLost] = useState<Record<number, boolean>>({})
   const [isModalOpen, setIsModalOpenState] = useState<ModalType>(false)
@@ -107,43 +86,22 @@ function App() {
   const [shareFailed, setShareFailed] = useState(false)
   const [successAlert, setSuccessAlert] = useState('')
   const [userInteracted, setUserInteracted] = useState(false)
-  // const [appToReload, setAppToReload] = useState(false)
-  // const [appIsReloaded, setAppIsReloaded] = useState(false)
-  // const savedDificulty = useMemo(() => {
-  //   return hashDifficulty ?? loadDifficultyToLocalStorage()
-  // }, [hashDifficulty])
-  // const [difficulty, setDifficulty] = useState(savedDificulty)
-  // const getLoadedState = useCallback((stateDifficulty) => {
-  //   const loadedState = loadGameStateFromLocalStorage(stateDifficulty)
+  const [gridSize, setGridSize] = useState({ width: 0, height: 0 })
 
-  //   return loadedState
-  // }, [])
+  const gridContainerRef = useRef<HTMLDivElement>(null)
+
+  const { solution, solutionCreator } = useMemo(
+    () =>
+      random > -1
+        ? getRandomWord(random, difficulty)
+        : getCurrentWord(day, difficulty),
+    [random, difficulty, day]
+  )
 
   const maxGuess = useMemo(
     () => MAX_NUMBER_OF_GUESSES[difficulty],
     [difficulty]
   )
-
-  // const savedRandom = useMemo(
-  //   () => getLoadedState(difficulty)?.random ?? -1,
-  //   [difficulty, getLoadedState]
-  // )
-
-  // const [random, setRandom] = useState(savedRandom)
-
-  // const savedDay = useMemo(
-  //   () => getLoadedState(difficulty)?.day ?? 0,
-  //   [difficulty, getLoadedState]
-  // )
-  // const [day, setDay] = useState(savedDay)
-
-  // const { solution } = useMemo(() => {
-  //   return random > -1
-  //     ? getRandomWord(random, difficulty)
-  //     : getCurrentWord(day, difficulty)
-  // }, [day, difficulty, random])
-
-  const wordFromUrl = useMemo(() => getWordFromUrl(difficulty), [difficulty])
 
   const setIsModalOpen = useCallback((type: ModalType) => {
     type && setIsModalOpenRegistered(type)
@@ -157,13 +115,14 @@ function App() {
   }, [context.theme, dispatch, theme])
 
   useEffect(() => {
-    if (wordFromUrl && !isWordEqual(wordFromUrl.solution, solution)) {
+    if (loadedSolution && !isWordEqual(solution, loadedSolution)) {
       dispatch({
-        type: 'UPDATE_SOLUTION',
+        type: 'UPDATE_GAME',
         difficulty,
-        solution: wordFromUrl.solution,
+        solution: solution,
+        guesses: [],
+        currentGuess: [],
       })
-      dispatch({ type: 'UPDATE_GUESSES', difficulty, guesses: [] })
       return
     }
 
@@ -174,7 +133,7 @@ function App() {
     if (guesses.length === maxGuess && !gameWasWon) {
       setIsGameLost({ [difficulty]: true })
     }
-  }, [difficulty, dispatch, guesses, maxGuess, solution, wordFromUrl])
+  }, [difficulty, dispatch, guesses, loadedSolution, maxGuess, solution])
 
   useEffect(() => {
     if (!info?.[difficulty]) {
@@ -182,72 +141,6 @@ function App() {
       dispatch({ type: 'SET_INFO', difficulty, seen: true })
     }
   }, [difficulty, dispatch, info, setIsModalOpen])
-
-  // const getLoadedGuesses = useCallback(
-  //   (customState?: GameState | null) => {
-  //     const loaded = customState ?? getLoadedState(difficulty)
-  //     if (loaded == null) {
-  //       setIsModalOpen('info')
-  //     }
-
-  //     if (loaded == null || !isWordEqual(loaded.solution, solution)) {
-  //       return []
-  //     }
-
-  //     const gameWasWon = loaded.guesses.some((guess) =>
-  //       isWordEqual(guess, solution)
-  //     )
-  //     if (gameWasWon) {
-  //       setIsGameWon({ [difficulty]: true })
-  //     }
-  //     if (loaded.guesses.length === maxGuess && !gameWasWon) {
-  //       setIsGameLost({ [difficulty]: true })
-  //     }
-  //     return loaded.guesses
-  //   },
-  //   [difficulty, getLoadedState, maxGuess, setIsModalOpen, solution]
-  // )
-
-  // const getLoadedStats = useCallback((statDifficulty) => {
-  //   loadStats(statDifficulty)
-  // }, [])
-
-  // const [stats, setStats] = useState(getLoadedStats(difficulty))
-  const [globalStats, setGlobalStats] = useState()
-
-  // const [, updateState] = useState<Record<string, string>>()
-  // const forceUpdate = useCallback(() => updateState({}), [])
-  // useEffect(() => {
-  //   if (appToReload) {
-  //     const loadedDifficulty = loadDifficultyToLocalStorage()
-  //     const loadedState = loadGameStateFromLocalStorage(loadedDifficulty)
-  //     if (!appIsReloaded) {
-  //       setTimeout(() => {
-  //         const loadedDay = loadedState?.day
-
-  //         setAppIsReloaded(true)
-  //         if (loadedState) {
-  //           setIsModalOpen(false)
-  //         }
-  //         setDay(loadedDay ?? 0)
-  //         setDifficulty(loadedDifficulty)
-  //         const loadedGuesses = getLoadedGuesses()
-  //         if (loadedGuesses.length) {
-  //           setGuesses(loadedGuesses)
-  //         }
-  //         forceUpdate()
-  //       }, 1000)
-  //     }
-  //   }
-  // }, [
-  //   appIsReloaded,
-  //   appToReload,
-  //   day,
-  //   forceUpdate,
-  //   getLoadedGuesses,
-  //   getLoadedStats,
-  //   setIsModalOpen,
-  // ])
 
   useEffect(() => {
     getStatsFromAPI().then((data) => setGlobalStats(data))
@@ -262,20 +155,6 @@ function App() {
     })
   }, [dispatch])
 
-  // const saveStat = useCallback(
-  //   (gameStats: GameStats) => {
-  //     setStats(gameStats)
-  //     sendStatsToAPI(gameStats, difficulty).then((data) => setGlobalStats(data))
-  //   },
-  //   [difficulty]
-  // )
-
-  // const [guesses, setGuesses] = useState<Word[]>([])
-
-  const gridContainerRef = useRef<HTMLDivElement>(null)
-
-  // const [gridFull, setGridFull] = useState(loadGridFullToLocalStorage())
-  const [gridSize, setGridSize] = useState({ width: 0, height: 0 })
   useEffect(() => {
     const handleResize = () => {
       if (gridContainerRef.current == null) {
@@ -343,19 +222,12 @@ function App() {
     }
   }
 
-  // useEffect(() => {
-  //   checkViewPort()
-  //   !hashDifficulty && saveDifficultyToLocalStorage(difficulty)
-  //   setGuesses(getLoadedGuesses())
-  //   setStats(getLoadedStats(difficulty))
-  // }, [difficulty, getLoadedGuesses, getLoadedStats, hashDifficulty])
-
   useEffect(() => {
     checkViewPort()
-    if (userInteracted && !wordFromUrl) {
+    if (userInteracted && !solutionCreator) {
       debouncingStateToAPI(state)
     }
-  }, [state, userInteracted, wordFromUrl])
+  }, [state, userInteracted, solutionCreator])
 
   useEffect(() => {
     if (!isGameWon[difficulty] && !isGameLost[difficulty]) {
@@ -495,11 +367,11 @@ function App() {
   }
 
   const handleShareCopySuccess = useCallback(() => {
-    // addGTM('event', 'copy', { status: 'success' })
-    // setShareComplete(true)
-    // setTimeout(() => {
-    //   setShareComplete(false)
-    // }, ALERT_TIME_MS)
+    addGTM('event', 'copy', { status: 'success' })
+    setShareComplete(true)
+    setTimeout(() => {
+      setShareComplete(false)
+    }, ALERT_TIME_MS)
   }, [])
 
   const handleShareFailure = useCallback(() => {
@@ -524,8 +396,7 @@ function App() {
     setUserInteracted(true)
     setIsGameLost({ [difficulty]: false })
     setIsGameWon({ [difficulty]: false })
-    dispatch({ type: 'UPDATE_GUESSES', difficulty, guesses: [] })
-    dispatch({ type: 'UPDATE_CURRENT_GUESS', difficulty, currentGuess: [] })
+    dispatch({ type: 'UPDATE_GAME', difficulty, guesses: [], currentGuess: [] })
     if (type === 'in-row') {
       dispatch({ type: 'SET_RANDOM', difficulty, random: -1 })
       dispatch({ type: 'SET_DAY', difficulty, day: day + 1 })
@@ -550,11 +421,9 @@ function App() {
       const newCurrentGuess = emptyRow.map(
         (letter, index) => currentGuess[index] ?? letter
       )
-      const newGuesses = [
-        ...guesses,
-        newCurrentGuess,
-        // emptyRow.map((letter, index) => currentGuess[index] ?? letter),
-      ].filter((guess) => guess.length)
+      const newGuesses = [...guesses, newCurrentGuess].filter(
+        (guess) => guess.length
+      )
       for (let i = 0; i < maxGuess; i++) {
         if (!newGuesses[i]) {
           newGuesses[i] = [...emptyRow]
