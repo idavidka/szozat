@@ -8,7 +8,9 @@ import {
   HASH_PARAM_KEY_ID,
 } from './hashUtils'
 import PKG from '../../package.json'
-import { Difficulty, State } from '../hooks/gameReducer'
+import { Difficulty, State as GameState } from '../hooks/gameReducer'
+import { Group, State as WordState } from '../hooks/wordReducer'
+import { Word } from './statuses'
 
 export const gameKey = 'game'
 export const wordKey = 'words'
@@ -95,7 +97,7 @@ export const createDifficulty = (): Difficulty => {
 export const loadInitialTheme = (): ThemeValue => {
   const gameState = getItem(gameKey)
   if (gameState) {
-    const savedTheme = (JSON.parse(gameState) as State)?.theme
+    const savedTheme = (JSON.parse(gameState) as GameState)?.theme
 
     if (savedTheme) {
       return savedTheme as ThemeValue
@@ -108,4 +110,19 @@ export const loadInitialTheme = (): ThemeValue => {
   }
 
   return 'light' // light theme as the default
+}
+
+export const getWordsFromLocalStorage = (
+  group: Group,
+  difficulty: Difficulty
+): Word[] | undefined => {
+  const wordState = getItem(wordKey)
+
+  if (!wordState) {
+    return undefined
+  }
+
+  const words = JSON.parse(wordState) as WordState
+
+  return words?.[group]?.[difficulty] ?? words?.[group]?.[5]
 }

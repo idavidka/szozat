@@ -27,6 +27,7 @@ import {
 import {
   getGlobalStatsFromAPI,
   getStateFromAPI,
+  getStaticWords,
   sendStateToAPI,
 } from './lib/api'
 import { WIN_MESSAGES } from './constants/strings'
@@ -67,12 +68,12 @@ function App() {
   const { state, dispatch } = usePersistedReducer<GameState, GameAction>(
     gameReducer,
     gameInitialState,
-    getKey(gameKey)
+    gameKey
   )
   const { state: wordsState, dispatch: dispatchWord } = usePersistedReducer<
     WordState,
     WordAction
-  >(wordReducer, wordInitialState, getKey(wordKey))
+  >(wordReducer, wordInitialState, wordKey)
   const context = React.useContext(ThemeContext)
 
   const { difficulty, theme, view, game, stats, info } = state
@@ -114,7 +115,8 @@ function App() {
       random > -1
         ? getRandomWord(random, difficulty)
         : getCurrentWord(day, difficulty),
-    [random, difficulty, day]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [random, difficulty, day, wordsState]
   )
 
   const maxGuess = useMemo(
@@ -175,15 +177,10 @@ function App() {
   }, [dispatch])
 
   useEffect(() => {
-    getStateFromAPI().then((data) => {
-      if (data) {
-        dispatch({
-          type: 'UPDATE_STATE',
-          state: data,
-        })
-      }
+    getStaticWords(({ group, difficulty, words }) => {
+      dispatchWord({ type: 'UPDATE_DIFFICULTY', group, difficulty, words })
     })
-  }, [dispatch])
+  }, [dispatchWord])
 
   useEffect(() => {
     const handleResize = () => {
@@ -501,7 +498,7 @@ function App() {
     }
   }
 
-  console.log('Debug', words)
+  console.log('Debug', words, solution)
   if (words.all.length === 0) {
     return <div>Loading</div>
   }

@@ -5,7 +5,7 @@ import { CharValue, Word } from './statuses'
 
 export type GameType = 'random' | 'in-row'
 
-export const toWord = (word: string[]): Word => {
+export const toWord = (word: Word): Word => {
   return word.map((letter) => letter.toUpperCase() as CharValue)
 }
 

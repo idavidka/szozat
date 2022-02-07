@@ -114,7 +114,7 @@ export const getCurrentWord = (day: number, difficulty: Difficulty) => {
 }
 
 export const getLetterCount = (word: Word): Record<CharValue, number> => {
-  return word.reduce<Record<CharValue, number>>((acc, letter) => {
+  return (word ?? []).reduce<Record<CharValue, number>>((acc, letter) => {
     return { ...acc, [letter]: (acc[letter] ?? 0) + 1 }
   }, {})
 }

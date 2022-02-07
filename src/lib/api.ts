@@ -1,6 +1,9 @@
 import { debounce } from 'lodash'
-import { State } from '../hooks/gameReducer'
+import { DIFFICULTIES } from '../constants/constants'
+import { Difficulty, State } from '../hooks/gameReducer'
+import { Group } from '../hooks/wordReducer'
 import { createId } from './localStorage'
+import { Word } from './statuses'
 
 export const sendStateToAPI = (state: State) => {
   if (!process.env.REACT_APP_API_URL) {
@@ -19,17 +22,37 @@ export const sendStateToAPI = (state: State) => {
   }).then((response) => response.json())
 }
 
-// export const getWords = () => {
-//   const url = '/words/'
-//   const params = new URLSearchParams()
-//   params.append('state', 'true')
-//   params.append('id', createId())
+export const getStaticWords = (
+  resolver: (value: {
+    group: Group
+    difficulty: Difficulty
+    words: Word[]
+  }) => void
+) => {
+  DIFFICULTIES.forEach((difficulty) => {
+    const urls: Record<Group, string> = {
+      all: `/words/hungarian-word-letter-list-${difficulty}.json`,
+      selected: `/words/hungarian-puzzles-${difficulty}.json`,
+      random: `/words/hungarian-puzzles-all-${difficulty}.json`,
+    }
 
-//   params.toString()
-//   return fetch(`${url}?${params.toString()}`, {
-//     method: 'GET',
-//   }).then((response) => response.json())
-// }
+    Object.entries(urls).forEach(([group, url], index) => {
+      setTimeout(() => {
+        fetch(url, {
+          method: 'GET',
+        })
+          .then((response) => response.json())
+          .then((words) =>
+            resolver({
+              group: group as Group,
+              difficulty,
+              words: words as Word[],
+            })
+          )
+      }, index * 100)
+    })
+  })
+}
 
 export const getStateFromAPI = () => {
   if (!process.env.REACT_APP_API_URL) {

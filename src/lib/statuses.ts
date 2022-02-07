@@ -38,7 +38,7 @@ export const getStatuses = (
   guesses.forEach((word, index) => {
     const wordCount = getLetterCount(word)
     word.forEach((letter, i) => {
-      if (!solution.includes(letter)) {
+      if (!solution?.includes(letter)) {
         // make status absent
         return (charObj[letter] = 'absent')
       }
