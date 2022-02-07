@@ -36,19 +36,19 @@ const decrypt = (value: string): string => {
   )
 }
 
-export const getKey = (key: string) => {
-  return key === 'id' ? key : `${key}-${PKG.version}`
+export const getKey = (key: string, version?: string) => {
+  return key === 'id' ? key : `${key}-${version ?? PKG.version}`
 }
 
-export const setItem: typeof localStorage.setItem = (
-  key: string,
-  value: string
-) => {
-  localStorage.setItem(getKey(key), isLocalhost() ? value : encrypt(value))
+export const setItem = (key: string, value: string, version?: string) => {
+  localStorage.setItem(
+    getKey(key, version),
+    isLocalhost() ? value : encrypt(value)
+  )
 }
 
-export const getItem: typeof localStorage.getItem = (key: string) => {
-  const value = localStorage.getItem(getKey(key))
+export const getItem = (key: string, version?: string) => {
+  const value = localStorage.getItem(getKey(key, version))
 
   try {
     if (value) {
@@ -61,9 +61,24 @@ export const getItem: typeof localStorage.getItem = (key: string) => {
 }
 
 export const createId = () => {
+  const version = PKG.version.match(
+    /(?<major>\d)\.(?<minor>\d)\.(?<patch>\d)/
+  )?.groups
   const hashId = getDecodedHashParam(HASH_PARAM_KEY_ID)
 
-  const current = JSON.parse(getItem(idKey) ?? getItem(gameKey) ?? '{}')?.id
+  let prevVersion = PKG.version
+  if (version && parseInt(version.patch) > 0) {
+    prevVersion = [
+      version.major,
+      version.minor,
+      parseInt(version.patch) - 1,
+    ].join('.')
+  }
+
+  //versioning with loop
+  const current = JSON.parse(
+    getItem(idKey) ?? getItem(gameKey) ?? getItem(gameKey, prevVersion) ?? '{}'
+  )?.id
 
   const id = hashId || current || Math.random().toString(36).substr(2, 10)
 
