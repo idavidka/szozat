@@ -22,7 +22,7 @@ export const addStatsForCompletedGame = (
     stats.winDistribution[count] += 1
     stats.currentStreak += 1
 
-    if (stats.bestStreak < stats.currentStreak) {
+    if (!stats.bestStreak || stats.bestStreak < stats.currentStreak) {
       stats.bestStreak = stats.currentStreak
     }
   }
@@ -48,19 +48,18 @@ export const toStats = (
   stats?: Record<Difficulty, GameStats>
 ): GameStats => {
   const stat = stats?.[difficulty]
+  const defaultStat = getDefaultStats(difficulty)
 
   if (!stat) {
-    return getDefaultStats(difficulty)
+    return defaultStat
   }
 
-  stat.successRate = getSuccessRate(stat)
-
-  return stat
+  return {
+    ...defaultStat,
+    ...stat,
+    successRate: getSuccessRate(stat),
+  }
 }
-
-// export const loadStats = (difficulty: Difficulty) => {
-//   return loadStatsFromLocalStorage(difficulty) || getDefaultStats(difficulty)
-// }
 
 const getSuccessRate = (gameStats: GameStats) => {
   const { totalGames, gamesFailed } = gameStats
