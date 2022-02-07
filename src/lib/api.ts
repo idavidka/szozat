@@ -2,7 +2,7 @@ import { debounce } from 'lodash'
 import { DIFFICULTIES } from '../constants/constants'
 import { Difficulty, State } from '../hooks/gameReducer'
 import { Group } from '../hooks/wordReducer'
-import { createId } from './localStorage'
+import { createId, getWordsFromLocalStorage } from './localStorage'
 import { Word } from './statuses'
 
 export const sendStateToAPI = (state: State) => {
@@ -36,20 +36,24 @@ export const getStaticWords = (
       random: `/words/hungarian-puzzles-all-${difficulty}.json`,
     }
 
-    Object.entries(urls).forEach(([group, url], index) => {
-      setTimeout(() => {
-        fetch(url, {
-          method: 'GET',
-        })
-          .then((response) => response.json())
-          .then((words) =>
-            resolver({
-              group: group as Group,
-              difficulty,
-              words: words as Word[],
-            })
-          )
-      }, index * 100)
+    let timeout = 0
+    Object.entries(urls).forEach(([group, url]) => {
+      if (!getWordsFromLocalStorage(group as Group, difficulty)?.length) {
+        timeout = timeout++
+        setTimeout(() => {
+          fetch(url, {
+            method: 'GET',
+          })
+            .then((response) => response.json())
+            .then((words) =>
+              resolver({
+                group: group as Group,
+                difficulty,
+                words: words as Word[],
+              })
+            )
+        }, timeout * 100)
+      }
     })
   })
 }

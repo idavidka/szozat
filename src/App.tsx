@@ -5,6 +5,7 @@ import {
   ViewGridAddIcon,
   ViewGridIcon,
   PuzzleIcon,
+  RefreshIcon,
 } from '@heroicons/react/outline'
 import animateScrollTo from 'animated-scroll-to'
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
@@ -498,9 +499,28 @@ function App() {
     }
   }
 
-  console.log('Debug', words, solution)
-  if (words.all.length === 0) {
-    return <div>Loading</div>
+  if (
+    words.all.length === 0 ||
+    words.selected.length === 0 ||
+    words.random.length === 0 ||
+    !solution
+  ) {
+    return (
+      <div className={context.theme + ' h-[100%] '}>
+        <div className="flex justify-center content-center text-center flex-col bg-white dark:bg-gray-800 h-[100%]">
+          <span className="text-5xl mb-5 dark:text-gray-300">Loading</span>
+          <Icon
+            component={RefreshIcon}
+            isStandalone
+            className="w-40 h-40 animate-spin"
+            style={{
+              animationDuration: '2s',
+              animationDirection: 'reverse',
+            }}
+          />
+        </div>
+      </div>
+    )
   }
 
   return (
