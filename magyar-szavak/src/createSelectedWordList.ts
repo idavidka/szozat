@@ -26,7 +26,7 @@ const hungarianWordsOnlyAlphabet = hungarianWords.filter((word) => {
 const wordLetters = hungarianWordsOnlyAlphabet.map(getWordLetters)
 
 fs.writeFileSync(
-  `../src/constants/${OUTPUT.replace(
+  `../public/words/${OUTPUT.replace(
     /(-\d)?\.(json|txt)$/,
     ''
   )}-${TARGET_WORD_LENGTH}.json`,

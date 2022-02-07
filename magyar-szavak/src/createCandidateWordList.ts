@@ -160,7 +160,7 @@ if (true) {
   // Save to file
   const jsonString = JSON.stringify(wordLetters)
   fs.writeFileSync(
-    `../src/constants/${OUTPUT_LIST.replace(
+    `../public/words/${OUTPUT_LIST.replace(
       /(-\d)?\.(json|txt)$/,
       ''
     )}-${TARGET_WORD_LENGTH}.json`,
@@ -176,7 +176,7 @@ if (true) {
     )
 
     fs.writeFileSync(
-      `../src/constants/${OUTPUT_PUZZLE.replace(
+      `../public/words/${OUTPUT_PUZZLE.replace(
         /(-\d)?\.(json|txt)$/,
         ''
       )}-${TARGET_WORD_LENGTH}.json`,
@@ -193,7 +193,7 @@ if (true) {
     )
 
     fs.writeFileSync(
-      `../src/constants/${OUTPUT_PUZZLE_RANDOM.replace(
+      `../public/words/${OUTPUT_PUZZLE_RANDOM.replace(
         /(-\d)?\.(json|txt)$/,
         ''
       )}-${TARGET_WORD_LENGTH}.json`,

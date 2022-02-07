@@ -140,7 +140,7 @@ export const initialState: State = {
 }
 
 export const gameReducer: Reducer<State, Action> = (state, action): State => {
-  isLocalhost() && console.log('Action', action)
+  isLocalhost() && console.log('Game Action', action)
   switch (action.type) {
     case 'SET_THEME': {
       return { ...state, theme: action.theme }

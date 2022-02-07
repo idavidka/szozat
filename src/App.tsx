@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   InformationCircleIcon,
   ChartBarIcon,
@@ -26,44 +25,54 @@ import {
   getRandomWord,
 } from './lib/words'
 import {
-  debouncingStateToAPI,
   getGlobalStatsFromAPI,
   getStateFromAPI,
   sendStateToAPI,
 } from './lib/api'
 import { WIN_MESSAGES } from './constants/strings'
 import { addStatsForCompletedGame } from './lib/stats'
-import { gameKey, getKey } from './lib/localStorage'
+import { gameKey, getKey, wordKey } from './lib/localStorage'
 import { CharValue, Word } from './lib/statuses'
 import { MAX_NUMBER_OF_GUESSES } from './constants/constants'
 import { ThemeToggle } from './components/theme/ThemeToggle'
 import { ThemeContext } from './components/theme/ThemeContext'
 import { CreatePuzzleModal } from './components/modals/CreatePuzzleModal'
-import { times, random as rand, debounce } from 'lodash'
+import { times, random as rand } from 'lodash'
 import { addGTM, GameType, getGridMaxWidthClassName } from './lib/utils'
 import { ModalId, ModalType } from './components/modals/BaseModal'
 import { getAllWords } from './constants/wordlist'
 import { usePersistedReducer } from './hooks/usePersistedReducer'
 import {
   gameReducer,
-  initialState,
-  State,
-  Action,
+  initialState as gameInitialState,
+  State as GameState,
+  Action as GameAction,
   View,
   Difficulty,
   getInitialState,
 } from './hooks/gameReducer'
+import {
+  wordReducer,
+  initialState as wordInitialState,
+  State as WordState,
+  Action as WordAction,
+  Group,
+} from './hooks/wordReducer'
 import { ThemeValue } from './lib/theme'
 
 const ALERT_TIME_MS = 2000
 const NEW_MODAL_TIME_MS = 500
 
 function App() {
-  const { state, dispatch } = usePersistedReducer<State, Action>(
+  const { state, dispatch } = usePersistedReducer<GameState, GameAction>(
     gameReducer,
-    initialState,
+    gameInitialState,
     getKey(gameKey)
   )
+  const { state: wordsState, dispatch: dispatchWord } = usePersistedReducer<
+    WordState,
+    WordAction
+  >(wordReducer, wordInitialState, getKey(wordKey))
   const context = React.useContext(ThemeContext)
 
   const { difficulty, theme, view, game, stats, info } = state
@@ -91,6 +100,14 @@ function App() {
   const [gridSize, setGridSize] = useState({ width: 0, height: 0 })
 
   const gridContainerRef = useRef<HTMLDivElement>(null)
+
+  const words = useMemo<Record<Group, Word[]>>(() => {
+    return {
+      all: wordsState.all[difficulty],
+      selected: wordsState.selected[difficulty],
+      random: wordsState.random[difficulty],
+    }
+  }, [difficulty, wordsState])
 
   const { solution, solutionCreator } = useMemo(
     () =>
@@ -147,6 +164,17 @@ function App() {
   useEffect(() => {
     getGlobalStatsFromAPI().then((data) => setGlobalStats(data))
 
+    getStateFromAPI().then((data) => {
+      if (data) {
+        dispatch({
+          type: 'UPDATE_STATE',
+          state: data,
+        })
+      }
+    })
+  }, [dispatch])
+
+  useEffect(() => {
     getStateFromAPI().then((data) => {
       if (data) {
         dispatch({
@@ -473,6 +501,11 @@ function App() {
     }
   }
 
+  console.log('Debug', words)
+  if (words.all.length === 0) {
+    return <div>Loading</div>
+  }
+
   return (
     <div className={context.theme + ' h-[100%]'}>
       <Alert message="Nincs elég betű" isOpen={isNotEnoughLetters} />
@@ -481,7 +514,7 @@ function App() {
         isOpen={isWordNotFoundAlertOpen}
       />
       <Alert
-        message={`Vesztettél, a megoldás ez volt: ${solution.join('')}`}
+        message={`Vesztettél, a megoldás ez volt: ${solution?.join('')}`}
         isOpen={!!isGameLost[difficulty]}
       />
       <Alert

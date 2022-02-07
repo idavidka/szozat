@@ -19,6 +19,18 @@ export const sendStateToAPI = (state: State) => {
   }).then((response) => response.json())
 }
 
+// export const getWords = () => {
+//   const url = '/words/'
+//   const params = new URLSearchParams()
+//   params.append('state', 'true')
+//   params.append('id', createId())
+
+//   params.toString()
+//   return fetch(`${url}?${params.toString()}`, {
+//     method: 'GET',
+//   }).then((response) => response.json())
+// }
+
 export const getStateFromAPI = () => {
   if (!process.env.REACT_APP_API_URL) {
     return Promise.reject()

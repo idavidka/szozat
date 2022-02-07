@@ -11,11 +11,8 @@ import PKG from '../../package.json'
 import { Difficulty, State } from '../hooks/gameReducer'
 
 export const gameKey = 'game'
+export const wordKey = 'words'
 export const idKey = 'id'
-export const gameStateKey = 'gameState'
-export const difficultyKey = 'difficulty'
-export const gridFullKey = 'gridFull'
-export const themeKey = 'colorTheme'
 
 const encrypt = (value: string): string => {
   const buffer = window.btoa(encodeURIComponent(value)).split('')

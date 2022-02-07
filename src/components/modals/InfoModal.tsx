@@ -27,6 +27,10 @@ export const InfoModal = ({
   const words = useMemo(() => {
     const currentWords = getWords(difficulty)
 
+    if (currentWords.length < 5) {
+      return []
+    }
+
     const indexes = [
       0,
       0,
