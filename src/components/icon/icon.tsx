@@ -2,7 +2,7 @@ import React from 'react'
 
 type Props = {
   component: React.ElementType
-  onClick?: () => void
+  onClick?: (...args: any[]) => void
   isGroupEnd?: boolean
 }
 

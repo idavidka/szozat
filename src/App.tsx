@@ -53,6 +53,7 @@ import {
   Difficulty,
   getInitialState,
 } from './hooks/gameReducer'
+import { ThemeValue } from './lib/theme'
 
 const ALERT_TIME_MS = 2000
 const NEW_MODAL_TIME_MS = 500
@@ -111,9 +112,9 @@ function App() {
 
   useEffect(() => {
     if (theme !== context.theme) {
-      dispatch({ type: 'SET_THEME', theme: context.theme })
+      context.setTheme(theme)
     }
-  }, [context.theme, dispatch, theme])
+  }, [context, dispatch, theme])
 
   useEffect(() => {
     if (loadedSolution && !isWordEqual(solution, loadedSolution)) {
@@ -451,7 +452,13 @@ function App() {
   }
 
   const handleGridIcon = (newView: View) => {
+    setUserInteracted(true)
     dispatch({ type: 'SET_VIEW', view: newView })
+  }
+
+  const handleTheme = (newTheme: ThemeValue) => {
+    setUserInteracted(true)
+    dispatch({ type: 'SET_THEME', theme: newTheme })
   }
 
   const handleModalClose = () => {
@@ -546,7 +553,10 @@ function App() {
               selected={difficulty}
               onChange={handleDifficultyChange}
             />
-            <Icon component={ThemeToggle} />
+            <Icon
+              component={ThemeToggle}
+              onClick={(themeValue) => handleTheme(themeValue)}
+            />
             <Icon
               component={view === 'full' ? ViewGridIcon : ViewGridAddIcon}
               onClick={() =>
