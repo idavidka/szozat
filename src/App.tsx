@@ -260,7 +260,7 @@ function App() {
       stateToAPITimeout.current && clearTimeout(stateToAPITimeout.current)
       stateToAPITimeout.current = setTimeout(
         () => sendStateToAPI(state)?.then((data) => setGlobalStats(data)),
-        500
+        200
       )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
