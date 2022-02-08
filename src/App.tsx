@@ -73,7 +73,7 @@ function App() {
   const { state: wordsState, dispatch: dispatchWord } = usePersistedReducer<
     WordState,
     WordAction
-  >(wordReducer, wordInitialState, wordKey)
+  >(wordReducer, wordInitialState, wordKey, false)
   const context = React.useContext(ThemeContext)
 
   const { difficulty, theme, view, game, stats, info } = state

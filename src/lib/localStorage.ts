@@ -13,7 +13,7 @@ import { Group, State as WordState } from '../hooks/wordReducer'
 import { Word } from './statuses'
 
 export const gameKey = 'game'
-export const wordKey = 'words'
+export const wordKey = 'wordList'
 export const idKey = 'id'
 
 const encrypt = (value: string): string => {
@@ -39,10 +39,15 @@ export const getKey = (key: string, version?: string) => {
   return key === 'id' ? key : `${key}-${version ?? PKG.version}`
 }
 
-export const setItem = (key: string, value: string, version?: string) => {
+export const setItem = (
+  key: string,
+  value: string,
+  version?: string,
+  shouldEncrypt?: boolean
+) => {
   localStorage.setItem(
     getKey(key, version),
-    isLocalhost() ? value : encrypt(value)
+    isLocalhost() || !shouldEncrypt ? value : encrypt(value)
   )
 }
 

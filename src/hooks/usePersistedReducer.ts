@@ -6,7 +6,8 @@ import { getItem, setItem } from '../lib/localStorage'
 export const usePersistedReducer = <State, Action>(
   reducer: (state: State, action: Action) => State,
   initialState: State,
-  storageKey: string
+  storageKey: string,
+  shouldEncrypt = true
 ) => {
   const [state, dispatch] = useReducer(reducer, initialState, init)
   const prevState = usePrevious(state)
@@ -29,7 +30,7 @@ export const usePersistedReducer = <State, Action>(
     if (!stateEqual) {
       const stringifiedState = JSON.stringify(state)
       try {
-        setItem(storageKey, stringifiedState)
+        setItem(storageKey, stringifiedState, undefined, shouldEncrypt)
       } catch (err) {
         console.log('Debug', err)
       }

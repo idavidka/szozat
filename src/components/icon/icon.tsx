@@ -14,12 +14,12 @@ export const Icon = ({
   onClick,
   isGroupEnd,
   isStandalone,
-  className,
+  className = 'h-6 w-6',
   style,
 }: Props) => {
   return (
     <div
-      className={`h-6 w-6 transition duration-500 ease-in-out rounded-full ${
+      className={`transition duration-500 ease-in-out rounded-full ${
         isStandalone ? 'mx-auto' : 'ml-1'
       } ${className}`}
       style={style}
