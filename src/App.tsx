@@ -68,15 +68,23 @@ function App() {
   const { state, dispatch } = usePersistedReducer<GameState, GameAction>(
     gameReducer,
     gameInitialState,
-    gameKey
+    gameKey,
+    false
   )
+
+  const { difficulty, theme, view, game, stats, info } = state
+
   const { state: wordsState, dispatch: dispatchWord } = usePersistedReducer<
     WordState,
     WordAction
-  >(wordReducer, wordInitialState, wordKey, false)
+  >(
+    wordReducer,
+    wordInitialState,
+    `${wordKey}-${difficulty}`,
+    false,
+    'indexedDB'
+  )
   const context = React.useContext(ThemeContext)
-
-  const { difficulty, theme, view, game, stats, info } = state
 
   const {
     day,

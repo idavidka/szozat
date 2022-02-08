@@ -121,7 +121,7 @@ export const getWordsFromLocalStorage = (
   group: Group,
   difficulty: Difficulty
 ): Word[] | undefined => {
-  const wordState = getItem(wordKey)
+  const wordState = getItem(`${wordKey}-${difficulty}`)
 
   if (!wordState) {
     return undefined
