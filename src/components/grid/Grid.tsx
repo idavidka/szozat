@@ -39,27 +39,20 @@ export const Grid = ({
         )
       : []
 
-  const classes = classNames({
-    'grid-flow-row': full,
-  })
-
   const rowHeight = size.height / MAX_NUMBER_OF_GUESSES[difficulty] - 5
 
-  const textSizeClasses = {
+  const classes = classNames({
+    'grid-flow-row px-1': full,
     'text-xs': rowHeight < 19,
     'text-sm': rowHeight >= 19 && rowHeight < 23,
     'text-base': rowHeight >= 23 && rowHeight < 28,
     'text-lg': rowHeight >= 28,
-  }
+  })
 
   return (
     <div
       className={classNames(
         'grid grid-rows-8 gap-1 mx-auto w-full',
-        {
-          'px-1': !full,
-        },
-        textSizeClasses,
         `${getGridMaxWidthClassName(difficulty)} ${classes}`
       )}
       style={

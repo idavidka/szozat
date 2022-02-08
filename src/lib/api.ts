@@ -1,5 +1,4 @@
 import { debounce } from 'lodash'
-import { DIFFICULTIES } from '../constants/constants'
 import { Difficulty, State } from '../hooks/gameReducer'
 import { Group } from '../hooks/wordReducer'
 import { createId, getWordsFromLocalStorage } from './localStorage'

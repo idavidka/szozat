@@ -1,8 +1,17 @@
 {
     "id": "j2xa9q9xyq",
-    "difficulty": 6,
+    "difficulty": 5,
     "theme": "dark",
     "view": "full",
+    "info": {
+        "3": false,
+        "4": true,
+        "5": true,
+        "6": true,
+        "7": false,
+        "8": true,
+        "9": false
+    },
     "stats": {
         "3": {
             "winDistribution": [
@@ -15,12 +24,13 @@
                 2
             ],
             "totalGames": 9,
-            "gamesFailed": 5
+            "gamesFailed": 5,
+            "successRate": 44
         },
         "4": {
             "winDistribution": [
-                0,
-                0,
+                2,
+                1,
                 0,
                 0,
                 0,
@@ -28,22 +38,28 @@
                 0,
                 2
             ],
-            "totalGames": 9,
-            "gamesFailed": 6
+            "totalGames": 12,
+            "gamesFailed": 6,
+            "successRate": 50,
+            "currentStreak": 2,
+            "bestStreak": 2
         },
         "5": {
             "winDistribution": [
                 2,
-                5,
-                4,
                 6,
-                10,
-                4,
+                5,
                 7,
-                9
+                12,
+                6,
+                7,
+                11
             ],
-            "totalGames": 75,
-            "gamesFailed": 28
+            "totalGames": 92,
+            "gamesFailed": 36,
+            "successRate": 64,
+            "currentStreak": 2,
+            "bestStreak": 8
         },
         "6": {
             "winDistribution": [
@@ -59,7 +75,8 @@
                 0
             ],
             "totalGames": 2,
-            "gamesFailed": 0
+            "gamesFailed": 0,
+            "successRate": 100
         },
         "7": {
             "winDistribution": [
@@ -142,25 +159,15 @@
         },
         "4": {
             "guesses": [],
-            "solution": [
-                "I",
-                "G",
-                "E",
-                "N"
-            ],
-            "day": 35
+            "day": 35,
+            "currentGuess": [],
+            "random": 614
         },
         "5": {
             "guesses": [],
-            "solution": [
-                "S",
-                "V",
-                "E",
-                "R",
-                "T"
-            ],
             "day": 68,
-            "random": -1
+            "random": 2226,
+            "currentGuess": []
         },
         "6": {
             "guesses": [
@@ -255,17 +262,8 @@
         },
         "8": {
             "guesses": [],
-            "solution": [
-                "R",
-                "U",
-                "C",
-                "A",
-                "Ö",
-                "R",
-                "Ö",
-                "M"
-            ],
-            "day": 28
+            "day": 28,
+            "currentGuess": []
         },
         "9": {
             "guesses": [],

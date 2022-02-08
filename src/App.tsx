@@ -26,6 +26,7 @@ import {
   getRandomWord,
 } from './lib/words'
 import {
+  debouncingStateToAPI,
   getGlobalStatsFromAPI,
   getStateFromAPI,
   getStaticWords,
@@ -102,14 +103,18 @@ function App() {
 
   const gridContainerRef = useRef<HTMLDivElement>(null)
 
-  const { solution, solutionCreator } = useMemo(
-    () =>
+  const [{ solution, solutionCreator }, setSolution] = useState<{
+    solution: Word
+    solutionCreator?: string
+  }>(getCurrentWord(day, difficulty))
+
+  useEffect(() => {
+    setSolution(
       random > -1
         ? getRandomWord(random, difficulty)
-        : getCurrentWord(day, difficulty),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [random, difficulty, day, wordsState]
-  )
+        : getCurrentWord(day, difficulty)
+    )
+  }, [day, difficulty, random, wordsState])
 
   const maxGuess = useMemo(
     () => MAX_NUMBER_OF_GUESSES[difficulty],
@@ -249,12 +254,15 @@ function App() {
     }
   }
 
+  const stateToAPITimeout = useRef<NodeJS.Timeout>()
   useEffect(() => {
     checkViewPort()
     if (userInteracted && !solutionCreator) {
-      sendStateToAPI(state)?.then((data) => {
-        setGlobalStats(data)
-      })
+      stateToAPITimeout.current && clearTimeout(stateToAPITimeout.current)
+      stateToAPITimeout.current = setTimeout(
+        () => sendStateToAPI(state)?.then((data) => setGlobalStats(data)),
+        500
+      )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, userInteracted])
@@ -498,7 +506,6 @@ function App() {
     }
   }
 
-  console.log('ASD', solution, wordsState)
   if (
     wordsState.all.length === 0 ||
     wordsState.selected.length === 0 ||
