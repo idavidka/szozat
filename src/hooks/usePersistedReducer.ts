@@ -1,6 +1,7 @@
 import { useEffect, useReducer } from 'react'
 import deepEqual from 'fast-deep-equal/es6'
 import { usePrevious } from './usePrevious'
+import { useFirebase } from './useFirebase'
 import { getItem, setItem } from '../lib/localStorage'
 
 export const usePersistedReducer = <State, Action>(
@@ -8,6 +9,9 @@ export const usePersistedReducer = <State, Action>(
   initialState: State,
   storageKey: string
 ) => {
+  const { database, write } = useFirebase()
+
+  console.log('Database', database)
   const [state, dispatch] = useReducer(reducer, initialState, init)
   const prevState = usePrevious(state)
 
@@ -29,6 +33,7 @@ export const usePersistedReducer = <State, Action>(
     if (!stateEqual) {
       const stringifiedState = JSON.stringify(state)
       try {
+        write('game/teszt', state)
         setItem(storageKey, stringifiedState)
       } catch (err) {
         console.log('Debug', err)
