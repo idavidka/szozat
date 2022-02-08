@@ -23,38 +23,37 @@ export const sendStateToAPI = (state: State) => {
 }
 
 export const getStaticWords = (
+  difficulty: Difficulty,
   resolver: (value: {
     group: Group
     difficulty: Difficulty
     words: Word[]
   }) => void
 ) => {
-  DIFFICULTIES.forEach((difficulty) => {
-    const urls: Record<Group, string> = {
-      all: `/words/hungarian-word-letter-list-${difficulty}.json`,
-      selected: `/words/hungarian-puzzles-${difficulty}.json`,
-      random: `/words/hungarian-puzzles-all-${difficulty}.json`,
-    }
+  const urls: Record<Group, string> = {
+    all: `/words/hungarian-word-letter-list-${difficulty}.json`,
+    selected: `/words/hungarian-puzzles-${difficulty}.json`,
+    random: `/words/hungarian-puzzles-all-${difficulty}.json`,
+  }
 
-    let timeout = 0
-    Object.entries(urls).forEach(([group, url]) => {
-      if (!getWordsFromLocalStorage(group as Group, difficulty)?.length) {
-        timeout = timeout++
-        setTimeout(() => {
-          fetch(url, {
-            method: 'GET',
-          })
-            .then((response) => response.json())
-            .then((words) =>
-              resolver({
-                group: group as Group,
-                difficulty,
-                words: words as Word[],
-              })
-            )
-        }, timeout * 100)
-      }
-    })
+  let timeout = 0
+  Object.entries(urls).forEach(([group, url]) => {
+    if (!getWordsFromLocalStorage(group as Group, difficulty)?.length) {
+      timeout = timeout++
+      setTimeout(() => {
+        fetch(url, {
+          method: 'GET',
+        })
+          .then((response) => response.json())
+          .then((words) =>
+            resolver({
+              group: group as Group,
+              difficulty,
+              words: words as Word[],
+            })
+          )
+      }, timeout * 100)
+    }
   })
 }
 

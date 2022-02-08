@@ -1,103 +1,61 @@
 import { Reducer } from 'react'
 import { Word } from '../lib/statuses'
 import { isLocalhost } from '../lib/utils'
-import { Difficulty } from './gameReducer'
 
 export type Group = 'all' | 'selected' | 'random'
 
-export type State = Record<Group, Record<Difficulty, Word[]>>
+export type State = Record<Group, Word[]>
 
 export type Action =
+  | {
+      type: 'RESET_STATE'
+    }
   | {
       type: 'UPDATE_STATE'
       state: Partial<State>
     }
   | {
-      type: 'UPDATE_DIFFICULTY'
-      group: Group
-      difficulty: Difficulty
-      words: Word[]
-    }
-  | {
       type: 'ADD_WORD'
       group: Group
-      difficulty: Difficulty
       word: Word
     }
   | {
       type: 'REMOVE_WORD'
       group: Group
-      difficulty: Difficulty
       word: Word
     }
 
 export const initialState: State = {
-  all: {
-    3: [],
-    4: [],
-    5: [],
-    6: [],
-    7: [],
-    8: [],
-    9: [],
-  },
-  selected: {
-    3: [],
-    4: [],
-    5: [],
-    6: [],
-    7: [],
-    8: [],
-    9: [],
-  },
-  random: {
-    3: [],
-    4: [],
-    5: [],
-    6: [],
-    7: [],
-    8: [],
-    9: [],
-  },
+  all: [],
+  selected: [],
+  random: [],
 }
 
 export const wordReducer: Reducer<State, Action> = (state, action): State => {
   isLocalhost() && console.log('Word Action', action)
   switch (action.type) {
     case 'ADD_WORD': {
-      const index = state[action.group][action.difficulty].indexOf(action.word)
-      const indexAll = state.all[action.difficulty].indexOf(action.word)
+      const index = state[action.group].indexOf(action.word)
+      const indexAll = state.all.indexOf(action.word)
       let all = {}
       let group = {}
       if (indexAll < 0) {
         all = {
-          all: {
-            ...(state.all ?? {}),
-            [action.difficulty]: [
-              ...(state.all[action.difficulty] ?? []),
-              ...action.word,
-            ],
-          },
+          all: [...(state.all ?? []), action.word],
         }
       }
 
       if (index < 0) {
         group = {
-          [action.group]: {
-            ...(state[action.group] ?? {}),
-            [action.difficulty]: [
-              ...(state[action.group][action.difficulty] ?? []),
-              ...action.word,
-            ],
-          },
+          [action.group]: [...(state[action.group] ?? {}), action.word],
         }
       }
 
       return { ...state, ...all, ...group }
     }
     case 'REMOVE_WORD': {
-      const words = [...state[action.group][action.difficulty]]
-      const wordsAll = [...state.all[action.difficulty]]
+      const words = [...state[action.group]]
+      const wordsAll = [...state.all]
       const index = words.indexOf(action.word)
       const indexAll = wordsAll.indexOf(action.word)
       let all = {}
@@ -105,35 +63,20 @@ export const wordReducer: Reducer<State, Action> = (state, action): State => {
       if (indexAll > -1) {
         wordsAll.splice(indexAll, 1)
         all = {
-          all: {
-            ...(state.all ?? {}),
-            [action.difficulty]: wordsAll,
-          },
+          all: wordsAll,
         }
       }
       if (index > -1) {
         words.splice(index, 1)
         group = {
-          [action.group]: {
-            ...(state[action.group] ?? {}),
-            [action.difficulty]: words,
-          },
+          [action.group]: words,
         }
       }
 
       return { ...state, ...all, ...group }
     }
-    case 'UPDATE_DIFFICULTY': {
-      return {
-        ...state,
-        [action.group]: {
-          ...(state[action.group] ?? {}),
-          [action.difficulty]: [
-            ...(state[action.group][action.difficulty] ?? []),
-            ...action.words,
-          ],
-        },
-      }
+    case 'RESET_STATE': {
+      return initialState
     }
     case 'UPDATE_STATE': {
       return {

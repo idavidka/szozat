@@ -19,7 +19,10 @@ export const Icon = ({
 }: Props) => {
   return (
     <div
-      className={`h-6 w-6 transition duration-500 ease-in-out rounded-full ml-1 ${className}`}
+      className={`h-6 w-6 transition duration-500 ease-in-out rounded-full ${
+        isStandalone ? 'mx-auto' : 'ml-1'
+      } ${className}`}
+      style={style}
     >
       <IconComponent
         className={`cursor-pointer text-slate-800 dark:text-gray-300 hover:text-slate-600 hover:dark:text-gray-100 ${
@@ -28,7 +31,6 @@ export const Icon = ({
             : ''
         }`}
         onClick={onClick}
-        style={style}
       />
     </div>
   )

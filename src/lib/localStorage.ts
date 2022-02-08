@@ -124,5 +124,11 @@ export const getWordsFromLocalStorage = (
 
   const words = JSON.parse(wordState) as WordState
 
-  return words?.[group]?.[difficulty] ?? words?.[group]?.[5]
+  const selectedGroup = words?.[group]
+
+  if (selectedGroup?.[0]?.length !== difficulty) {
+    return undefined
+  }
+
+  return words?.[group] ?? words?.[group]
 }

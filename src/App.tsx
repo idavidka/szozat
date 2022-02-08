@@ -33,7 +33,7 @@ import {
 } from './lib/api'
 import { WIN_MESSAGES } from './constants/strings'
 import { addStatsForCompletedGame } from './lib/stats'
-import { gameKey, getKey, wordKey } from './lib/localStorage'
+import { gameKey, wordKey } from './lib/localStorage'
 import { CharValue, Word } from './lib/statuses'
 import { MAX_NUMBER_OF_GUESSES } from './constants/constants'
 import { ThemeToggle } from './components/theme/ThemeToggle'
@@ -58,7 +58,6 @@ import {
   initialState as wordInitialState,
   State as WordState,
   Action as WordAction,
-  Group,
 } from './hooks/wordReducer'
 import { ThemeValue } from './lib/theme'
 
@@ -102,14 +101,6 @@ function App() {
   const [gridSize, setGridSize] = useState({ width: 0, height: 0 })
 
   const gridContainerRef = useRef<HTMLDivElement>(null)
-
-  const words = useMemo<Record<Group, Word[]>>(() => {
-    return {
-      all: wordsState.all[difficulty],
-      selected: wordsState.selected[difficulty],
-      random: wordsState.random[difficulty],
-    }
-  }, [difficulty, wordsState])
 
   const { solution, solutionCreator } = useMemo(
     () =>
@@ -178,10 +169,18 @@ function App() {
   }, [dispatch])
 
   useEffect(() => {
-    getStaticWords(({ group, difficulty, words }) => {
-      dispatchWord({ type: 'UPDATE_DIFFICULTY', group, difficulty, words })
+    // if (wordsState.all[0]?.length !== difficulty) {
+    //   dispatchWord({ type: 'RESET_STATE' })
+    // }
+    getStaticWords(difficulty, ({ group, words }) => {
+      dispatchWord({
+        type: 'UPDATE_STATE',
+        state: {
+          [group]: words,
+        },
+      })
     })
-  }, [dispatchWord])
+  }, [difficulty, dispatchWord])
 
   useEffect(() => {
     const handleResize = () => {
@@ -499,10 +498,11 @@ function App() {
     }
   }
 
+  console.log('ASD', solution, wordsState)
   if (
-    words.all.length === 0 ||
-    words.selected.length === 0 ||
-    words.random.length === 0 ||
+    wordsState.all.length === 0 ||
+    wordsState.selected.length === 0 ||
+    wordsState.random.length === 0 ||
     !solution
   ) {
     return (
