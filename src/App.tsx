@@ -561,6 +561,7 @@ function App() {
         message="A játékot kimásoltuk a vágólapra"
         isOpen={shareComplete}
         variant="success"
+        className="z-[1020]"
       />
       <Alert
         message="Nem sikerült a megosztás - lehet, hogy beágyazott böngészőt használsz?"
