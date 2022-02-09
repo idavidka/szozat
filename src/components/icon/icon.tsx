@@ -4,7 +4,6 @@ type Props = {
   component: React.ElementType
   onClick?: (...args: any[]) => void
   className?: string
-  isGroupEnd?: boolean
   isStandalone?: boolean
   style?: CSSProperties
 }
@@ -12,7 +11,6 @@ type Props = {
 export const Icon = ({
   component: IconComponent,
   onClick,
-  isGroupEnd,
   isStandalone,
   className = 'h-6 w-6',
   style,
@@ -25,11 +23,7 @@ export const Icon = ({
       style={style}
     >
       <IconComponent
-        className={`cursor-pointer text-slate-800 dark:text-gray-300 hover:text-slate-600 hover:dark:text-gray-100 ${
-          isGroupEnd
-            ? 'pr-1 w-7 border-r-2 border-slate-800 dark:border-gray-300'
-            : ''
-        }`}
+        className="cursor-pointer text-slate-800 dark:text-gray-300 hover:text-slate-600 hover:dark:text-gray-100"
         onClick={onClick}
       />
     </div>

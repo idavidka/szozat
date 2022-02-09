@@ -14,6 +14,7 @@ import { Grid } from './components/grid/Grid'
 import { Keyboard } from './components/keyboard/Keyboard'
 import { AboutModal } from './components/modals/AboutModal'
 import { InfoModal } from './components/modals/InfoModal'
+import { DevModal } from './components/modals/DevModal'
 import { StatsModal } from './components/modals/StatsModal'
 import { NewGameModal } from './components/modals/NewGameModal'
 import { DifficultyList } from './components/lists/DifficultyList'
@@ -40,7 +41,12 @@ import { ThemeToggle } from './components/theme/ThemeToggle'
 import { ThemeContext } from './components/theme/ThemeContext'
 import { CreatePuzzleModal } from './components/modals/CreatePuzzleModal'
 import { times, random as rand } from 'lodash'
-import { addGTM, GameType, getGridMaxWidthClassName } from './lib/utils'
+import {
+  addGTM,
+  GameType,
+  getGridMaxWidthClassName,
+  isLocalhost,
+} from './lib/utils'
 import { ModalId, ModalType } from './components/modals/BaseModal'
 import { getAllWords } from './constants/wordlist'
 import { usePersistedReducer } from './hooks/usePersistedReducer'
@@ -160,6 +166,7 @@ function App() {
   }, [difficulty, dispatch, info, setIsModalOpen])
 
   useEffect(() => {
+    isLocalhost() && console.log('Solution', solution)
     getGlobalStatsFromAPI().then((data) => setGlobalStats(data))
 
     getStateFromAPI().then((data) => {
@@ -170,6 +177,7 @@ function App() {
         })
       }
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch])
 
   useEffect(() => {
@@ -403,6 +411,10 @@ function App() {
     }
   }
 
+  const onDevClick = () => {
+    handleModalClose('dev')
+  }
+
   const handleShareCopySuccess = useCallback(() => {
     addGTM('event', 'copy', { status: 'success' })
     setShareComplete(true)
@@ -493,8 +505,8 @@ function App() {
     dispatch({ type: 'SET_THEME', theme: newTheme })
   }
 
-  const handleModalClose = () => {
-    const fallbackModal = checkIsModalCallback()
+  const handleModalClose = (newModal?: ModalType) => {
+    const fallbackModal = newModal ?? checkIsModalCallback()
     setIsModalOpen(false)
     setIsModalOpenRegistered(false)
     if (fallbackModal) {
@@ -561,6 +573,11 @@ function App() {
         handleModal={setIsModalOpen}
         difficulty={difficulty}
       />
+      <DevModal
+        isOpen={checkIsModalOpen('dev')}
+        solution={solution}
+        handleClose={handleModalClose}
+      />
       <StatsModal
         isOpen={checkIsModalOpen('stat') || checkIsModalOpen('new-game')}
         handleClose={handleModalClose}
@@ -597,7 +614,7 @@ function App() {
           className="flex flex-col px-2 pt-8 w-[100%] h-[100%] max-w-[500px] mx-auto sm:px-6 lg:px-8"
           style={{ boxSizing: 'border-box' }}
         >
-          <div className="flex  mx-4 items-center mb-8 relative z-20">
+          <div className="flex  mx-1 items-center mb-8 relative z-20">
             <h1 className="text-xl font-bold dark:text-gray-300">Szózat</h1>
             <Icon
               component={InformationCircleIcon}
@@ -612,13 +629,13 @@ function App() {
             <Icon
               component={ThemeToggle}
               onClick={(themeValue) => handleTheme(themeValue)}
+              className="h-6 w-6 ml-0"
             />
             <Icon
               component={view === 'full' ? ViewGridIcon : ViewGridAddIcon}
               onClick={() =>
                 handleGridIcon(view === 'full' ? 'compact' : 'full')
               }
-              isGroupEnd
             />
             <Icon
               component={ChartBarIcon}
@@ -671,6 +688,7 @@ function App() {
               onDelete={onDelete}
               onReplace={onReplace}
               onEnter={onEnter}
+              onDevClick={onDevClick}
               guesses={guesses}
               currentGuess={currentGuess}
               day={day}

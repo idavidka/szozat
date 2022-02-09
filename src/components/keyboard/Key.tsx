@@ -18,6 +18,7 @@ type ButtonProps = {
   className?: string
   onShortClick?: () => void
   onClick?: (event: any) => void
+  onDevClick?: (event: any) => void
   children?: ReactNode
 }
 
@@ -28,6 +29,7 @@ const Button = ({
   onShortClick,
   onClick,
   children,
+  onDevClick,
 }: ButtonProps) => {
   const buttonRef = useRef<HTMLButtonElement>(null)
   const manager = useRef<HammerManager>()
@@ -51,6 +53,17 @@ const Button = ({
         LongTap.recognizeWith(Tap)
         manager.current.add(LongTap)
       }
+
+      if (onDevClick) {
+        const DevTap = new Hammer.Tap({
+          event: 'dev_tap',
+          taps: 10,
+          time: 250,
+        })
+        manager.current.add(Tap)
+        DevTap.recognizeWith(Tap)
+        manager.current.add(DevTap)
+      }
     }
 
     manager.current?.on('short_tap', (e) => {
@@ -65,10 +78,17 @@ const Button = ({
       })
     }
 
-    return () => {
-      manager.current?.off('short_tap long_tap')
+    if (onDevClick) {
+      manager.current?.on('dev_tap', (e) => {
+        onDevClick?.({ ...e.srcEvent, currentTarget: e.target })
+        e.target.blur()
+      })
     }
-  }, [onClick, onShortClick])
+
+    return () => {
+      manager.current?.off('short_tap long_tap dev_tap')
+    }
+  }, [onDevClick, onClick, onShortClick])
 
   return (
     <button
@@ -91,6 +111,7 @@ type KeyProps = {
   className?: string
   disabled?: boolean
   onClick: (value: KeyValue) => void
+  onDevClick?: (value: KeyValue) => void
 }
 
 export const Key = ({
@@ -101,6 +122,7 @@ export const Key = ({
   additional,
   className,
   onClick,
+  onDevClick,
   disabled,
 }: KeyProps) => {
   const classes = classnames(
@@ -132,6 +154,10 @@ export const Key = ({
     onClick(clickedValue)
   }
 
+  const handleDevClick = (clickedValue: KeyValue) => {
+    onDevClick?.(clickedValue)
+  }
+
   if (isEmpty(additional)) {
     return (
       <Button
@@ -140,6 +166,9 @@ export const Key = ({
         className={classes}
         onShortClick={() => {
           handleClick(value)
+        }}
+        onDevClick={() => {
+          handleDevClick(value)
         }}
       >
         {['present-diff', 'correct-diff'].includes(status ?? '') && (
@@ -198,6 +227,9 @@ export const Key = ({
             className={classes}
             onShortClick={() => {
               handleClick(value)
+            }}
+            onDevClick={() => {
+              handleDevClick(value)
             }}
           >
             {['present-diff', 'correct-diff'].includes(status ?? '') && (

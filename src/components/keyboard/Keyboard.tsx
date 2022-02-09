@@ -9,6 +9,7 @@ type Props = {
   onReplace: (value: CharValue) => void
   onDelete: () => void
   onEnter: () => void
+  onDevClick?: (value: KeyValue) => void
   guesses: Word[]
   currentGuess: Word
   day: number
@@ -23,6 +24,7 @@ export const Keyboard = ({
   onDelete,
   onReplace,
   onEnter,
+  onDevClick,
   guesses,
   currentGuess,
   day,
@@ -183,6 +185,7 @@ export const Keyboard = ({
           value="D"
           additional={{ DZ: charStatuses['DZ'], DZS: charStatuses['DZS'] }}
           onClick={onClick}
+          onDevClick={onDevClick}
           status={charStatuses['D']}
         />
         <Key value="F" onClick={onClick} status={charStatuses['F']} />

@@ -10,6 +10,7 @@ export type ModalId =
   | 'stat'
   | 'about'
   | 'create-puzzle'
+  | 'dev'
   | false
 
 export type ModalType = ModalId | [ModalId, ModalId]
@@ -27,7 +28,7 @@ export const BaseModal = ({ title, children, isOpen, handleClose }: Props) => {
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog
         as="div"
-        className={`${context.theme} fixed z-[1010] inset-0 overflow-y-auto`}
+        className={`${context.theme} base-modal fixed z-[1010] inset-0 overflow-y-auto`}
         onClose={handleClose}
       >
         <div className="flex items-center justify-center min-h-screen py-10 px-4 text-center">

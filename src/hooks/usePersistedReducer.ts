@@ -1,7 +1,9 @@
 import { useEffect, useReducer } from 'react'
 import deepEqual from 'fast-deep-equal/es6'
 import { usePrevious } from './usePrevious'
+import logger from 'use-reducer-logger'
 import { getItem, setItem } from '../lib/localStorage'
+import { isLocalhost } from '../lib/utils'
 
 export const usePersistedReducer = <State, Action>(
   reducer: (state: State, action: Action) => State,
@@ -9,7 +11,11 @@ export const usePersistedReducer = <State, Action>(
   storageKey: string,
   shouldEncrypt = true
 ) => {
-  const [state, dispatch] = useReducer(reducer, initialState, init)
+  const [state, dispatch] = useReducer(
+    isLocalhost() ? logger(reducer) : reducer,
+    initialState,
+    init
+  )
   const prevState = usePrevious(state)
 
   function init(): State {

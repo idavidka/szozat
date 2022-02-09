@@ -1,6 +1,5 @@
 import { Reducer } from 'react'
 import { Word } from '../lib/statuses'
-import { isLocalhost } from '../lib/utils'
 
 export type Group = 'all' | 'selected' | 'random'
 
@@ -32,7 +31,6 @@ export const initialState: State = {
 }
 
 export const wordReducer: Reducer<State, Action> = (state, action): State => {
-  isLocalhost() && console.log('Word Action', action)
   switch (action.type) {
     case 'ADD_WORD': {
       const index = state[action.group].indexOf(action.word)

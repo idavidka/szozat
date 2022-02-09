@@ -33,7 +33,7 @@ export const getShareText = (
     }\n\n` +
     generateEmojiGrid(guesses, day, random, difficulty) +
     '\n\n' +
-    window.location.href
+    window.location.origin
   return text
 }
 
