@@ -1,6 +1,6 @@
-import { solutionCreator, tomorrow } from '../../lib/words'
 import { BaseModal } from './BaseModal'
 import { Word } from '../../lib/statuses'
+import PKG from '../../../package.json'
 import React from 'react'
 import classNames from 'classnames'
 
@@ -35,17 +35,16 @@ export const DevModal = ({ isOpen, handleClose, solution }: Props) => {
         )}
       >
         <div className="ml-2 mt-5 sm:mt-6 columns-2">
-          {tomorrow && (
-            <div>
-              <h5>Feladvány:</h5>
-              {solution}
-            </div>
-          )}
-          {solutionCreator && (
-            <div>
-              <p>A feladvány készítője: {solutionCreator}</p>
-            </div>
-          )}
+          <div>
+            <h5>Verzió:</h5>
+            {PKG.version}
+          </div>
+        </div>
+        <div className="ml-2 mt-5 sm:mt-6 columns-2">
+          <div>
+            <h5>Feladvány:</h5>
+            {solution}
+          </div>
         </div>
         <div className="ml-2 mt-5 sm:mt-6">
           <button
@@ -64,6 +63,9 @@ export const DevModal = ({ isOpen, handleClose, solution }: Props) => {
           >
             Játékadatok törlése
           </button>
+          <div className="text-xs text-gray-900 dark:text-slate-200">
+            Figyelem! Minden játékadatod visszavonhatatlanul törlődni fog!
+          </div>
         </div>
         <div className="ml-2 mt-5 sm:mt-6" style={{ marginTop: 0 }}></div>
       </div>
