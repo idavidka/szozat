@@ -80,5 +80,29 @@ export const addGTM = (...props: any[]) => {
   // console.log(window.dataLayer)
 }
 
+export const abbreviation = (
+  givenValue = 0,
+  precision = 1,
+  suffixes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
+) => {
+  const value = givenValue
+  const flooredValue = Math.floor(value) || 0
+  const suffixNum = Math.floor(
+    (`${flooredValue}`.length - (flooredValue < 0 ? 2 : 1)) / 3
+  )
+  let shortValue =
+    suffixNum !== 0
+      ? parseFloat((value / Math.pow(1000, suffixNum)).toPrecision(3))
+      : value
+  if (shortValue % 1 !== 0) {
+    shortValue = Number(
+      shortValue.toFixed(shortValue < 10 ? precision + 1 : precision)
+    )
+  }
+  return `${shortValue}${
+    typeof suffixes === 'string' ? suffixes : suffixes[suffixNum]
+  }`
+}
+
 export const isLocalhost = () =>
   ['localhost', '192.168.0.18'].includes(window.location.hostname)

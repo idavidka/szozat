@@ -3,6 +3,7 @@ import { Word } from '../../lib/statuses'
 import PKG from '../../../package.json'
 import React from 'react'
 import classNames from 'classnames'
+import { abbreviation } from '../../lib/utils'
 
 type Props = {
   isOpen: boolean
@@ -52,10 +53,17 @@ export const DevModal = ({ isOpen, handleClose, solution }: Props) => {
             className="mt-2 w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
             onClick={handleReload}
           >
-            Oldal újratöltése
+            Játék újratöltése
           </button>
         </div>
-        <div className="ml-2 mt-5 sm:mt-6">
+
+        <div className="ml-2 mt-5 sm:mt-6 columns-2">
+          <div>
+            <h5>Játékadatok:</h5>
+            {abbreviation(new Blob(Object.values(localStorage)).size)}
+          </div>
+        </div>
+        <div className="ml-2 mt-1 sm:mt-1">
           <button
             type="button"
             className="mt-2 w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"

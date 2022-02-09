@@ -76,13 +76,14 @@ function App() {
     gameInitialState,
     gameKey
   )
+
+  const { difficulty, theme, view, game, stats, info } = state
+
   const { state: wordsState, dispatch: dispatchWord } = usePersistedReducer<
     WordState,
     WordAction
   >(wordReducer, wordInitialState, wordKey, false)
   const context = React.useContext(ThemeContext)
-
-  const { difficulty, theme, view, game, stats, info } = state
 
   const {
     day,
@@ -432,6 +433,7 @@ function App() {
   }, [])
 
   const handleDifficultyChange = (value: Difficulty) => {
+    setSuccessAlert('')
     addGTM('event', 'changeDifficulty', {
       previous: difficulty,
       current: value,
