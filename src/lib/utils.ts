@@ -106,3 +106,14 @@ export const abbreviation = (
 
 export const isLocalhost = () =>
   ['localhost', '192.168.0.18'].includes(window.location.hostname)
+
+export const copyStyle = (sourceNode: HTMLElement, targetNode: HTMLElement) => {
+  const computedStyle = window.getComputedStyle(sourceNode)
+  Array.from(computedStyle).forEach((key) =>
+    targetNode.style.setProperty(
+      key,
+      computedStyle.getPropertyValue(key),
+      computedStyle.getPropertyPriority(key)
+    )
+  )
+}

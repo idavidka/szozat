@@ -40,7 +40,7 @@ import { MAX_NUMBER_OF_GUESSES } from './constants/constants'
 import { ThemeToggle } from './components/theme/ThemeToggle'
 import { ThemeContext } from './components/theme/ThemeContext'
 import { CreatePuzzleModal } from './components/modals/CreatePuzzleModal'
-import { times, random as rand } from 'lodash'
+import { times, random as rand, isNil } from 'lodash'
 import {
   addGTM,
   GameType,
@@ -311,7 +311,7 @@ function App() {
     }
   }
 
-  const onReplace = (value: CharValue) => {
+  const onReplace = (value: CharValue, index?: number) => {
     checkViewPort()
     if (
       currentGuess.length - 1 < difficulty &&
@@ -320,11 +320,23 @@ function App() {
     ) {
       setUserInteracted(true)
 
-      dispatch({
-        type: 'UPDATE_CURRENT_GUESS',
-        difficulty,
-        currentGuess: [...currentGuess.slice(0, -1), value],
-      })
+      if (isNil(index)) {
+        dispatch({
+          type: 'UPDATE_CURRENT_GUESS',
+          difficulty,
+          currentGuess: [...currentGuess.slice(0, -1), value],
+        })
+      } else if (currentGuess[index]) {
+        const newCurrentGuess = [...currentGuess]
+        newCurrentGuess[index] = value
+        dispatch({
+          type: 'UPDATE_CURRENT_GUESS',
+          difficulty,
+          currentGuess: newCurrentGuess,
+        })
+      } else if (index >= currentGuess.length && index < difficulty) {
+        onChar(value)
+      }
     }
   }
 

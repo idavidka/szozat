@@ -6,7 +6,7 @@ import { Difficulty } from '../../hooks/gameReducer'
 
 type Props = {
   onChar: (value: CharValue) => void
-  onReplace: (value: CharValue) => void
+  onReplace: (value: CharValue, index?: number) => void
   onDelete: () => void
   onEnter: () => void
   onDevClick?: (value: KeyValue) => void
@@ -45,6 +45,10 @@ export const Keyboard = ({
     } else {
       onChar(value)
     }
+  }
+
+  const onDrop = (value: KeyValue, index: number) => {
+    onReplace(value, index)
   }
 
   useEffect(() => {
@@ -103,39 +107,117 @@ export const Keyboard = ({
     <div>
       <div className="bottom-check fixed bottom-0" />
       <div className="flex justify-center mb-1">
-        <Key value="CS" onClick={onClick} status={charStatuses['CS']} />
-        <Key value="DZ" onClick={onClick} status={charStatuses['DZ']} />
-        <Key value="DZS" onClick={onClick} status={charStatuses['DZS']} />
-        <Key value="GY" onClick={onClick} status={charStatuses['GY']} />
-        <Key value="LY" onClick={onClick} status={charStatuses['LY']} />
-        <Key value="NY" onClick={onClick} status={charStatuses['NY']} />
-        <Key value="SZ" onClick={onClick} status={charStatuses['SZ']} />
-        <Key value="TY" onClick={onClick} status={charStatuses['TY']} />
-        <Key value="ZS" onClick={onClick} status={charStatuses['ZS']} />
-        <Key value="Ö" onClick={onClick} status={charStatuses['Ö']} />
-        <Key value="Ü" onClick={onClick} status={charStatuses['Ü']} />
-        <Key value="Ó" onClick={onClick} status={charStatuses['Ó']} />
+        <Key
+          value="CS"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['CS']}
+        />
+        <Key
+          value="DZ"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['DZ']}
+        />
+        <Key
+          value="DZS"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['DZS']}
+        />
+        <Key
+          value="GY"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['GY']}
+        />
+        <Key
+          value="LY"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['LY']}
+        />
+        <Key
+          value="NY"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['NY']}
+        />
+        <Key
+          value="SZ"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['SZ']}
+        />
+        <Key
+          value="TY"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['TY']}
+        />
+        <Key
+          value="ZS"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['ZS']}
+        />
+        <Key
+          value="Ö"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['Ö']}
+        />
+        <Key
+          value="Ü"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['Ü']}
+        />
+        <Key
+          value="Ó"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['Ó']}
+        />
       </div>
       <div className="flex justify-center mb-1">
-        <Key value="Q" onClick={onClick} status={charStatuses['Q']} />
-        <Key value="W" onClick={onClick} status={charStatuses['W']} />
+        <Key
+          value="Q"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['Q']}
+        />
+        <Key
+          value="W"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['W']}
+        />
         <Key
           value="E"
           additional={{ É: charStatuses['É'] }}
           onClick={onClick}
+          onDrop={onDrop}
           status={charStatuses['E']}
         />
-        <Key value="R" onClick={onClick} status={charStatuses['R']} />
+        <Key
+          value="R"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['R']}
+        />
         <Key
           value="T"
           additional={{ TY: charStatuses['TY'] }}
           onClick={onClick}
+          onDrop={onDrop}
           status={charStatuses['T']}
         />
         <Key
           value="Z"
           additional={{ ZS: charStatuses['ZS'] }}
           onClick={onClick}
+          onDrop={onDrop}
           status={charStatuses['Z']}
         />
         <Key
@@ -146,12 +228,14 @@ export const Keyboard = ({
             Ű: charStatuses['Ű'],
           }}
           onClick={onClick}
+          onDrop={onDrop}
           status={charStatuses['U']}
         />
         <Key
           value="I"
           additional={{ Í: charStatuses['Í'] }}
           onClick={onClick}
+          onDrop={onDrop}
           status={charStatuses['I']}
         />
         <Key
@@ -162,29 +246,48 @@ export const Keyboard = ({
             Ő: charStatuses['Ő'],
           }}
           onClick={onClick}
+          onDrop={onDrop}
           status={charStatuses['O']}
         />
-        <Key value="P" onClick={onClick} status={charStatuses['P']} />
-        <Key value="Ő" onClick={onClick} status={charStatuses['Ő']} />
-        <Key value="Ú" onClick={onClick} status={charStatuses['Ú']} />
+        <Key
+          value="P"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['P']}
+        />
+        <Key
+          value="Ő"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['Ő']}
+        />
+        <Key
+          value="Ú"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['Ú']}
+        />
       </div>
       <div className="flex justify-center mb-1">
         <Key
           value="A"
           additional={{ Á: charStatuses['Á'] }}
           onClick={onClick}
+          onDrop={onDrop}
           status={charStatuses['A']}
         />
         <Key
           value="S"
           additional={{ SZ: charStatuses['SZ'] }}
           onClick={onClick}
+          onDrop={onDrop}
           status={charStatuses['S']}
         />
         <Key
           value="D"
           additional={{ DZ: charStatuses['DZ'], DZS: charStatuses['DZS'] }}
           onClick={onClick}
+          onDrop={onDrop}
           onDevClick={onDevClick}
           status={charStatuses['D']}
         />
@@ -193,20 +296,52 @@ export const Keyboard = ({
           value="G"
           additional={{ GY: charStatuses['GY'] }}
           onClick={onClick}
+          onDrop={onDrop}
           status={charStatuses['G']}
         />
-        <Key value="H" onClick={onClick} status={charStatuses['H']} />
-        <Key value="J" onClick={onClick} status={charStatuses['J']} />
-        <Key value="K" onClick={onClick} status={charStatuses['K']} />
+        <Key
+          value="H"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['H']}
+        />
+        <Key
+          value="J"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['J']}
+        />
+        <Key
+          value="K"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['K']}
+        />
         <Key
           value="L"
           additional={{ LY: charStatuses['LY'] }}
           onClick={onClick}
+          onDrop={onDrop}
           status={charStatuses['L']}
         />
-        <Key value="É" onClick={onClick} status={charStatuses['É']} />
-        <Key value="Á" onClick={onClick} status={charStatuses['Á']} />
-        <Key value="Ű" onClick={onClick} status={charStatuses['Ű']} />
+        <Key
+          value="É"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['É']}
+        />
+        <Key
+          value="Á"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['Á']}
+        />
+        <Key
+          value="Ű"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['Ű']}
+        />
       </div>
       <div className="flex justify-center">
         <Key
@@ -215,33 +350,66 @@ export const Keyboard = ({
           value="ENTER"
           onClick={onClick}
           disabled={!enabledOnEnter}
+          noDrag
         >
           Beküld
         </Key>
-        <Key value="Í" onClick={onClick} status={charStatuses['Í']} />
-        <Key value="Y" onClick={onClick} status={charStatuses['Y']} />
-        <Key value="X" onClick={onClick} status={charStatuses['X']} />
+        <Key
+          value="Í"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['Í']}
+        />
+        <Key
+          value="Y"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['Y']}
+        />
+        <Key
+          value="X"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['X']}
+        />
         <Key
           value="C"
           additional={{ CS: charStatuses['CS'] }}
           onClick={onClick}
           status={charStatuses['C']}
         />
-        <Key value="V" onClick={onClick} status={charStatuses['V']} />
-        <Key value="B" onClick={onClick} status={charStatuses['B']} />
+        <Key
+          value="V"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['V']}
+        />
+        <Key
+          value="B"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['B']}
+        />
         <Key
           value="N"
           additional={{ NY: charStatuses['NY'] }}
           onClick={onClick}
+          onDrop={onDrop}
           status={charStatuses['N']}
         />
-        <Key value="M" onClick={onClick} status={charStatuses['M']} />
+        <Key
+          value="M"
+          onClick={onClick}
+          onDrop={onDrop}
+          status={charStatuses['M']}
+        />
         <Key
           width={65.4}
           className="bg-red-500 text-white hover:bg-red-400 disabled:opacity-50 disabled:cursor-not-allowed"
           value="DELETE"
           onClick={onClick}
           disabled={!enabledOnDelete}
+          noDrag
         >
           Töröl
         </Key>

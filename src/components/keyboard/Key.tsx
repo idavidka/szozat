@@ -4,6 +4,7 @@ import {
   useRef,
   CSSProperties,
   useLayoutEffect,
+  useCallback,
 } from 'react'
 import { Popover, Transition } from '@headlessui/react'
 import classnames from 'classnames'
@@ -11,6 +12,7 @@ import { KeyValue } from '../../lib/keyboard'
 import { CharStatus } from '../../lib/statuses'
 import { isEmpty } from 'lodash'
 import Hammer from 'hammerjs'
+import { copyStyle } from '../../lib/utils'
 
 type ButtonProps = {
   disabled?: boolean
@@ -19,7 +21,9 @@ type ButtonProps = {
   onShortClick?: () => void
   onClick?: (event: any) => void
   onDevClick?: (event: any) => void
+  onDrop?: (index: number) => void
   children?: ReactNode
+  noDrag?: boolean
 }
 
 const Button = ({
@@ -30,22 +34,71 @@ const Button = ({
   onClick,
   children,
   onDevClick,
+  onDrop,
+  noDrag,
 }: ButtonProps) => {
   const buttonRef = useRef<HTMLButtonElement>(null)
   const manager = useRef<HammerManager>()
+  const buttonCloneRef = useRef<HTMLElement | null>()
+
+  const handlePan = useCallback(
+    (type: 'start' | 'move' | 'end', event: HammerInput) => {
+      const target =
+        event.target.tagName === 'BUTTON'
+          ? event.target
+          : event.target.closest('button')
+      if (type === 'start' && target) {
+        buttonCloneRef.current = target.cloneNode(true) as HTMLElement
+        copyStyle(target, buttonCloneRef.current)
+        buttonCloneRef.current.style.position = 'absolute'
+        buttonCloneRef.current.style.transform = 'translate(-50%,-50%)'
+        buttonCloneRef.current.style.zIndex = '2000'
+        document.body.appendChild(buttonCloneRef.current)
+      }
+      if (type === 'end' && buttonCloneRef.current) {
+        document.body.removeChild(buttonCloneRef.current)
+        buttonCloneRef.current = null
+        const currentElement = document.elementFromPoint(
+          event.center.x,
+          event.center.y
+        )
+        const currentCell = currentElement?.classList.contains(
+          'current-row-cell'
+        )
+          ? currentElement
+          : currentElement?.closest('.current-row-cell')
+
+        if (currentCell && currentCell.parentNode) {
+          const index = Array.from(currentCell.parentNode.children).indexOf(
+            currentCell
+          )
+
+          onDrop?.(index)
+        }
+      }
+      if (type === 'move' && buttonCloneRef.current) {
+        buttonCloneRef.current.style.top = `${event.center.y}px`
+        buttonCloneRef.current.style.left = `${event.center.x}px`
+      }
+    },
+    [onDrop]
+  )
 
   useLayoutEffect(() => {
     if (!manager.current && buttonRef.current) {
-      manager.current = new Hammer.Manager(buttonRef.current)
-
+      manager.current = new Hammer.Manager(
+        buttonRef.current as unknown as HTMLButtonElement
+      )
       const Tap = new Hammer.Tap({
         event: 'short_tap',
         taps: 1,
         time: onClick ? 250 : 5000,
       })
       manager.current.add(Tap)
+      let LongTap
+      let DevTap
       if (onClick) {
-        const LongTap = new Hammer.Press({
+        LongTap = new Hammer.Press({
           event: 'long_tap',
           taps: 1,
           time: 500,
@@ -53,16 +106,24 @@ const Button = ({
         LongTap.recognizeWith(Tap)
         manager.current.add(LongTap)
       }
-
       if (onDevClick) {
-        const DevTap = new Hammer.Tap({
+        DevTap = new Hammer.Tap({
           event: 'dev_tap',
           taps: 10,
           time: 250,
         })
-        manager.current.add(Tap)
         DevTap.recognizeWith(Tap)
         manager.current.add(DevTap)
+      }
+      if (!noDrag) {
+        const Pan = new Hammer.Pan({
+          event: 'pan',
+          taps: 1,
+        })
+        Tap.recognizeWith(Pan)
+        LongTap?.recognizeWith(Pan)
+        DevTap?.recognizeWith(Pan)
+        manager.current.add(Pan)
       }
     }
 
@@ -70,6 +131,20 @@ const Button = ({
       onShortClick?.()
       e.target.blur()
     })
+
+    if (!noDrag) {
+      manager.current?.on('panstart', (e) => {
+        handlePan('start', e)
+      })
+
+      manager.current?.on('panmove', (e) => {
+        handlePan('move', e)
+      })
+
+      manager.current?.on('panend', (e) => {
+        handlePan('end', e)
+      })
+    }
 
     if (onClick) {
       manager.current?.on('long_tap', (e) => {
@@ -86,9 +161,9 @@ const Button = ({
     }
 
     return () => {
-      manager.current?.off('short_tap long_tap dev_tap')
+      manager.current?.off('short_tap long_tap dev_tap panstart panmove panend')
     }
-  }, [onDevClick, onClick, onShortClick])
+  }, [onDevClick, onClick, onShortClick, noDrag, handlePan])
 
   return (
     <button
@@ -110,7 +185,9 @@ type KeyProps = {
   status?: CharStatus
   className?: string
   disabled?: boolean
+  noDrag?: boolean
   onClick: (value: KeyValue) => void
+  onDrop?: (value: KeyValue, index: number) => void
   onDevClick?: (value: KeyValue) => void
 }
 
@@ -122,8 +199,10 @@ export const Key = ({
   additional,
   className,
   onClick,
+  onDrop,
   onDevClick,
   disabled,
+  noDrag,
 }: KeyProps) => {
   const classes = classnames(
     'flex relative items-center justify-center rounded mx-0.5 text-xs font-bold cursor-pointer select-none overflow-hidden',
@@ -164,9 +243,11 @@ export const Key = ({
         disabled={!!disabled}
         style={{ width: `${width}px`, height: '50px' }}
         className={classes}
+        noDrag={noDrag}
         onShortClick={() => {
           handleClick(value)
         }}
+        onDrop={(index: number) => onDrop?.(value, index)}
         onDevClick={() => {
           handleDevClick(value)
         }}
@@ -225,9 +306,11 @@ export const Key = ({
             disabled={!!disabled}
             style={{ width: `${width}px`, height: '50px' }}
             className={classes}
+            noDrag={noDrag}
             onShortClick={() => {
               handleClick(value)
             }}
+            onDrop={(index: number) => onDrop?.(value, index)}
             onDevClick={() => {
               handleDevClick(value)
             }}

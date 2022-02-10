@@ -1,5 +1,6 @@
 import { CharStatus } from '../../lib/statuses'
 import classnames from 'classnames'
+import { usePrevious } from '../../hooks/usePrevious'
 
 type Props = {
   value?: string
@@ -9,6 +10,7 @@ type Props = {
 }
 
 export const Cell = ({ value, status, className, isPulsing }: Props) => {
+  const prevValue = usePrevious(value)
   const containerClasses = classnames(
     'grow relative inline-flex justify-center border-solid border-2 rounded before:content-[""] before:block before:pb-[100%] overflow-hidden',
     {
@@ -22,7 +24,8 @@ export const Cell = ({ value, status, className, isPulsing }: Props) => {
       'bg-yellow-500 text-white border-0': ['present', 'present-diff'].includes(
         status ?? ''
       ),
-      'cell-animation': !!value,
+      'cell-animation': prevValue !== value,
+      'current-row-cell': isPulsing,
       'animate-pulse': !value && isPulsing,
       'bg-slate-200 dark:bg-slate-700 cursor-not-allowed': !value && !isPulsing,
     },
