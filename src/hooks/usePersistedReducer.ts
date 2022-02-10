@@ -2,7 +2,7 @@ import { useEffect, useReducer } from 'react'
 import deepEqual from 'fast-deep-equal/es6'
 import { usePrevious } from './usePrevious'
 import logger from 'use-reducer-logger'
-import { getItem, setItem } from '../lib/localStorage'
+import { getItem, idKey, setItem } from '../lib/localStorage'
 import { isLocalhost } from '../lib/utils'
 import { get } from 'lodash'
 
@@ -37,8 +37,8 @@ export const usePersistedReducer = <State, Action>(
     if (!stateEqual) {
       const stringifiedState = JSON.stringify(state)
       try {
-        if (get(state, 'id')) {
-          setItem('id', JSON.stringify({ id: get(state, 'id') }))
+        if (get(state, idKey)) {
+          setItem(idKey, JSON.stringify({ id: get(state, idKey) }))
         }
         setItem(storageKey, stringifiedState, undefined, shouldEncrypt)
       } catch (err) {
