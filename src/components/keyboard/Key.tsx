@@ -10,7 +10,7 @@ import { Popover, Transition } from '@headlessui/react'
 import classnames from 'classnames'
 import { KeyValue } from '../../lib/keyboard'
 import { CharStatus } from '../../lib/statuses'
-import { isEmpty } from 'lodash'
+import { debounce, isEmpty } from 'lodash'
 import Hammer from 'hammerjs'
 import { copyStyle } from '../../lib/utils'
 
@@ -40,6 +40,27 @@ const Button = ({
   const buttonRef = useRef<HTMLButtonElement>(null)
   const manager = useRef<HammerManager>()
   const buttonCloneRef = useRef<HTMLElement | null>()
+  const lastTarget = useRef<HTMLElement | null>()
+
+  const targeting = debounce((center: HammerInput['center']) => {
+    const targetCell = document
+      .elementsFromPoint(center.x, center.y)
+      .find((targetElement) =>
+        targetElement.classList.contains('current-row-cell')
+      ) as HTMLElement | undefined
+
+    if (targetCell && targetCell !== lastTarget.current) {
+      lastTarget.current?.classList.remove(
+        'bg-cyan-600',
+        'border-cyan-800',
+        'dark:bg-cyan-600',
+        'dark:border-cyan-800'
+      )
+      lastTarget.current = targetCell
+    }
+
+    return targetCell
+  }, 2)
 
   const handlePan = useCallback(
     (type: 'start' | 'move' | 'end', event: HammerInput) => {
@@ -48,11 +69,8 @@ const Button = ({
           ? event.target
           : event.target.closest('button')
 
-      const targetCell = document
-        .elementsFromPoint(event.center.x, event.center.y)
-        .find((targetElement) =>
-          targetElement.classList.contains('current-row-cell')
-        ) as HTMLElement | undefined
+      const targetCell = targeting(event.center)
+
       if (type === 'start' && sourceElement) {
         buttonCloneRef.current = sourceElement.cloneNode(true) as HTMLElement
         copyStyle(sourceElement, buttonCloneRef.current)
@@ -77,11 +95,16 @@ const Button = ({
         buttonCloneRef.current.style.top = `${event.center.y}px`
         buttonCloneRef.current.style.left = `${event.center.x}px`
         if (targetCell) {
-          targetCell.style.borderColor = 'red'
+          targetCell.classList.add(
+            'bg-cyan-600',
+            'border-cyan-800',
+            'dark:bg-cyan-600',
+            'dark:border-cyan-800'
+          )
         }
       }
     },
-    [onDrop]
+    [onDrop, targeting]
   )
 
   useLayoutEffect(() => {
