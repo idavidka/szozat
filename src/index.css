@@ -15,10 +15,6 @@ body {
                                     supported by Chrome, Edge, Opera and Firefox */
 }
 
-.active-target-cell {
-  border-color: red !important;
-}
-
 .base-modal {
   -webkit-user-drag: auto;
   -webkit-tap-highlight-color: rgb(34 197 94);
