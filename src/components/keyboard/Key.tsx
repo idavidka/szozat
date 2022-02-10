@@ -43,13 +43,19 @@ const Button = ({
 
   const handlePan = useCallback(
     (type: 'start' | 'move' | 'end', event: HammerInput) => {
-      const target =
+      const sourceElement =
         event.target.tagName === 'BUTTON'
           ? event.target
           : event.target.closest('button')
-      if (type === 'start' && target) {
-        buttonCloneRef.current = target.cloneNode(true) as HTMLElement
-        copyStyle(target, buttonCloneRef.current)
+
+      const targetCell = document
+        .elementsFromPoint(event.center.x, event.center.y)
+        .find((targetElement) =>
+          targetElement.classList.contains('current-row-cell')
+        ) as HTMLElement | undefined
+      if (type === 'start' && sourceElement) {
+        buttonCloneRef.current = sourceElement.cloneNode(true) as HTMLElement
+        copyStyle(sourceElement, buttonCloneRef.current)
         buttonCloneRef.current.style.position = 'absolute'
         buttonCloneRef.current.style.transform = 'translate(-50%,-50%)'
         buttonCloneRef.current.style.zIndex = '2000'
@@ -58,19 +64,10 @@ const Button = ({
       if (type === 'end' && buttonCloneRef.current) {
         document.body.removeChild(buttonCloneRef.current)
         buttonCloneRef.current = null
-        const currentElement = document.elementFromPoint(
-          event.center.x,
-          event.center.y
-        )
-        const currentCell = currentElement?.classList.contains(
-          'current-row-cell'
-        )
-          ? currentElement
-          : currentElement?.closest('.current-row-cell')
 
-        if (currentCell && currentCell.parentNode) {
-          const index = Array.from(currentCell.parentNode.children).indexOf(
-            currentCell
+        if (targetCell && targetCell.parentNode) {
+          const index = Array.from(targetCell.parentNode.children).indexOf(
+            targetCell
           )
 
           onDrop?.(index)
@@ -79,6 +76,9 @@ const Button = ({
       if (type === 'move' && buttonCloneRef.current) {
         buttonCloneRef.current.style.top = `${event.center.y}px`
         buttonCloneRef.current.style.left = `${event.center.x}px`
+        if (targetCell) {
+          targetCell.style.borderColor = 'red'
+        }
       }
     },
     [onDrop]
