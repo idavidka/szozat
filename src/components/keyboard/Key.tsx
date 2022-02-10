@@ -79,6 +79,20 @@ const Button = ({
         buttonCloneRef.current.style.zIndex = '2000'
         document.body.appendChild(buttonCloneRef.current)
       }
+
+      if (['move', 'end'].includes(type) && buttonCloneRef.current) {
+        buttonCloneRef.current.style.top = `${event.center.y}px`
+        buttonCloneRef.current.style.left = `${event.center.x}px`
+        if (targetCell) {
+          targetCell.classList.add(
+            'bg-cyan-600',
+            'border-cyan-800',
+            'dark:bg-cyan-600',
+            'dark:border-cyan-800'
+          )
+        }
+      }
+
       if (type === 'end' && buttonCloneRef.current) {
         document.body.removeChild(buttonCloneRef.current)
         buttonCloneRef.current = null
@@ -89,18 +103,6 @@ const Button = ({
           )
 
           onDrop?.(index)
-        }
-      }
-      if (type === 'move' && buttonCloneRef.current) {
-        buttonCloneRef.current.style.top = `${event.center.y}px`
-        buttonCloneRef.current.style.left = `${event.center.x}px`
-        if (targetCell) {
-          targetCell.classList.add(
-            'bg-cyan-600',
-            'border-cyan-800',
-            'dark:bg-cyan-600',
-            'dark:border-cyan-800'
-          )
         }
       }
     },
