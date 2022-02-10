@@ -102,6 +102,13 @@ const Button = ({
             targetCell
           )
 
+          targetCell.classList.remove(
+            'bg-cyan-600',
+            'border-cyan-800',
+            'dark:bg-cyan-600',
+            'dark:border-cyan-800'
+          )
+
           onDrop?.(index)
         }
       }
