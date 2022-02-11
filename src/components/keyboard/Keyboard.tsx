@@ -106,7 +106,7 @@ export const Keyboard = ({
   return (
     <div>
       <div className="bottom-check fixed bottom-0" />
-      <div className="flex justify-center mb-1">
+      <div className="flex relative justify-center mb-1">
         <Key
           value="CS"
           onClick={onClick}
@@ -180,7 +180,7 @@ export const Keyboard = ({
           status={charStatuses['Ó']}
         />
       </div>
-      <div className="flex justify-center mb-1">
+      <div className="flex relative justify-center mb-1">
         <Key
           value="Q"
           onClick={onClick}
@@ -268,7 +268,7 @@ export const Keyboard = ({
           status={charStatuses['Ú']}
         />
       </div>
-      <div className="flex justify-center mb-1">
+      <div className="flex relative justify-center mb-1">
         <Key
           value="A"
           additional={{ Á: charStatuses['Á'] }}
@@ -343,7 +343,7 @@ export const Keyboard = ({
           status={charStatuses['Ű']}
         />
       </div>
-      <div className="flex justify-center">
+      <div className="flex relative justify-center">
         <Key
           width={65.4}
           className="bg-lime-500 text-white hover:bg-lime-400 disabled:opacity-50 disabled:cursor-not-allowed"

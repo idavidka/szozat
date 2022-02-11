@@ -144,6 +144,10 @@ export const InfoModal = ({
             vagy tripla betűt egybeírni, akkor az írás közben tartsd lenyomva a{' '}
             <b>[SHIFT]</b> billentyűt.
           </li>
+          <li>
+            Betű cseréléséhez csak fogd meg a kívánt betűt és húzd rá a
+            lecserélendőre.
+          </li>
         </ul>
       </div>
       <button

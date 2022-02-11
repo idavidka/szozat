@@ -15,6 +15,12 @@ body {
                                     supported by Chrome, Edge, Opera and Firefox */
 }
 
+.dropped-key {
+  transition: left 0.5s ease-in-out, top 0.5s ease-in-out,
+    width 0.5s ease-in-out, height 0.5s ease-in-out, font-size 0.5s ease-in-out,
+    opacity 0.5s ease-in-out !important;
+}
+
 .base-modal {
   -webkit-user-drag: auto;
   -webkit-tap-highlight-color: rgb(34 197 94);

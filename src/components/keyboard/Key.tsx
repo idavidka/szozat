@@ -41,6 +41,7 @@ const Button = ({
   const manager = useRef<HammerManager>()
   const buttonCloneRef = useRef<HTMLElement | null>()
   const lastTarget = useRef<HTMLElement | null>()
+  const original = useRef({ x: 0, y: 0, w: 0, h: 0, f: 0 })
 
   const targeting = debounce((center: HammerInput['center']) => {
     const targetCell = document
@@ -73,16 +74,28 @@ const Button = ({
 
       if (type === 'start' && sourceElement) {
         buttonCloneRef.current = sourceElement.cloneNode(true) as HTMLElement
+        original.current = {
+          ...event.center,
+          w: parseInt(buttonCloneRef.current.style.width),
+          h: parseInt(buttonCloneRef.current.style.height),
+          f: parseInt(buttonCloneRef.current.style.fontSize),
+        }
         copyStyle(sourceElement, buttonCloneRef.current)
         buttonCloneRef.current.style.position = 'absolute'
         buttonCloneRef.current.style.transform = 'translate(-50%,-50%)'
         buttonCloneRef.current.style.zIndex = '2000'
+        buttonCloneRef.current.style.width = `${original.current.w * 1.5}px`
+        buttonCloneRef.current.style.height = `${original.current.h * 1.5}px`
+        buttonCloneRef.current.style.fontSize = `${original.current.f * 1.5}px`
         document.body.appendChild(buttonCloneRef.current)
       }
 
-      if (['move', 'end'].includes(type) && buttonCloneRef.current) {
+      if (buttonCloneRef.current) {
         buttonCloneRef.current.style.top = `${event.center.y}px`
         buttonCloneRef.current.style.left = `${event.center.x}px`
+      }
+
+      if (type === 'move') {
         if (targetCell) {
           targetCell.classList.add(
             'bg-cyan-600',
@@ -94,22 +107,35 @@ const Button = ({
       }
 
       if (type === 'end' && buttonCloneRef.current) {
-        document.body.removeChild(buttonCloneRef.current)
-        buttonCloneRef.current = null
+        targetCell?.classList.remove(
+          'bg-cyan-600',
+          'border-cyan-800',
+          'dark:bg-cyan-600',
+          'dark:border-cyan-800'
+        )
 
         if (targetCell && targetCell.parentNode) {
           const index = Array.from(targetCell.parentNode.children).indexOf(
             targetCell
           )
 
-          targetCell.classList.remove(
-            'bg-cyan-600',
-            'border-cyan-800',
-            'dark:bg-cyan-600',
-            'dark:border-cyan-800'
-          )
-
           onDrop?.(index)
+          document.body.removeChild(buttonCloneRef.current)
+          buttonCloneRef.current = null
+        } else {
+          buttonCloneRef.current.classList.add('dropped-key')
+          buttonCloneRef.current.style.left = `${original.current.x}px`
+          buttonCloneRef.current.style.top = `${original.current.y}px`
+          buttonCloneRef.current.style.fontSize = `${original.current.f}px`
+          buttonCloneRef.current.style.width = `${original.current.w}px`
+          buttonCloneRef.current.style.height = `${original.current.h}px`
+          buttonCloneRef.current.style.opacity = '0'
+          setTimeout(() => {
+            if (buttonCloneRef.current) {
+              document.body.removeChild(buttonCloneRef.current)
+              buttonCloneRef.current = null
+            }
+          }, 500)
         }
       }
     },
