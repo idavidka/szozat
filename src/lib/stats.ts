@@ -1,4 +1,4 @@
-import { times } from 'lodash'
+import { isNil, times } from 'lodash'
 import { MAX_NUMBER_OF_GUESSES } from '../constants/constants'
 import { Difficulty, GameStats } from '../hooks/gameReducer'
 
@@ -13,6 +13,14 @@ export const addStatsForCompletedGame = (
   const stats = { ...gameStats[difficulty] }
 
   stats.totalGames += 1
+
+  if (isNil(stats.currentStreak)) {
+    stats.currentStreak = 0
+  }
+
+  if (isNil(stats.bestStreak)) {
+    stats.bestStreak = 0
+  }
 
   if (count > MAX_NUMBER_OF_GUESSES[difficulty] - 1) {
     // A fail situation
@@ -52,6 +60,14 @@ export const toStats = (
 
   if (!stat) {
     return defaultStat
+  }
+
+  if (isNil(stat.currentStreak)) {
+    stat.currentStreak = 0
+  }
+
+  if (isNil(stat.bestStreak)) {
+    stat.bestStreak = 0
   }
 
   return {

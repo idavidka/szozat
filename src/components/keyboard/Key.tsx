@@ -99,8 +99,6 @@ const Button = ({
         ) as HTMLElement | undefined
     }, undefined)
 
-    console.log('ASD', targetCell)
-
     if (!targetCell || (targetCell && targetCell !== lastTarget.current)) {
       lastTarget.current?.classList.remove(
         'bg-cyan-600',
