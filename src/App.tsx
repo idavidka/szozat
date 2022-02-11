@@ -540,7 +540,7 @@ function App() {
     return (
       <div className={context.theme + ' h-[100%] '}>
         <div className="flex justify-center content-center text-center flex-col bg-white dark:bg-gray-800 h-[100%]">
-          <span className="text-5xl mb-5 dark:text-gray-300">Loading</span>
+          <span className="text-5xl mb-5 dark:text-gray-300">Betöltés</span>
           <Icon
             component={RefreshIcon}
             isStandalone
