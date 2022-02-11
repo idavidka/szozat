@@ -91,7 +91,9 @@ export const Keyboard = ({
       if (bottomCheck) {
         const heightDiff = documentHeight.current - window.innerHeight
 
-        document.body.style.height = `calc(100vh - ${heightDiff}px)`
+        document.body.style.height = `calc(100vh - ${
+          heightDiff < 0 ? 0 : heightDiff
+        }px)`
       }
     }
     resize()
