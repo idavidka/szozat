@@ -43,14 +43,65 @@ const Button = ({
   const lastTarget = useRef<HTMLElement | null>()
   const original = useRef({ x: 0, y: 0, w: 0, h: 0, f: 0 })
 
-  const targeting = debounce((center: HammerInput['center']) => {
-    const targetCell = document
-      .elementsFromPoint(center.x, center.y)
-      .find((targetElement) =>
-        targetElement.classList.contains('current-row-cell')
-      ) as HTMLElement | undefined
+  const targeting = debounce((element?: HTMLElement | null) => {
+    if (!element) {
+      return undefined
+    }
 
-    if (targetCell && targetCell !== lastTarget.current) {
+    const positions = {
+      center: {
+        x: element.offsetLeft,
+        y: element.offsetTop,
+      },
+      top: {
+        x: element.offsetLeft,
+        y: element.offsetTop - element.offsetHeight * 0.1,
+      },
+      bottom: {
+        x: element.offsetLeft,
+        y: element.offsetTop + element.offsetHeight * 0.7,
+      },
+      left: {
+        x: element.offsetLeft - element.offsetWidth / 2,
+        y: element.offsetTop,
+      },
+      right: {
+        x: element.offsetLeft + element.offsetWidth / 2,
+        y: element.offsetTop,
+      },
+      topLeft: {
+        x: element.offsetLeft - element.offsetWidth / 2,
+        y: element.offsetTop - element.offsetHeight * 0.7,
+      },
+      topRight: {
+        x: element.offsetLeft + element.offsetWidth / 2,
+        y: element.offsetTop - element.offsetHeight * 0.7,
+      },
+      bottomLeft: {
+        x: element.offsetLeft - element.offsetWidth / 2,
+        y: element.offsetTop + element.offsetHeight * 0.1,
+      },
+      bottomRight: {
+        x: element.offsetLeft + element.offsetWidth / 2,
+        y: element.offsetTop + element.offsetHeight * 0.1,
+      },
+    }
+    const targetCell = Object.entries(positions).reduce<
+      HTMLElement | undefined
+    >((acc, [_, { x, y }]) => {
+      if (acc) {
+        return acc
+      }
+      return document
+        .elementsFromPoint(x, y)
+        .find((targetElement) =>
+          targetElement.classList.contains('current-row-cell')
+        ) as HTMLElement | undefined
+    }, undefined)
+
+    console.log('ASD', targetCell)
+
+    if (!targetCell || (targetCell && targetCell !== lastTarget.current)) {
       lastTarget.current?.classList.remove(
         'bg-cyan-600',
         'border-cyan-800',
@@ -70,7 +121,7 @@ const Button = ({
           ? event.target
           : event.target.closest('button')
 
-      const targetCell = targeting(event.center)
+      const targetCell = targeting(buttonCloneRef.current)
 
       if (type === 'start' && sourceElement) {
         buttonCloneRef.current = sourceElement.cloneNode(true) as HTMLElement
@@ -82,7 +133,7 @@ const Button = ({
         }
         copyStyle(sourceElement, buttonCloneRef.current)
         buttonCloneRef.current.style.position = 'absolute'
-        buttonCloneRef.current.style.transform = 'translate(-50%,-50%)'
+        buttonCloneRef.current.style.transform = 'translate(-50%,-80%)'
         buttonCloneRef.current.style.zIndex = '2000'
         buttonCloneRef.current.style.width = `${original.current.w * 1.5}px`
         buttonCloneRef.current.style.height = `${original.current.h * 1.5}px`
