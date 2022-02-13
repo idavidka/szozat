@@ -711,6 +711,7 @@ function App() {
               difficulty={difficulty}
               enabledOnEnter={currentGuess.length === difficulty}
               enabledOnDelete={currentGuess.length > 0}
+              noDrag={isGameLost[difficulty] || isGameWon[difficulty]}
             />
           </div>
         </div>

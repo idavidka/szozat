@@ -1,7 +1,7 @@
 import { KeyValue } from '../../lib/keyboard'
 import { CharValue, getStatuses, Word, isCharValue } from '../../lib/statuses'
 import { Key } from './Key'
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { Difficulty } from '../../hooks/gameReducer'
 
 type Props = {
@@ -17,6 +17,7 @@ type Props = {
   difficulty: Difficulty
   enabledOnEnter?: boolean
   enabledOnDelete?: boolean
+  noDrag?: boolean
 }
 
 export const Keyboard = ({
@@ -32,6 +33,7 @@ export const Keyboard = ({
   difficulty,
   enabledOnEnter,
   enabledOnDelete,
+  noDrag,
 }: Props) => {
   const charStatuses = getStatuses(guesses, day, random, difficulty)
   const lastKey = useRef('')
@@ -105,122 +107,53 @@ export const Keyboard = ({
     }
   }, [onEnter, onDelete, onChar, onReplace, currentGuess])
 
+  const keyProps = useMemo(
+    () => ({
+      onClick,
+      onDrop,
+      noDrag,
+    }),
+    [noDrag, onClick, onDrop]
+  )
+
   return (
     <div>
       <div className="bottom-check fixed bottom-0" />
       <div className="flex relative justify-center mb-1">
-        <Key
-          value="CS"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['CS']}
-        />
-        <Key
-          value="DZ"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['DZ']}
-        />
-        <Key
-          value="DZS"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['DZS']}
-        />
-        <Key
-          value="GY"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['GY']}
-        />
-        <Key
-          value="LY"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['LY']}
-        />
-        <Key
-          value="NY"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['NY']}
-        />
-        <Key
-          value="SZ"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['SZ']}
-        />
-        <Key
-          value="TY"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['TY']}
-        />
-        <Key
-          value="ZS"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['ZS']}
-        />
-        <Key
-          value="Ö"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['Ö']}
-        />
-        <Key
-          value="Ü"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['Ü']}
-        />
-        <Key
-          value="Ó"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['Ó']}
-        />
+        <Key value="CS" status={charStatuses['CS']} {...keyProps} />
+        <Key value="DZ" status={charStatuses['DZ']} {...keyProps} />
+        <Key value="DZS" status={charStatuses['DZS']} {...keyProps} />
+        <Key value="GY" status={charStatuses['GY']} {...keyProps} />
+        <Key value="LY" status={charStatuses['LY']} {...keyProps} />
+        <Key value="NY" status={charStatuses['NY']} {...keyProps} />
+        <Key value="SZ" status={charStatuses['SZ']} {...keyProps} />
+        <Key value="TY" status={charStatuses['TY']} {...keyProps} />
+        <Key value="ZS" status={charStatuses['ZS']} {...keyProps} />
+        <Key value="Ö" status={charStatuses['Ö']} {...keyProps} />
+        <Key value="Ü" status={charStatuses['Ü']} {...keyProps} />
+        <Key value="Ó" status={charStatuses['Ó']} {...keyProps} />
       </div>
       <div className="flex relative justify-center mb-1">
-        <Key
-          value="Q"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['Q']}
-        />
-        <Key
-          value="W"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['W']}
-        />
+        <Key value="Q" status={charStatuses['Q']} {...keyProps} />
+        <Key value="W" status={charStatuses['W']} {...keyProps} />
         <Key
           value="E"
           additional={{ É: charStatuses['É'] }}
-          onClick={onClick}
-          onDrop={onDrop}
           status={charStatuses['E']}
+          {...keyProps}
         />
-        <Key
-          value="R"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['R']}
-        />
+        <Key value="R" status={charStatuses['R']} {...keyProps} />
         <Key
           value="T"
           additional={{ TY: charStatuses['TY'] }}
-          onClick={onClick}
-          onDrop={onDrop}
           status={charStatuses['T']}
+          {...keyProps}
         />
         <Key
           value="Z"
           additional={{ ZS: charStatuses['ZS'] }}
-          onClick={onClick}
-          onDrop={onDrop}
           status={charStatuses['Z']}
+          {...keyProps}
         />
         <Key
           value="U"
@@ -229,16 +162,14 @@ export const Keyboard = ({
             Ü: charStatuses['Ü'],
             Ű: charStatuses['Ű'],
           }}
-          onClick={onClick}
-          onDrop={onDrop}
           status={charStatuses['U']}
+          {...keyProps}
         />
         <Key
           value="I"
           additional={{ Í: charStatuses['Í'] }}
-          onClick={onClick}
-          onDrop={onDrop}
           status={charStatuses['I']}
+          {...keyProps}
         />
         <Key
           value="O"
@@ -247,103 +178,52 @@ export const Keyboard = ({
             Ö: charStatuses['Ö'],
             Ő: charStatuses['Ő'],
           }}
-          onClick={onClick}
-          onDrop={onDrop}
           status={charStatuses['O']}
+          {...keyProps}
         />
-        <Key
-          value="P"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['P']}
-        />
-        <Key
-          value="Ő"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['Ő']}
-        />
-        <Key
-          value="Ú"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['Ú']}
-        />
+        <Key value="P" status={charStatuses['P']} {...keyProps} />
+        <Key value="Ő" status={charStatuses['Ő']} {...keyProps} />
+        <Key value="Ú" status={charStatuses['Ú']} {...keyProps} />
       </div>
       <div className="flex relative justify-center mb-1">
         <Key
           value="A"
           additional={{ Á: charStatuses['Á'] }}
-          onClick={onClick}
-          onDrop={onDrop}
           status={charStatuses['A']}
+          {...keyProps}
         />
         <Key
           value="S"
           additional={{ SZ: charStatuses['SZ'] }}
-          onClick={onClick}
-          onDrop={onDrop}
           status={charStatuses['S']}
+          {...keyProps}
         />
         <Key
           value="D"
           additional={{ DZ: charStatuses['DZ'], DZS: charStatuses['DZS'] }}
-          onClick={onClick}
-          onDrop={onDrop}
           onDevClick={onDevClick}
           status={charStatuses['D']}
+          {...keyProps}
         />
         <Key value="F" onClick={onClick} status={charStatuses['F']} />
         <Key
           value="G"
           additional={{ GY: charStatuses['GY'] }}
-          onClick={onClick}
-          onDrop={onDrop}
           status={charStatuses['G']}
+          {...keyProps}
         />
-        <Key
-          value="H"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['H']}
-        />
-        <Key
-          value="J"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['J']}
-        />
-        <Key
-          value="K"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['K']}
-        />
+        <Key value="H" status={charStatuses['H']} {...keyProps} />
+        <Key value="J" status={charStatuses['J']} {...keyProps} />
+        <Key value="K" status={charStatuses['K']} {...keyProps} />
         <Key
           value="L"
           additional={{ LY: charStatuses['LY'] }}
-          onClick={onClick}
-          onDrop={onDrop}
           status={charStatuses['L']}
+          {...keyProps}
         />
-        <Key
-          value="É"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['É']}
-        />
-        <Key
-          value="Á"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['Á']}
-        />
-        <Key
-          value="Ű"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['Ű']}
-        />
+        <Key value="É" status={charStatuses['É']} {...keyProps} />
+        <Key value="Á" status={charStatuses['Á']} {...keyProps} />
+        <Key value="Ű" status={charStatuses['Ű']} {...keyProps} />
       </div>
       <div className="flex relative justify-center">
         <Key
@@ -356,55 +236,24 @@ export const Keyboard = ({
         >
           Beküld
         </Key>
-        <Key
-          value="Í"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['Í']}
-        />
-        <Key
-          value="Y"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['Y']}
-        />
-        <Key
-          value="X"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['X']}
-        />
+        <Key value="Í" status={charStatuses['Í']} {...keyProps} />
+        <Key value="Y" status={charStatuses['Y']} {...keyProps} />
+        <Key value="X" status={charStatuses['X']} {...keyProps} />
         <Key
           value="C"
           additional={{ CS: charStatuses['CS'] }}
-          onClick={onClick}
           status={charStatuses['C']}
+          {...keyProps}
         />
-        <Key
-          value="V"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['V']}
-        />
-        <Key
-          value="B"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['B']}
-        />
+        <Key value="V" status={charStatuses['V']} {...keyProps} />
+        <Key value="B" status={charStatuses['B']} {...keyProps} />
         <Key
           value="N"
           additional={{ NY: charStatuses['NY'] }}
-          onClick={onClick}
-          onDrop={onDrop}
           status={charStatuses['N']}
+          {...keyProps}
         />
-        <Key
-          value="M"
-          onClick={onClick}
-          onDrop={onDrop}
-          status={charStatuses['M']}
-        />
+        <Key value="M" status={charStatuses['M']} {...keyProps} />
         <Key
           width={65.4}
           className="bg-red-500 text-white hover:bg-red-400 disabled:opacity-50 disabled:cursor-not-allowed"
