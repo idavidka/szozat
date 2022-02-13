@@ -1,6 +1,6 @@
 import { KeyValue } from '../../lib/keyboard'
 import { CharValue, getStatuses, Word, isCharValue } from '../../lib/statuses'
-import { Key } from './Key'
+import { Key, KeyProps } from './Key'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { Difficulty } from '../../hooks/gameReducer'
 
@@ -113,7 +113,7 @@ export const Keyboard = ({
     }
   }, [onEnter, onDelete, onChar, onReplace, currentGuess])
 
-  const keyProps = useMemo(
+  const keyProps = useMemo<Pick<KeyProps, 'onClick' | 'onDrop' | 'noDrag'>>(
     () => ({
       onClick,
       onDrop,
@@ -211,7 +211,7 @@ export const Keyboard = ({
           status={charStatuses['D']}
           {...keyProps}
         />
-        <Key value="F" onClick={onClick} status={charStatuses['F']} />
+        <Key value="F" status={charStatuses['F']} {...keyProps} />
         <Key
           value="G"
           additional={{ GY: charStatuses['GY'] }}

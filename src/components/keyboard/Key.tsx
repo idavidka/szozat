@@ -284,7 +284,7 @@ const Button = ({
   )
 }
 
-type KeyProps = {
+export type KeyProps = {
   children?: ReactNode
   value: KeyValue
   additional?: Record<KeyValue, CharStatus>
@@ -400,6 +400,7 @@ export const Key = ({
                           onClick(value)
                           close()
                         }}
+                        noDrag={noDrag}
                         status={addStatus}
                       />
                     )
