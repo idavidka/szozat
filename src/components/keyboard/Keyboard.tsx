@@ -1,7 +1,7 @@
 import { KeyValue } from '../../lib/keyboard'
 import { CharValue, getStatuses, Word, isCharValue } from '../../lib/statuses'
 import { Key } from './Key'
-import { useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { Difficulty } from '../../hooks/gameReducer'
 
 type Props = {
@@ -39,19 +39,25 @@ export const Keyboard = ({
   const lastKey = useRef('')
   const documentHeight = useRef(document.documentElement.offsetHeight)
 
-  const onClick = (value: KeyValue) => {
-    if (value === 'ENTER') {
-      onEnter()
-    } else if (value === 'DELETE') {
-      onDelete()
-    } else {
-      onChar(value)
-    }
-  }
+  const onClick = useCallback(
+    (value: KeyValue) => {
+      if (value === 'ENTER') {
+        onEnter()
+      } else if (value === 'DELETE') {
+        onDelete()
+      } else {
+        onChar(value)
+      }
+    },
+    [onChar, onDelete, onEnter]
+  )
 
-  const onDrop = (value: KeyValue, index: number) => {
-    onReplace(value, index)
-  }
+  const onDrop = useCallback(
+    (value: KeyValue, index: number) => {
+      onReplace(value, index)
+    },
+    [onReplace]
+  )
 
   useEffect(() => {
     const keyup = (e: KeyboardEvent) => {
