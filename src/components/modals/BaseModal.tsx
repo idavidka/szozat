@@ -17,12 +17,19 @@ export type ModalType = ModalId | [ModalId, ModalId]
 
 type Props = {
   title: string
+  subTitle?: string
   children: React.ReactNode
   isOpen: boolean
   handleClose: () => void
 }
 
-export const BaseModal = ({ title, children, isOpen, handleClose }: Props) => {
+export const BaseModal = ({
+  title,
+  children,
+  isOpen,
+  handleClose,
+  subTitle = '',
+}: Props) => {
   const context = useContext(ThemeContext)
   return (
     <Transition.Root show={isOpen} as={Fragment}>
@@ -69,6 +76,11 @@ export const BaseModal = ({ title, children, isOpen, handleClose }: Props) => {
               </div>
               <div>
                 <div className="text-center">
+                  {subTitle && (
+                    <div className="text-xs absolute top-[4px] left-[4px] font-medium text-gray-900 dark:text-slate-200">
+                      {subTitle}
+                    </div>
+                  )}
                   <Dialog.Title
                     as="h3"
                     className="text-lg leading-6 font-medium text-gray-900 dark:text-slate-200"

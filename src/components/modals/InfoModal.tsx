@@ -10,6 +10,7 @@ import {
 } from '../../lib/utils'
 import { CharStatus } from '../../lib/statuses'
 import { Difficulty } from '../../hooks/gameReducer'
+import PKG from '../../../package.json'
 
 type Props = {
   isOpen: boolean
@@ -91,7 +92,12 @@ export const InfoModal = ({
   }, [difficulty])
 
   return (
-    <BaseModal title="Szabályok" isOpen={isOpen} handleClose={handleClose}>
+    <BaseModal
+      title="Szabályok"
+      subTitle={PKG.version}
+      isOpen={isOpen}
+      handleClose={handleClose}
+    >
       <p className="text-sm text-gray-500 dark:text-slate-200">
         Találd ki a napi <b>{difficulty} betűs</b> szót{' '}
         <b>{MAX_NUMBER_OF_GUESSES[difficulty]} tippből</b>! Minden tipp után a
