@@ -15,6 +15,11 @@ body {
                                     supported by Chrome, Edge, Opera and Firefox */
 }
 
+.targeted-button {
+  background-color: rgb(8 145 178) !important;
+  border-color: rgb(21 94 117) !important;
+}
+
 .dropped-key {
   transition: left 0.5s ease-in-out, top 0.5s ease-in-out,
     width 0.5s ease-in-out, height 0.5s ease-in-out, font-size 0.5s ease-in-out,

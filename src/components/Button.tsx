@@ -55,6 +55,7 @@ export const Button = ({
       'border-cyan-800',
       'dark:bg-cyan-600',
       'dark:border-cyan-800',
+      'targeted-button',
     ],
     onDrop,
   })
