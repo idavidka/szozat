@@ -4,7 +4,7 @@ import classnames from 'classnames'
 import { KeyValue } from '../../lib/keyboard'
 import { CharStatus } from '../../lib/statuses'
 import { isEmpty } from 'lodash'
-import { DnDButton } from '../DnDButton'
+import { Button } from '../Button'
 
 export type KeyProps = {
   children?: ReactNode
@@ -68,7 +68,7 @@ export const Key = ({
 
   if (isEmpty(additional)) {
     return (
-      <DnDButton
+      <Button
         disabled={!!disabled}
         style={{ width: `${width}px`, height: '50px' }}
         className={classes}
@@ -88,7 +88,7 @@ export const Key = ({
           />
         )}
         <span className="relative z-[15]">{children || value}</span>
-      </DnDButton>
+      </Button>
     )
   }
 
@@ -132,7 +132,7 @@ export const Key = ({
             </Transition>
           </span>
           <Popover.Button
-            as={DnDButton}
+            as={Button}
             disabled={!!disabled}
             style={{ width: `${width}px`, height: '50px' }}
             className={classes}

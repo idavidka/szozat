@@ -41,6 +41,7 @@ import {
   getGuessLength,
   getInitialCurentGuess,
   isLocalhost,
+  removeLetter,
   setLetter,
 } from './lib/utils'
 import { ModalId, ModalType } from './components/modals/BaseModal'
@@ -329,7 +330,7 @@ function App() {
         dispatch({
           type: 'UPDATE_CURRENT_GUESS',
           difficulty,
-          currentGuess: [...currentGuess.slice(0, -1), value],
+          currentGuess: removeLetter(currentGuess, value),
         })
       } else {
         dispatch({
@@ -349,7 +350,7 @@ function App() {
       dispatch({
         type: 'UPDATE_CURRENT_GUESS',
         difficulty,
-        currentGuess: [...currentGuess.slice(0, -1)],
+        currentGuess: removeLetter(currentGuess),
       })
     }
   }

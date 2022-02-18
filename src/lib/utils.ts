@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import { isNil, times } from 'lodash'
+import { findLastIndex, isNil, times } from 'lodash'
 import { Difficulty } from '../hooks/gameReducer'
 import { getHashParams, HASH_PARAM_KEY_DIFFICULTY } from './hashUtils'
 import { CharValue, Word } from './statuses'
@@ -17,6 +17,20 @@ export const getGuessLength = (guess: Word) => {
   return guess.filter(Boolean).length
 }
 
+export const removeLetter = (word: Word, value?: CharValue): Word => {
+  const lastNonEmptyIndex = findLastIndex(word, (letter) => !!letter)
+
+  if (lastNonEmptyIndex < 0 || lastNonEmptyIndex >= word.length) {
+    return word
+  }
+
+  const newWord = Object.assign({}, Object.values(word))
+
+  newWord[lastNonEmptyIndex] = value
+
+  return Object.values(newWord) as Word
+}
+
 export const setLetter = (
   word: Word,
   value: CharValue,
@@ -30,7 +44,6 @@ export const setLetter = (
     return [...word, value]
   }
 
-  console.log('ASD char', word, value, nextEmptyIndex, index, hasIndex)
   if (nextEmptyIndex < 0 || (!hasIndex && nextEmptyIndex >= word.length)) {
     return word
   }
