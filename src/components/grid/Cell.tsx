@@ -1,18 +1,56 @@
 import { CharStatus } from '../../lib/statuses'
 import classnames from 'classnames'
 import { usePrevious } from '../../hooks/usePrevious'
+import { useDragAndDrop } from '../../hooks/useDragAndDrop'
+import { useCallback, useRef } from 'react'
+import { KeyValue } from '../../lib/keyboard'
 
 type Props = {
   value?: string
   status?: CharStatus
   className?: string
   isPulsing?: boolean
+  onDrop?: (value: KeyValue, index: number) => void
 }
 
-export const Cell = ({ value, status, className, isPulsing }: Props) => {
+export const Cell = ({
+  value,
+  status,
+  className,
+  isPulsing,
+  onDrop: onDropProp,
+}: Props) => {
+  const letterRef = useRef<HTMLDivElement>(null)
+
+  const onDrop = useCallback(
+    (target: HTMLElement) => {
+      if (value && target.parentNode) {
+        const index = Array.from(target.parentNode.children).indexOf(target)
+
+        console.log('ASD', value, target)
+        onDropProp?.(value, index)
+      }
+    },
+    [onDropProp, value]
+  )
+
+  useDragAndDrop({
+    enabled: !!value && isPulsing,
+    source: letterRef.current,
+    target: 'current-row-cell',
+    closestClassName: 'letter',
+    targetedClassNames: [
+      'bg-cyan-600',
+      'border-cyan-800',
+      'dark:bg-cyan-600',
+      'dark:border-cyan-800',
+    ],
+    onDrop,
+  })
+
   const prevValue = usePrevious(value)
   const containerClasses = classnames(
-    'grow relative inline-flex justify-center border-solid border-2 rounded before:content-[""] before:block before:pb-[100%] overflow-hidden',
+    'letter grow relative inline-flex justify-center border-solid border-2 rounded before:content-[""] before:block before:pb-[100%] overflow-hidden',
     {
       'bg-white dark:bg-slate-800 border-slate-500 dark:text-slate-100':
         !status,
@@ -42,7 +80,7 @@ export const Cell = ({ value, status, className, isPulsing }: Props) => {
   })
 
   return (
-    <div className={containerClasses}>
+    <div className={containerClasses} ref={letterRef}>
       {['present-diff', 'correct-diff'].includes(status ?? '') && (
         <div
           className={differenceMarkerClasses}

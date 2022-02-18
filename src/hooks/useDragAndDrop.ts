@@ -4,9 +4,10 @@ import { copyStyle } from '../lib/utils'
 
 type Props = {
   source: HTMLElement | null | undefined
-  manager: HammerManager | null | undefined
+  manager?: HammerManager | null
   target: string | HTMLElement
   targetedClassNames?: string[]
+  closestClassName?: string
   onDrop?: (element: HTMLElement) => void
   enabled?: boolean
 }
@@ -15,6 +16,7 @@ export const useDragAndDrop = <TargetType extends HTMLElement>({
   source,
   target,
   targetedClassNames,
+  closestClassName,
   manager,
   onDrop,
   enabled = true,
@@ -107,10 +109,11 @@ export const useDragAndDrop = <TargetType extends HTMLElement>({
 
   const handlePan = useCallback(
     (type: 'start' | 'move' | 'end', event: HammerInput) => {
-      const sourceElement =
-        event.target.tagName === 'BUTTON'
+      const sourceElement = (
+        !closestClassName || event.target.classList.contains(closestClassName)
           ? event.target
-          : event.target.closest('button')
+          : event.target.closest(`.${closestClassName}`)
+      ) as HTMLElement
 
       const targetElement = targeting(targetCloneRef.current)
 
@@ -168,7 +171,7 @@ export const useDragAndDrop = <TargetType extends HTMLElement>({
         }
       }
     },
-    [onDrop, targetedClassNames, targeting]
+    [closestClassName, onDrop, targetedClassNames, targeting]
   )
 
   useEffect(() => {
@@ -178,31 +181,31 @@ export const useDragAndDrop = <TargetType extends HTMLElement>({
 
     let Pan: Recognizer | undefined = undefined
 
-    if (!initialized && source && manager) {
+    if (!initialized && source && usedManager) {
       Pan = new Hammer.Pan({
         event: 'pan',
         taps: 1,
       })
 
-      manager.add(Pan)
+      usedManager.add(Pan)
 
       setRecognizer(Pan)
       setInitialized(true)
     }
 
-    manager?.on('panstart', (e) => {
+    usedManager?.on('panstart', (e) => {
       handlePan('start', e)
     })
 
-    manager?.on('panmove', (e) => {
+    usedManager?.on('panmove', (e) => {
       handlePan('move', e)
     })
 
-    manager?.on('panend', (e) => {
+    usedManager?.on('panend', (e) => {
       handlePan('end', e)
     })
 
-    const recognizers = get(manager, 'recognizers') as Recognizer[]
+    const recognizers = get(usedManager, 'recognizers') as Recognizer[]
 
     recognizers?.forEach((cRecognizer) => {
       if (Pan && cRecognizer !== Pan) {
@@ -211,9 +214,9 @@ export const useDragAndDrop = <TargetType extends HTMLElement>({
     })
 
     return () => {
-      manager?.off('panstart panmove panend')
+      usedManager?.off('panstart panmove panend')
     }
-  }, [enabled, handlePan, initialized, manager, source])
+  }, [enabled, handlePan, initialized, usedManager, source])
 
   return { initialized, recognizer, manager: usedManager }
 }

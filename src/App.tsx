@@ -709,6 +709,7 @@ function App() {
               full={view === 'full'}
               difficulty={difficulty}
               showCurrentRow={!isGameWon[difficulty]}
+              onReplace={onReplace}
             />
           </div>
           <div className="pb-5">

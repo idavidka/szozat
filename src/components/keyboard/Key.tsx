@@ -34,7 +34,7 @@ export const Key = ({
   noDrag,
 }: KeyProps) => {
   const classes = classnames(
-    'flex relative items-center justify-center rounded mx-0.5 text-xs font-bold cursor-pointer select-none overflow-hidden',
+    'key flex relative items-center justify-center rounded mx-0.5 text-xs font-bold cursor-pointer select-none overflow-hidden',
     className ?? {
       'bg-slate-200 dark:bg-slate-500 hover:bg-slate-600 dark:hover:bg-slate-400 active:bg-slate-400 dark:text-slate-900':
         !status,

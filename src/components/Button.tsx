@@ -2,7 +2,6 @@ import React, {
   CSSProperties,
   ReactNode,
   useCallback,
-  useEffect,
   useLayoutEffect,
   useRef,
 } from 'react'
@@ -46,11 +45,12 @@ export const Button = ({
     [onDropProp]
   )
 
-  const dnd = useDragAndDrop({
+  useDragAndDrop({
     enabled: !noDrag,
     source: buttonRef.current,
     manager: manager.current,
     target: 'current-row-cell',
+    closestClassName: 'key',
     targetedClassNames: [
       'bg-cyan-600',
       'border-cyan-800',
@@ -115,7 +115,7 @@ export const Button = ({
     return () => {
       manager.current?.off('short_tap long_tap dev_tap')
     }
-  }, [onDevClick, onClick, onShortClick, noDrag])
+  }, [onDevClick, onClick, onShortClick, noDrag, disabled])
 
   return (
     <button

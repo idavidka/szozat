@@ -1,11 +1,13 @@
 import classNames from 'classnames'
 import { MAX_NUMBER_OF_GUESSES } from '../../constants/constants'
 import { getGridMaxWidthClassName } from '../../lib/utils'
-import { Word } from '../../lib/statuses'
+import { CharValue, Word } from '../../lib/statuses'
 import { CompletedRow } from './CompletedRow'
 import { CurrentRow } from './CurrentRow'
 import { EmptyRow } from './EmptyRow'
 import { Difficulty } from '../../hooks/gameReducer'
+import { useCallback } from 'react'
+import { KeyValue } from '../../lib/keyboard'
 
 type Props = {
   guesses: Word[]
@@ -16,6 +18,7 @@ type Props = {
   difficulty: Difficulty
   full?: boolean
   showCurrentRow?: boolean
+  onReplace: (value: CharValue, index?: number) => void
 }
 
 export const Grid = ({
@@ -27,7 +30,15 @@ export const Grid = ({
   size,
   full,
   showCurrentRow,
+  onReplace,
 }: Props) => {
+  const onDrop = useCallback(
+    (value: KeyValue, index: number) => {
+      onReplace(value, index)
+    },
+    [onReplace]
+  )
+
   const empties =
     guesses.length < MAX_NUMBER_OF_GUESSES[difficulty] - 1
       ? Array.from(
@@ -74,7 +85,11 @@ export const Grid = ({
         />
       ))}
       {guesses.length < MAX_NUMBER_OF_GUESSES[difficulty] && showCurrentRow && (
-        <CurrentRow guess={currentGuess} difficulty={difficulty} />
+        <CurrentRow
+          guess={currentGuess}
+          difficulty={difficulty}
+          onDrop={onDrop}
+        />
       )}
       {empties.map((_, i) => (
         <EmptyRow key={i} difficulty={difficulty} />
