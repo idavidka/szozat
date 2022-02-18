@@ -4,6 +4,7 @@ import { MAX_NUMBER_OF_GUESSES } from '../constants/constants'
 import { createDifficulty, createId } from '../lib/localStorage'
 import { Word } from '../lib/statuses'
 import { ThemeValue } from '../lib/theme'
+import { getInitialCurentGuess } from '../lib/utils'
 import { getCurrentWord, getRandomWord } from '../lib/words'
 
 export type Difficulty = 3 | 4 | 5 | 6 | 7 | 8 | 9
@@ -89,7 +90,7 @@ export const getInitialState = (difficulty: Difficulty): GameState => {
     random: -1,
     solution,
     guesses: [],
-    currentGuess: [],
+    currentGuess: getInitialCurentGuess(difficulty),
   }
 }
 

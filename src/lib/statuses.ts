@@ -11,7 +11,7 @@ export type CharStatus =
 
 export type CharValue = typeof CHAR_VALUES[number]
 
-export type Word = readonly CharValue[]
+export type Word = readonly (CharValue | undefined)[]
 
 export function isCharValue(value: string): value is CharValue {
   return CHAR_VALUES.includes(value as any)
@@ -38,6 +38,10 @@ export const getStatuses = (
   guesses.forEach((word, index) => {
     const wordCount = getLetterCount(word)
     word.forEach((letter, i) => {
+      if (!letter) {
+        return
+      }
+
       if (!solution?.includes(letter)) {
         // make status absent
         return (charObj[letter] = 'absent')
@@ -90,7 +94,7 @@ export const getGuessStatuses = (
 
   // handle all correct cases first
   guess.forEach((letter, i) => {
-    if (letter === solution[i]) {
+    if (letter && letter === solution[i]) {
       statuses[i] =
         solutionCount[letter] > guessCount[letter] ? 'correct-diff' : 'correct'
       solutionCharsTaken[i] = true
@@ -99,7 +103,7 @@ export const getGuessStatuses = (
   })
 
   guess.forEach((letter, i) => {
-    if (statuses[i]) return
+    if (statuses[i] || !letter) return
 
     if (!solution.includes(letter)) {
       // handles the absent case

@@ -3,6 +3,7 @@ import { CharValue, getStatuses, Word, isCharValue } from '../../lib/statuses'
 import { Key, KeyProps } from './Key'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { Difficulty } from '../../hooks/gameReducer'
+import { getGuessLength } from '../../lib/utils'
 
 type Props = {
   onChar: (value: CharValue) => void
@@ -39,6 +40,11 @@ export const Keyboard = ({
   const lastKey = useRef('')
   const documentHeight = useRef(document.documentElement.offsetHeight)
 
+  const currentGuessLength = useMemo(
+    () => getGuessLength(currentGuess),
+    [currentGuess]
+  )
+
   const onClick = useCallback(
     (value: KeyValue) => {
       if (value === 'ENTER') {
@@ -64,15 +70,14 @@ export const Keyboard = ({
       if (e.code === 'Enter') {
         onEnter()
       } else if (e.code === 'Backspace') {
-        const key = currentGuess?.[(currentGuess?.length ?? 0) - 1] ?? ''
+        const key = currentGuess?.[currentGuessLength - 1] ?? ''
         const shorterKey = key.substring(0, key.length - 1)
 
         if (!e.shiftKey && isCharValue(shorterKey)) {
           onReplace(shorterKey)
           lastKey.current = shorterKey
         } else {
-          lastKey.current =
-            currentGuess?.[(currentGuess?.length ?? 0) - 2] ?? ''
+          lastKey.current = currentGuess?.[currentGuessLength - 2] ?? ''
           onDelete()
         }
       } else {
@@ -111,7 +116,7 @@ export const Keyboard = ({
       window.removeEventListener('keyup', keyup)
       window.removeEventListener('resize.keyboard', resize)
     }
-  }, [onEnter, onDelete, onChar, onReplace, currentGuess])
+  }, [onEnter, onDelete, onChar, onReplace, currentGuess, currentGuessLength])
 
   const keyProps = useMemo<Pick<KeyProps, 'onClick' | 'onDrop' | 'noDrag'>>(
     () => ({

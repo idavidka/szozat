@@ -20,13 +20,6 @@ import { NewGameModal } from './components/modals/NewGameModal'
 import { DifficultyList } from './components/lists/DifficultyList'
 import { Icon } from './components/icon/icon'
 import {
-  isWordInWordList,
-  isWinningWord,
-  isWordEqual,
-  getCurrentWord,
-  getRandomWord,
-} from './lib/words'
-import {
   getGlobalStatsFromAPI,
   getStateFromAPI,
   getStaticWords,
@@ -45,10 +38,20 @@ import {
   addGTM,
   GameType,
   getGridMaxWidthClassName,
+  getGuessLength,
+  getInitialCurentGuess,
   isLocalhost,
+  setLetter,
 } from './lib/utils'
 import { ModalId, ModalType } from './components/modals/BaseModal'
 import { getAllWords } from './constants/wordlist'
+import {
+  isWordInWordList,
+  isWinningWord,
+  isWordEqual,
+  getCurrentWord,
+  getRandomWord,
+} from './lib/words'
 import { usePersistedReducer } from './hooks/usePersistedReducer'
 import {
   gameReducer,
@@ -90,7 +93,7 @@ function App() {
     random,
     solution: loadedSolution,
     guesses = [],
-    currentGuess = [],
+    currentGuess = getInitialCurentGuess(difficulty),
   } = game?.[difficulty] ?? getInitialState(difficulty)
 
   const [globalStats, setGlobalStats] = useState()
@@ -108,6 +111,11 @@ function App() {
   const [gridSize, setGridSize] = useState({ width: 0, height: 0 })
 
   const gridContainerRef = useRef<HTMLDivElement>(null)
+
+  const currentGuessLength = useMemo(
+    () => getGuessLength(currentGuess),
+    [currentGuess]
+  )
 
   const [{ solution, solutionCreator }, setSolution] = useState<{
     solution: Word
@@ -145,7 +153,7 @@ function App() {
         difficulty,
         solution: solution,
         guesses: [],
-        currentGuess: [],
+        currentGuess: getInitialCurentGuess(difficulty),
       })
       return
     }
@@ -182,9 +190,6 @@ function App() {
   }, [dispatch])
 
   useEffect(() => {
-    // if (wordsState.all[0]?.length !== difficulty) {
-    //   dispatchWord({ type: 'RESET_STATE' })
-    // }
     getStaticWords(difficulty, ({ group, words }) => {
       dispatchWord({
         type: 'UPDATE_STATE',
@@ -297,7 +302,7 @@ function App() {
   const onChar = (value: CharValue) => {
     checkViewPort()
     if (
-      currentGuess.length < difficulty &&
+      currentGuessLength < difficulty &&
       guesses.length < maxGuess &&
       !isGameWon[difficulty]
     ) {
@@ -306,7 +311,7 @@ function App() {
       dispatch({
         type: 'UPDATE_CURRENT_GUESS',
         difficulty,
-        currentGuess: [...currentGuess, value],
+        currentGuess: setLetter(currentGuess, value, difficulty),
       })
     }
   }
@@ -314,7 +319,7 @@ function App() {
   const onReplace = (value: CharValue, index?: number) => {
     checkViewPort()
     if (
-      currentGuess.length - 1 < difficulty &&
+      currentGuessLength - 1 < difficulty &&
       guesses.length < maxGuess &&
       !isGameWon[difficulty]
     ) {
@@ -326,23 +331,19 @@ function App() {
           difficulty,
           currentGuess: [...currentGuess.slice(0, -1), value],
         })
-      } else if (currentGuess[index]) {
-        const newCurrentGuess = [...currentGuess]
-        newCurrentGuess[index] = value
+      } else {
         dispatch({
           type: 'UPDATE_CURRENT_GUESS',
           difficulty,
-          currentGuess: newCurrentGuess,
+          currentGuess: setLetter(currentGuess, value, difficulty, index),
         })
-      } else if (index >= currentGuess.length && index < difficulty) {
-        onChar(value)
       }
     }
   }
 
   const onDelete = () => {
     checkViewPort()
-    if (currentGuess.length - 1 >= 0 && !isGameWon[difficulty]) {
+    if (currentGuessLength - 1 >= 0 && !isGameWon[difficulty]) {
       setUserInteracted(true)
 
       dispatch({
@@ -359,7 +360,7 @@ function App() {
       return
     }
 
-    if (currentGuess.length !== difficulty) {
+    if (currentGuessLength !== difficulty) {
       setIsNotEnoughLetters(true)
       return setTimeout(() => {
         setIsNotEnoughLetters(false)
@@ -382,7 +383,7 @@ function App() {
 
     const winningWord = isWinningWord(currentGuess, day, random, difficulty)
     if (
-      currentGuess.length === difficulty &&
+      currentGuessLength === difficulty &&
       guesses.length < maxGuess &&
       !isGameWon[difficulty]
     ) {
@@ -391,7 +392,11 @@ function App() {
         difficulty,
         guesses: [...guesses, currentGuess],
       })
-      dispatch({ type: 'UPDATE_CURRENT_GUESS', difficulty, currentGuess: [] })
+      dispatch({
+        type: 'UPDATE_CURRENT_GUESS',
+        difficulty,
+        currentGuess: getInitialCurentGuess(difficulty),
+      })
       if (winningWord) {
         dispatch({
           type: 'UPDATE_STATS',
@@ -459,7 +464,12 @@ function App() {
     setUserInteracted(true)
     setIsGameLost({ [difficulty]: false })
     setIsGameWon({ [difficulty]: false })
-    dispatch({ type: 'UPDATE_GAME', difficulty, guesses: [], currentGuess: [] })
+    dispatch({
+      type: 'UPDATE_GAME',
+      difficulty,
+      guesses: [],
+      currentGuess: getInitialCurentGuess(difficulty),
+    })
     if (type === 'in-row') {
       dispatch({ type: 'SET_RANDOM', difficulty, random: -1 })
       dispatch({ type: 'SET_DAY', difficulty, day: day + 1 })
@@ -604,6 +614,7 @@ function App() {
         isGameLost={isGameLost[difficulty]}
         isGameWon={isGameWon[difficulty]}
         solution={isGameWon[difficulty] ? solution : undefined}
+        solutionCreator={solutionCreator}
         handleShareCopySuccess={handleShareCopySuccess}
         handleShareFailure={handleShareFailure}
         handleNewGameClick={handleNewGame}
@@ -630,7 +641,9 @@ function App() {
           style={{ boxSizing: 'border-box' }}
         >
           <div className="flex  mx-1 items-center mb-8 relative z-20">
-            <h1 className="text-xl font-bold dark:text-gray-300">Szózat</h1>
+            <h1 className="text-xl font-bold dark:text-gray-300">
+              Szózat<sup>+</sup>
+            </h1>
             <Icon
               component={InformationCircleIcon}
               onClick={() => {
@@ -709,8 +722,8 @@ function App() {
               day={day}
               random={random}
               difficulty={difficulty}
-              enabledOnEnter={currentGuess.length === difficulty}
-              enabledOnDelete={currentGuess.length > 0}
+              enabledOnEnter={currentGuessLength === difficulty}
+              enabledOnDelete={currentGuessLength > 0}
               noDrag={isGameLost[difficulty] || isGameWon[difficulty]}
             />
           </div>

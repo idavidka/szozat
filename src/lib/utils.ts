@@ -1,15 +1,56 @@
 import classNames from 'classnames'
+import { isNil, times } from 'lodash'
 import { Difficulty } from '../hooks/gameReducer'
 import { getHashParams, HASH_PARAM_KEY_DIFFICULTY } from './hashUtils'
 import { CharValue, Word } from './statuses'
 
 export type GameType = 'random' | 'in-row'
 
+export const getInitialCurentGuess = (difficulty: Difficulty): Word =>
+  times(difficulty, () => undefined)
+
 export const toWord = (word: Word): Word => {
-  return word.map((letter) => letter.toUpperCase() as CharValue)
+  return word.map((letter) => letter?.toUpperCase() as CharValue)
 }
 
-export const getArticle = (value: CharValue) => {
+export const getGuessLength = (guess: Word) => {
+  return guess.filter(Boolean).length
+}
+
+export const setLetter = (
+  word: Word,
+  value: CharValue,
+  difficulty: Difficulty,
+  index?: number
+): Word => {
+  const hasIndex = !isNil(index)
+  const nextEmptyIndex = hasIndex ? index : word.findIndex((letter) => !letter)
+
+  if (nextEmptyIndex < 0 && word.length < difficulty) {
+    return [...word, value]
+  }
+
+  console.log('ASD char', word, value, nextEmptyIndex, index, hasIndex)
+  if (nextEmptyIndex < 0 || (!hasIndex && nextEmptyIndex >= word.length)) {
+    return word
+  }
+
+  const newWord = Object.assign(
+    {},
+    getInitialCurentGuess(difficulty),
+    Object.values(word)
+  )
+
+  newWord[nextEmptyIndex] = value
+
+  return Object.values(newWord) as Word
+}
+
+export const getArticle = (value?: CharValue) => {
+  if (!value) {
+    return ''
+  }
+
   const own = [
     'Q',
     'W',

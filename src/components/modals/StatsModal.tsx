@@ -2,7 +2,7 @@ import Countdown from 'react-countdown'
 import { StatBar } from '../stats/StatBar'
 import { Histogram } from '../stats/Histogram'
 import { getShareText, shareStatus } from '../../lib/share'
-import { solutionCreator, tomorrow } from '../../lib/words'
+import { tomorrow } from '../../lib/words'
 import { BaseModal } from './BaseModal'
 import { Word } from '../../lib/statuses'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -25,6 +25,7 @@ type Props = {
   random: number
   difficulty: Difficulty
   solution?: Word
+  solutionCreator?: string
   stats: Record<Difficulty, GameStats>
   globalStats: Record<Difficulty, GameStats> | undefined
   handleShareCopySuccess: () => void
@@ -42,6 +43,7 @@ export const StatsModal = ({
   day,
   random,
   solution,
+  solutionCreator,
   difficulty,
   stats,
   globalStats,
@@ -165,7 +167,7 @@ export const StatsModal = ({
         <div className="ml-2 mt-5 sm:mt-6" style={{ marginTop: 0 }}></div>
       </>
     )
-  }, [handleNewGameClick, isGameLost, isGameWon, isMinimal])
+  }, [handleNewGameClick, isGameLost, isGameWon, isMinimal, solutionCreator])
 
   return (
     <BaseModal
