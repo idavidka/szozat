@@ -675,7 +675,10 @@ function App() {
           className="flex flex-col px-2 pt-8 w-[100%] h-[100%] max-w-[500px] mx-auto sm:px-6 lg:px-8"
           style={{ boxSizing: 'border-box' }}
         >
-          <div className="flex  mx-1 items-center mb-8 relative z-20">
+          <div
+            className="flex  mx-1 items-center mb-8 relative z-20"
+            data-html2canvas-ignore
+          >
             <h1 className="text-xl font-bold dark:text-gray-300">
               Szózat<sup>+</sup>
             </h1>
@@ -745,7 +748,7 @@ function App() {
               showCurrentRow={!isGameWon[difficulty]}
             />
           </div>
-          <div className="pb-5">
+          <div className="pb-5" data-html2canvas-ignore>
             <Keyboard
               onChar={onChar}
               onDelete={onDelete}

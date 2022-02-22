@@ -1,5 +1,5 @@
 {
-    "id": "j2xa9q9xyq",
+    "id": "kt7iujx56t",
     "difficulty": 5,
     "theme": "dark",
     "view": "compact",
@@ -13,22 +13,140 @@
         "9": true
     },
     "stats": {
+        "3": {
+            "winDistribution": [
+                0,
+                0,
+                0,
+                1,
+                1,
+                0,
+                2
+            ],
+            "totalGames": 9,
+            "gamesFailed": 5,
+            "successRate": 44
+        },
+        "4": {
+            "winDistribution": [
+                2,
+                1,
+                0,
+                0,
+                0,
+                1,
+                0,
+                2
+            ],
+            "totalGames": 12,
+            "gamesFailed": 6,
+            "successRate": 50,
+            "currentStreak": 2,
+            "bestStreak": 2
+        },
         "5": {
+            "winDistribution": [
+                3,
+                9,
+                9,
+                9,
+                16,
+                10,
+                13,
+                12
+            ],
+            "totalGames": 122,
+            "gamesFailed": 41,
+            "successRate": 66,
+            "currentStreak": 2,
+            "bestStreak": 16
+        },
+        "6": {
             "winDistribution": [
                 0,
                 0,
                 0,
                 0,
                 0,
-                3,
-                2,
+                0,
+                0,
+                1,
+                1,
                 0
             ],
-            "totalGames": 5,
+            "totalGames": 2,
             "gamesFailed": 0,
-            "successRate": 5,
-            "currentStreak": 5,
-            "bestStreak": 5
+            "successRate": 100,
+            "currentStreak": 0,
+            "bestStreak": 0
+        },
+        "7": {
+            "winDistribution": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "gamesFailed": 0,
+            "currentStreak": 0,
+            "bestStreak": 0,
+            "totalGames": 0,
+            "successRate": 0
+        },
+        "8": {
+            "winDistribution": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "gamesFailed": 0,
+            "currentStreak": 0,
+            "bestStreak": 0,
+            "totalGames": 0,
+            "successRate": 0
+        },
+        "9": {
+            "winDistribution": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0
+            ],
+            "totalGames": 4,
+            "gamesFailed": 2
         }
     },
     "game": {

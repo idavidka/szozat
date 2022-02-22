@@ -37,6 +37,7 @@ export const BaseModal = ({
         as="div"
         className={`${context.theme} base-modal fixed z-[1010] inset-0 overflow-y-auto`}
         onClose={handleClose}
+        data-html2canvas-ignore
       >
         <div className="flex items-center justify-center min-h-screen py-10 px-4 text-center">
           <Transition.Child

@@ -13,6 +13,7 @@ import { createCustomStatURl } from '../../lib/hashUtils'
 import { GameType } from '../../lib/utils'
 import { Difficulty, GameStats } from '../../hooks/gameReducer'
 import { toStats } from '../../lib/stats'
+import html2canvas from 'html2canvas'
 
 type Props = {
   isOpen: boolean
@@ -169,6 +170,17 @@ export const StatsModal = ({
     )
   }, [handleNewGameClick, isGameLost, isGameWon, isMinimal, solutionCreator])
 
+  const [image, setImage] = useState<string>()
+  useEffect(() => {
+    if (isGameWon) {
+      html2canvas(document.body).then(function (canvas) {
+        setImage(canvas.toDataURL())
+      })
+    } else {
+      setImage('')
+    }
+  }, [isGameWon])
+
   return (
     <BaseModal
       title={isMinimal ? 'Új feladvány' : 'Statisztika'}
@@ -270,6 +282,11 @@ export const StatsModal = ({
                               </p>
                               {renderShareText(guesses, isGameLost, solution)}
                             </div>
+                            {image && (
+                              <div>
+                                <img src={image} alt="status screenshot" />
+                              </div>
+                            )}
                           </>
                         )}
                       </>

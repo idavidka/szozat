@@ -38,7 +38,12 @@ export const usePersistedReducer = <State, Action>(
       const stringifiedState = JSON.stringify(state)
       try {
         if (get(state, idKey)) {
-          setItem(idKey, JSON.stringify({ id: get(state, idKey) }))
+          setItem(
+            idKey,
+            JSON.stringify({ id: get(state, idKey) }),
+            undefined,
+            false
+          )
         }
         setItem(storageKey, stringifiedState, undefined, shouldEncrypt)
       } catch (err) {
