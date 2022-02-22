@@ -171,3 +171,13 @@ export const copyStyle = (sourceNode: HTMLElement, targetNode: HTMLElement) => {
     )
   )
 }
+
+export const addToDebugInfo = (content: string) => {
+  const infoContainer = document.getElementById('debug-info')
+
+  if (infoContainer) {
+    const newLine = document.createElement('div')
+    newLine.innerHTML = content
+    infoContainer.appendChild(newLine)
+  }
+}

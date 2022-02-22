@@ -36,6 +36,7 @@ import { CreatePuzzleModal } from './components/modals/CreatePuzzleModal'
 import { times, random as rand, isNil } from 'lodash'
 import {
   addGTM,
+  addToDebugInfo,
   GameType,
   getGridMaxWidthClassName,
   getGuessLength,
@@ -125,7 +126,13 @@ function App() {
   }>(getCurrentWord(day, difficulty))
 
   useEffect(() => {
-    alert('ok')
+    addToDebugInfo(
+      JSON.stringify(
+        random > -1
+          ? getRandomWord(random, difficulty)
+          : getCurrentWord(day, difficulty)
+      )
+    )
     setSolution(
       random > -1
         ? getRandomWord(random, difficulty)
@@ -547,7 +554,7 @@ function App() {
   const debugInfo = () => {
     if (new URLSearchParams(window.location.search).get('debug') === '1') {
       return (
-        <div className="text-xs dark:text-gray-300">
+        <div id="debug-info" className="text-xs dark:text-gray-300">
           {JSON.stringify({
             solution,
             day,
