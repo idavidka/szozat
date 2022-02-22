@@ -542,6 +542,23 @@ function App() {
     }
   }
 
+  const debugInfo = () => {
+    if (new URLSearchParams(window.location.search).get('debug') === '1') {
+      return (
+        <div>
+          {JSON.stringify({
+            all: wordsState.all.length,
+            selected: wordsState.selected.length,
+            random: wordsState.random.length,
+            solution,
+          })}
+        </div>
+      )
+    }
+
+    return ''
+  }
+
   if (
     wordsState.all.length === 0 ||
     wordsState.selected.length === 0 ||
@@ -551,6 +568,7 @@ function App() {
     return (
       <div className={context.theme + ' h-[100%] '}>
         <div className="flex justify-center content-center text-center flex-col bg-white dark:bg-gray-800 h-[100%]">
+          {debugInfo()}
           <span className="text-5xl mb-5 dark:text-gray-300">Betöltés</span>
           <Icon
             component={RefreshIcon}
@@ -568,6 +586,7 @@ function App() {
 
   return (
     <div className={context.theme + ' h-[100%]'}>
+      {debugInfo()}
       <Alert message="Nincs elég betű" isOpen={isNotEnoughLetters} />
       <Alert
         message="Nem találtunk ilyen szót"
