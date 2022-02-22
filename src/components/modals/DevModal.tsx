@@ -4,7 +4,7 @@ import PKG from '../../../package.json'
 import React from 'react'
 import classNames from 'classnames'
 import { abbreviation } from '../../lib/utils'
-import { getSize, truncate } from '../../lib/localStorage'
+import { createId, getSize, truncate } from '../../lib/localStorage'
 
 type Props = {
   isOpen: boolean
@@ -38,6 +38,12 @@ export const DevModal = ({ isOpen, handleClose, solution }: Props) => {
           <div>
             <h5>Verzió:</h5>
             {PKG.version}
+          </div>
+        </div>
+        <div className="ml-2 mt-5 sm:mt-6 columns-2">
+          <div>
+            <h5>UID:</h5>
+            {createId()}
           </div>
         </div>
         <div className="ml-2 mt-5 sm:mt-6 columns-2">
