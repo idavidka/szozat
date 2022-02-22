@@ -504,7 +504,7 @@ function App() {
     }
 
     return Promise.reject()
-  }, [gridSize.height, theme])
+  }, [difficulty, gridSize.height, theme])
 
   const handleNewGame = (type: GameType) => {
     addGTM('event', 'newGame', { difficulty })
