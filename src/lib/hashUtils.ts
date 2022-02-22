@@ -69,7 +69,7 @@ export const createCustomGameUrl = (
 export const createCustomStatURl = () => {
   const id = createId()
   const idValue = encodeHashParam(id)
-  const urlBeginning = window.location.href.split('#')[0]
+  const urlBeginning = window.location.origin.split('#')[0]
   const hashString = createHashString([
     { key: HASH_PARAM_KEY_ID, value: idValue },
   ])
