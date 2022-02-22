@@ -172,12 +172,16 @@ export const copyStyle = (sourceNode: HTMLElement, targetNode: HTMLElement) => {
   )
 }
 
-export const addToDebugInfo = (content: string) => {
-  const infoContainer = document.getElementById('debug-info')
-
-  if (infoContainer) {
-    const newLine = document.createElement('div')
-    newLine.innerHTML = content
-    infoContainer.appendChild(newLine)
-  }
+const debugLines: Record<string, string> = {}
+export const addToDebugInfo = (
+  key: string,
+  content: Record<string, unknown>
+) => {
+  const keys = Object.keys(debugLines).filter((existedKey) =>
+    existedKey.startsWith(`${key}-`)
+  )
+  debugLines[`${key}-${keys.length}`] = JSON.stringify(content)
+}
+export const getDebugInfo = () => {
+  return debugLines
 }

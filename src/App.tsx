@@ -33,11 +33,12 @@ import { MAX_NUMBER_OF_GUESSES } from './constants/constants'
 import { ThemeToggle } from './components/theme/ThemeToggle'
 import { ThemeContext } from './components/theme/ThemeContext'
 import { CreatePuzzleModal } from './components/modals/CreatePuzzleModal'
-import { times, random as rand, isNil } from 'lodash'
+import { times, random as rand, isNil, map } from 'lodash'
 import {
   addGTM,
   addToDebugInfo,
   GameType,
+  getDebugInfo,
   getGridMaxWidthClassName,
   getGuessLength,
   getInitialCurentGuess,
@@ -127,11 +128,10 @@ function App() {
 
   useEffect(() => {
     addToDebugInfo(
-      JSON.stringify(
-        random > -1
-          ? getRandomWord(random, difficulty)
-          : getCurrentWord(day, difficulty)
-      )
+      'random',
+      random > -1
+        ? getRandomWord(random, difficulty)
+        : getCurrentWord(day, difficulty)
     )
     setSolution(
       random > -1
@@ -551,21 +551,40 @@ function App() {
     }
   }
 
+  useEffect(() => {
+    addToDebugInfo('solution', {
+      solution,
+      day,
+      difficulty,
+      random,
+      length: {
+        all: wordsState.all.length,
+        selected: wordsState.selected.length,
+        random: wordsState.random.length,
+      },
+    })
+  }, [
+    day,
+    difficulty,
+    random,
+    solution,
+    wordsState.all.length,
+    wordsState.random.length,
+    wordsState.selected.length,
+  ])
+
   const debugInfo = () => {
     if (new URLSearchParams(window.location.search).get('debug') === '1') {
       return (
-        <div id="debug-info" className="text-xs dark:text-gray-300">
-          {JSON.stringify({
-            solution,
-            day,
-            difficulty,
-            random,
-            length: {
-              all: wordsState.all.length,
-              selected: wordsState.selected.length,
-              random: wordsState.random.length,
-            },
-          })}
+        <div
+          id="debug-info"
+          className="bg-white dark:bg-gray-800 max-h-[200px] overflow-auto text-xs dark:text-gray-300"
+        >
+          {map(getDebugInfo(), (info, key) => (
+            <div>
+              <b>{key}:</b> {info}
+            </div>
+          ))}
         </div>
       )
     }
