@@ -41,11 +41,7 @@ export const Alert = ({
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
     >
-      <div
-        className={classes}
-        onClick={() => setState(false)}
-        data-html2canvas-ignore
-      >
+      <div className={classes} onClick={() => setState(false)}>
         <div className="p-4">
           <p className="text-sm text-center font-medium text-gray-900">
             {message}

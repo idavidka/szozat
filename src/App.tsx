@@ -72,6 +72,7 @@ import {
 } from './hooks/wordReducer'
 import { ThemeValue } from './lib/theme'
 import PKG from '../package.json'
+import html2canvas from 'html2canvas'
 
 const ALERT_TIME_MS = 2000
 const NEW_MODAL_TIME_MS = 500
@@ -442,10 +443,6 @@ function App() {
     }
   }
 
-  const onDevClick = () => {
-    handleModalClose('dev')
-  }
-
   const handleShareCopySuccess = useCallback(() => {
     addGTM('event', 'copy', { status: 'success' })
     setShareComplete(true)
@@ -471,6 +468,43 @@ function App() {
     setUserInteracted(true)
     dispatch({ type: 'SET_DIFFICULTY', difficulty: value })
   }
+
+  const handleScreenShot = useCallback(() => {
+    if (gridContainerRef.current && gridSize.height) {
+      const grid = gridContainerRef.current.querySelector(
+        '.grid'
+      ) as HTMLDivElement
+
+      if (grid) {
+        const currentPadding = gridContainerRef.current.style.padding
+        const currentHeight = grid.style.height
+        const currentAutoRows = grid.style.gridAutoRows
+        const rowHeight =
+          gridSize.height / MAX_NUMBER_OF_GUESSES[difficulty] - 5
+
+        gridContainerRef.current.style.padding = '5px'
+        gridContainerRef.current.style.overflowY = 'hidden'
+        grid.style.height = `${gridSize.height}px`
+        grid.style.gridAutoRows = `${rowHeight}px`
+        return html2canvas(gridContainerRef.current, {
+          backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff',
+        }).then((canvas) => {
+          if (gridContainerRef.current) {
+            gridContainerRef.current.style.padding = currentPadding
+            gridContainerRef.current.style.overflowY = 'auto'
+
+            if (grid) {
+              grid.style.height = currentHeight
+              grid.style.gridAutoRows = currentAutoRows
+            }
+          }
+          return Promise.resolve(canvas)
+        })
+      }
+    }
+
+    return Promise.reject()
+  }, [gridSize.height, theme])
 
   const handleNewGame = (type: GameType) => {
     addGTM('event', 'newGame', { difficulty })
@@ -653,6 +687,7 @@ function App() {
         handleShareCopySuccess={handleShareCopySuccess}
         handleShareFailure={handleShareFailure}
         handleNewGameClick={handleNewGame}
+        screenshot={handleScreenShot}
         stats={stats}
         globalStats={globalStats}
       />
@@ -675,10 +710,7 @@ function App() {
           className="flex flex-col px-2 pt-8 w-[100%] h-[100%] max-w-[500px] mx-auto sm:px-6 lg:px-8"
           style={{ boxSizing: 'border-box' }}
         >
-          <div
-            className="flex  mx-1 items-center mb-8 relative z-20"
-            data-html2canvas-ignore
-          >
+          <div className="flex  mx-1 items-center mb-8 relative z-20">
             <h1 className="text-xl font-bold dark:text-gray-300">
               Szózat<sup>+</sup>
             </h1>
@@ -748,13 +780,18 @@ function App() {
               showCurrentRow={!isGameWon[difficulty]}
             />
           </div>
-          <div className="pb-5" data-html2canvas-ignore>
+          <div className="pb-5">
             <Keyboard
               onChar={onChar}
               onDelete={onDelete}
               onReplace={onReplace}
               onEnter={onEnter}
-              onDevClick={onDevClick}
+              onDevClicks={{
+                D: () => {
+                  handleModalClose('dev')
+                },
+                R: () => window.location.reload(),
+              }}
               guesses={guesses}
               currentGuess={currentGuess}
               day={day}

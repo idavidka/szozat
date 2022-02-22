@@ -13,7 +13,6 @@ import { createCustomStatURl } from '../../lib/hashUtils'
 import { GameType } from '../../lib/utils'
 import { Difficulty, GameStats } from '../../hooks/gameReducer'
 import { toStats } from '../../lib/stats'
-import html2canvas from 'html2canvas'
 
 type Props = {
   isOpen: boolean
@@ -32,6 +31,7 @@ type Props = {
   handleShareCopySuccess: () => void
   handleShareFailure: () => void
   handleNewGameClick: (type: GameType) => void
+  screenshot?: () => Promise<HTMLCanvasElement>
 }
 
 export const StatsModal = ({
@@ -51,6 +51,7 @@ export const StatsModal = ({
   handleShareCopySuccess,
   handleShareFailure,
   handleNewGameClick,
+  screenshot,
 }: Props) => {
   const [statDifficulty, setStatDifficulty] = useState<Difficulty>(difficulty)
   useEffect(() => {
@@ -172,14 +173,15 @@ export const StatsModal = ({
 
   const [image, setImage] = useState<string>()
   useEffect(() => {
-    if (isGameWon) {
-      html2canvas(document.body).then(function (canvas) {
+    if (isGameWon && isOpen) {
+      screenshot?.().then((canvas) => {
         setImage(canvas.toDataURL())
       })
     } else {
       setImage('')
     }
-  }, [isGameWon])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen])
 
   return (
     <BaseModal
@@ -283,9 +285,14 @@ export const StatsModal = ({
                               {renderShareText(guesses, isGameLost, solution)}
                             </div>
                             {image && (
-                              <div>
-                                <img src={image} alt="status screenshot" />
-                              </div>
+                              <>
+                                <p className="text-gray-500 dark:text-slate-200 pb-2 pt-5">
+                                  Vagy másold ki ezt a képet!
+                                </p>
+                                <p>
+                                  <img src={image} alt="status screenshot" />
+                                </p>
+                              </>
                             )}
                           </>
                         )}
