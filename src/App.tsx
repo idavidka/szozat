@@ -70,6 +70,7 @@ import {
   Action as WordAction,
 } from './hooks/wordReducer'
 import { ThemeValue } from './lib/theme'
+import PKG from '../package.json'
 
 const ALERT_TIME_MS = 2000
 const NEW_MODAL_TIME_MS = 500
@@ -124,6 +125,7 @@ function App() {
   }>(getCurrentWord(day, difficulty))
 
   useEffect(() => {
+    alert('ok')
     setSolution(
       random > -1
         ? getRandomWord(random, difficulty)
@@ -545,12 +547,17 @@ function App() {
   const debugInfo = () => {
     if (new URLSearchParams(window.location.search).get('debug') === '1') {
       return (
-        <div>
+        <div className="text-xs dark:text-gray-300">
           {JSON.stringify({
-            all: wordsState.all.length,
-            selected: wordsState.selected.length,
-            random: wordsState.random.length,
             solution,
+            day,
+            difficulty,
+            random,
+            length: {
+              all: wordsState.all.length,
+              selected: wordsState.selected.length,
+              random: wordsState.random.length,
+            },
           })}
         </div>
       )
@@ -569,6 +576,7 @@ function App() {
       <div className={context.theme + ' h-[100%] '}>
         <div className="flex justify-center content-center text-center flex-col bg-white dark:bg-gray-800 h-[100%]">
           {debugInfo()}
+          <span className="text-xs dark:text-gray-300">{PKG.version}</span>
           <span className="text-5xl mb-5 dark:text-gray-300">Betöltés</span>
           <Icon
             component={RefreshIcon}
