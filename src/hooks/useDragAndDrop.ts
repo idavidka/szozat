@@ -160,8 +160,12 @@ export const useDragAndDrop = <TargetType extends HTMLElement>({
           targetCloneRef.current.style.height = `${original.current.h}px`
           targetCloneRef.current.style.opacity = '0'
           setTimeout(() => {
+            document.body
+              .querySelectorAll('.dropped-key')
+              .forEach((element) => {
+                document.body.removeChild(element)
+              })
             if (targetCloneRef.current) {
-              document.body.removeChild(targetCloneRef.current)
               targetCloneRef.current = null
             }
           }, 500)
