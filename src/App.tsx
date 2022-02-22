@@ -27,7 +27,7 @@ import {
 } from './lib/api'
 import { WIN_MESSAGES } from './constants/strings'
 import { addStatsForCompletedGame } from './lib/stats'
-import { gameKey, wordKey } from './lib/localStorage'
+import { gameKey, getSize, truncate, wordKey } from './lib/localStorage'
 import { CharValue, Word } from './lib/statuses'
 import { MAX_NUMBER_OF_GUESSES } from './constants/constants'
 import { ThemeToggle } from './components/theme/ThemeToggle'
@@ -36,7 +36,6 @@ import { CreatePuzzleModal } from './components/modals/CreatePuzzleModal'
 import { times, random as rand, isNil, map } from 'lodash'
 import {
   addGTM,
-  addToDebugInfo,
   GameType,
   getDebugInfo,
   getGridMaxWidthClassName,
@@ -127,12 +126,16 @@ function App() {
   }>(getCurrentWord(day, difficulty))
 
   useEffect(() => {
-    addToDebugInfo(
-      'random',
-      random > -1
-        ? getRandomWord(random, difficulty)
-        : getCurrentWord(day, difficulty)
-    )
+    const size = getSize()
+
+    if (size > 1024 * 1024) {
+      truncate('id')
+
+      window.location.reload()
+    }
+  }, [])
+
+  useEffect(() => {
     setSolution(
       random > -1
         ? getRandomWord(random, difficulty)
@@ -550,28 +553,6 @@ function App() {
       }, NEW_MODAL_TIME_MS)
     }
   }
-
-  useEffect(() => {
-    addToDebugInfo('solution', {
-      solution,
-      day,
-      difficulty,
-      random,
-      length: {
-        all: wordsState.all.length,
-        selected: wordsState.selected.length,
-        random: wordsState.random.length,
-      },
-    })
-  }, [
-    day,
-    difficulty,
-    random,
-    solution,
-    wordsState.all.length,
-    wordsState.random.length,
-    wordsState.selected.length,
-  ])
 
   const debugInfo = () => {
     if (new URLSearchParams(window.location.search).get('debug') === '1') {

@@ -175,7 +175,7 @@ export const copyStyle = (sourceNode: HTMLElement, targetNode: HTMLElement) => {
 const debugLines: Record<string, string> = {}
 export const addToDebugInfo = (
   key: string,
-  content: Record<string, unknown>
+  content: Record<string, unknown> | unknown[]
 ) => {
   const keys = Object.keys(debugLines).filter((existedKey) =>
     existedKey.startsWith(`${key}-`)

@@ -137,3 +137,13 @@ export const getWordsFromLocalStorage = (
 
   return words?.[group] ?? words?.[group]
 }
+
+export const getSize = () => new Blob(Object.values(localStorage)).size
+
+export const truncate = (...excludes: string[]) => {
+  Object.keys(localStorage).forEach((itemKey) => {
+    if (!excludes.includes(itemKey)) {
+      localStorage.removeItem(itemKey)
+    }
+  })
+}

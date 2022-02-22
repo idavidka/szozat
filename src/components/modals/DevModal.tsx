@@ -4,6 +4,7 @@ import PKG from '../../../package.json'
 import React from 'react'
 import classNames from 'classnames'
 import { abbreviation } from '../../lib/utils'
+import { getSize, truncate } from '../../lib/localStorage'
 
 type Props = {
   isOpen: boolean
@@ -17,9 +18,7 @@ export const DevModal = ({ isOpen, handleClose, solution }: Props) => {
   }
 
   const handleTruncate = () => {
-    Object.keys(localStorage).forEach((itemKey) =>
-      localStorage.removeItem(itemKey)
-    )
+    truncate('id')
   }
 
   return (
@@ -60,7 +59,7 @@ export const DevModal = ({ isOpen, handleClose, solution }: Props) => {
         <div className="ml-2 mt-5 sm:mt-6 columns-2">
           <div>
             <h5>Játékadatok:</h5>
-            {abbreviation(new Blob(Object.values(localStorage)).size)}
+            {abbreviation(getSize())}
           </div>
         </div>
         <div className="ml-2 mt-1 sm:mt-1">
