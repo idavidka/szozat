@@ -1,10 +1,14 @@
 import moment from 'moment'
 import { MAX_NUMBER_OF_GUESSES } from '../constants/constants'
 import { Difficulty } from '../hooks/gameReducer'
-import { getGuessStatuses, Word } from './statuses'
+import { CharStatus, getGuessStatuses, Word } from './statuses'
 import { getCurrentWord, getRandomWord } from './words'
+import Konva from 'konva'
+import { ThemeValue } from './theme'
+import { range } from 'lodash'
 
 export const getScreenShot = (
+  theme: ThemeValue,
   guesses: Word[],
   lost: boolean,
   day: number,
@@ -12,14 +16,88 @@ export const getScreenShot = (
   difficulty: Difficulty,
   solution?: Word
 ) => {
-  const canvas = document.createElement('canvas')
+  const emptyColors: Record<
+    ThemeValue,
+    { border: string; background: string }
+  > = {
+    dark: {
+      background: '#334155',
+      border: '#64748b',
+    },
+    light: {
+      background: '#e2e8f0',
+      border: '#64748b',
+    },
+  }
+  const colors: Record<CharStatus, string> = {
+    present: '#eab308',
+    'present-diff': '#ca8a04',
+    correct: '#21c55d',
+    'correct-diff': '#16a349',
+    absent: '#94a4b8',
+  }
+  const padding = 3
+  const itemSize = { w: 40, h: 32 }
+  const rowSize = {
+    w: difficulty * itemSize.w + (difficulty - 1) * padding,
+    h: itemSize.h,
+  }
+  const canvasSize = {
+    w: rowSize.w + 2 * padding,
+    h:
+      rowSize.h * MAX_NUMBER_OF_GUESSES[difficulty] +
+      (MAX_NUMBER_OF_GUESSES[difficulty] - 1) * padding +
+      2 * padding,
+  }
 
-  const padding = 5
-  const itemWidth = 40
-  const rowWidth = difficulty * (itemWidth + padding) + padding
-  console.log('ASD', padding, itemWidth, rowWidth)
+  var stage = new Konva.Stage({
+    container: document.createElement('div'),
+    width: canvasSize.w,
+    height: canvasSize.h,
+  })
 
-  return canvas
+  var layer = new Konva.Layer()
+  stage.add(layer)
+
+  var stageRect = new Konva.Rect({
+    x: 0,
+    y: 0,
+    width: canvasSize.w,
+    height: canvasSize.h,
+    fill: theme === 'dark' ? '#1f2937' : '#ffffff',
+  })
+  layer.add(stageRect)
+
+  range(0, MAX_NUMBER_OF_GUESSES[difficulty]).forEach((i) => {
+    const guess = guesses[i] ?? range(i, difficulty)
+    const status = guess
+      ? getGuessStatuses(guess, day, random, difficulty)
+      : null
+
+    guess.forEach((letter, j) => {
+      const fill = status ? colors[status[j]] : emptyColors[theme].background
+      var stageRect = new Konva.Rect({
+        x: padding + j * (itemSize.w + padding),
+        y: padding + i * (rowSize.h + padding),
+        width: itemSize.w,
+        height: itemSize.h,
+        fill,
+        cornerRadius: 5,
+      })
+      layer.add(stageRect)
+    })
+  })
+
+  console.log('ASD', {
+    theme,
+    padding,
+    itemSize,
+    rowSize,
+    canvasSize,
+    im: stage.toCanvas(),
+  })
+
+  return stage.toCanvas()
 }
 
 export const getShareText = (

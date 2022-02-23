@@ -5,7 +5,13 @@ import { getScreenShot, getShareText, shareStatus } from '../../lib/share'
 import { tomorrow } from '../../lib/words'
 import { BaseModal } from './BaseModal'
 import { Word } from '../../lib/statuses'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { DifficultyList } from '../lists/DifficultyList'
 import { Tab } from '@headlessui/react'
 import classNames from 'classnames'
@@ -13,6 +19,7 @@ import { createCustomStatURl } from '../../lib/hashUtils'
 import { GameType } from '../../lib/utils'
 import { Difficulty, GameStats } from '../../hooks/gameReducer'
 import { toStats } from '../../lib/stats'
+import { ThemeContext } from '../theme/ThemeContext'
 
 type Props = {
   isOpen: boolean
@@ -51,6 +58,7 @@ export const StatsModal = ({
   handleShareFailure,
   handleNewGameClick,
 }: Props) => {
+  const { theme } = useContext(ThemeContext)
   const [statDifficulty, setStatDifficulty] = useState<Difficulty>(difficulty)
   useEffect(() => {
     setStatDifficulty(difficulty)
@@ -173,6 +181,7 @@ export const StatsModal = ({
   useEffect(() => {
     if (isGameWon && isOpen) {
       const canvas = getScreenShot(
+        theme,
         guesses,
         isGameLost,
         day,
@@ -295,7 +304,7 @@ export const StatsModal = ({
                                 <p className="text-gray-500 dark:text-slate-200 pb-2 pt-5">
                                   Vagy másold ki ezt a képet!
                                 </p>
-                                <p>
+                                <p className="flex justify-center">
                                   <img src={image} alt="status screenshot" />
                                 </p>
                               </>
