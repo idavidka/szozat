@@ -247,10 +247,6 @@ export const StatsModal = ({
                         </p>
                       </>
                     )}
-                    <StatBar gameStats={stat} details={details} />
-                    <h4 className="text-lg leading-6 font-medium">
-                      A megoldások eloszlása
-                    </h4>
 
                     <div className="relative ml-2 mt-5 mb-5 sm:mt-6 columns-2">
                       <div>
@@ -263,6 +259,10 @@ export const StatsModal = ({
                         />
                       </div>
                     </div>
+                    <StatBar gameStats={stat} details={details} />
+                    <h4 className="text-lg leading-6 font-medium">
+                      A megoldások eloszlása
+                    </h4>
                     <Histogram gameStats={stat} />
                     {details && (
                       <>

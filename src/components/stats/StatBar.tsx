@@ -1,7 +1,8 @@
+import { isNil } from 'lodash'
 import { GameStats } from '../../hooks/gameReducer'
 
 type Props = {
-  gameStats: GameStats
+  gameStats: GameStats & { players?: number }
   details?: boolean
 }
 
@@ -21,6 +22,7 @@ const StatItem = ({
 }
 
 export const StatBar = ({ gameStats, details }: Props) => {
+  console.log(gameStats)
   return (
     <div className="flex justify-center my-2 w-full">
       <StatItem label="Összes játék" value={gameStats.totalGames} />
@@ -36,6 +38,9 @@ export const StatBar = ({ gameStats, details }: Props) => {
             value={gameStats.bestStreak}
           />
         </>
+      )}
+      {!details && !isNil(gameStats.players) && (
+        <StatItem label="Játékosok" value={gameStats.players} />
       )}
     </div>
   )

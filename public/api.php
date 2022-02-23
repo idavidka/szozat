@@ -4,7 +4,7 @@
 
     $httpOrigin = $_SERVER['HTTP_ORIGIN'];
 
-    if (in_array($httpOrigin, array('http://szozat.idavid.hu','https://szozat.idavid.hu','http://localhost:3000', 'http://192.168.0.18:3000')))
+    if (in_array($httpOrigin, array('http://szozat.idavid.hu','https://szozat.idavid.hu','http://localhost:5000', 'http://192.168.0.18:5000')))
     {  
         header("Access-Control-Allow-Origin: $httpOrigin");
         header("Access-Control-Allow-Headers: *");
@@ -67,6 +67,7 @@
 
         for($i = 3; $i <= 9; $i++) {
             $stats[$i] = array(
+                'players' => 0,
                 'totalGames' => 0,
                 'gamesFailed' => 0,
                 'winDistribution' => array(),
@@ -80,6 +81,7 @@
             if(is_array($content)) {
                 $usedFiles[] = basename($file);
                 foreach($content['stats'] as $difficult => $stat) {
+                    $stats[$difficult]['players'] += $stat['totalGames'] > 0 ? 1 : 0;
                     $stats[$difficult]['totalGames'] += $stat['totalGames'];
                     $stats[$difficult]['gamesFailed'] += $stat['gamesFailed'];
                     foreach($stat['winDistribution'] as $i => $distribution) {
@@ -92,7 +94,8 @@
         // todo removed once all new state generated
         $legacyFiles = glob(getLegacyFolder().'*-stat'.'.json');
         foreach($legacyFiles as $file) {
-            if(in_array(basename($file), $usedFiles)) {
+            $filename = preg_replace('/\-stat\.json$/', '.json', basename($file));
+            if(in_array($filename, $usedFiles)) {
                 continue;
             }
 
@@ -101,6 +104,7 @@
 
             if(is_array($content)) {
                 foreach($content as $difficult => $stat) {
+                    $stats[$difficult]['players'] += $stat['totalGames'] > 0 ? 1 : 0;
                     $stats[$difficult]['totalGames'] += $stat['totalCount'];
                     $stats[$difficult]['gamesFailed'] += $stat['failedCount'];
                     foreach($stat['distributions'] as $i => $distribution) {
