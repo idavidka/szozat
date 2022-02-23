@@ -195,30 +195,31 @@ export const shareStatus = async (
       })
       return { type: 'share' as const }
     }
-    if (typeof content === 'object') {
-      const image = await new Promise<Blob>((resolve, reject) => {
-        content.toBlob((blob) => {
-          if (blob) {
-            resolve(blob)
-          } else {
-            reject()
-          }
-        })
-      })
-      const file = new File([image], `jatek-${random > 0 ? random : day}.png`, {
-        type: 'image/png',
-      })
-      var filesArray = [file]
+    // if (typeof content === 'object') {
+    //   const image = await new Promise<Blob>((resolve, reject) => {
+    //     content.toBlob(
+    //       (blob) => {
+    //         if (blob) {
+    //           resolve(blob)
+    //         } else {
+    //           reject()
+    //         }
+    //       },
+    //       'image/jpeg',
+    //       1.5
+    //     )
+    //   })
 
-      if (navigator.canShare && navigator.canShare({ files: filesArray })) {
-        await navigator.share({
-          // files: filesArray,
-          title: 'Megoldásom',
-          text: `Nekem ${guesses.length} lépésből sikerült.`,
-        })
-        return { type: 'share' as const }
-      }
-    }
+    //   const file = new File([image], `jatek-${random > 0 ? random : day}.png`, {
+    //     type: image.type,
+    //   })
+    //   var filesArray = [file]
+
+    //   await navigator.share({
+    //     files: filesArray,
+    //   })
+    //   return { type: 'share' as const }
+    // }
   }
 
   if (navigator?.clipboard?.writeText != null) {

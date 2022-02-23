@@ -79,7 +79,7 @@ export const StatsModal = ({
           shareType,
           solution
         )
-        console.log(type)
+
         if (type === 'clipboard') {
           handleShareCopySuccess()
         }
@@ -291,6 +291,7 @@ export const StatsModal = ({
                         {stat.totalGames > 0 && (
                           <>
                             <div className="ml-2 mt-5 sm:mt-6">
+                              Oszd meg az eredményedet!
                               <button
                                 tabIndex={-1}
                                 type="button"
@@ -299,7 +300,7 @@ export const StatsModal = ({
                               >
                                 Megosztás
                               </button>
-                              <p>
+                              <p className="text-xs">
                                 Ha a megosztás gomb nem működik, másold ki innen
                                 az eredményedet:
                               </p>
@@ -308,17 +309,50 @@ export const StatsModal = ({
                             {image && (
                               <>
                                 <p className="text-gray-500 dark:text-slate-200 pb-2 pt-5">
-                                  Vagy másold ki ezt a képet!
-                                </p>
-                                <p className="flex justify-center">
-                                  <img
-                                    src={image}
-                                    className="cursor-pointer"
-                                    alt="status screenshot"
+                                  Vagy oszd meg ezt a képet!
+                                  <button
+                                    tabIndex={-1}
+                                    type="button"
+                                    className="mt-2 w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
                                     onClick={() =>
                                       handleShareClick('screenshot')
                                     }
+                                  >
+                                     Kép másolása a vágólapra
+                                  </button>
+                                </p>
+                                <p className="flex justify-center">
+                                  <img
+                                    className="cursor-pointer share-img"
+                                    src={image}
+                                    alt={`jatek.${
+                                      random > 0 ? random : day
+                                    }.png`}
+                                    title={`Játék ${random > 0 ? random : day}`}
+                                    onClick={() => {
+                                      var element = document.createElement('a')
+                                      const clearUrl = image.replace(
+                                        /^data:image\/\w+;base64,/,
+                                        ''
+                                      )
+
+                                      element.setAttribute(
+                                        'href',
+                                        'data:attachment/image' + clearUrl
+                                      )
+                                      element.setAttribute(
+                                        'download',
+                                        `jatek.${random > 0 ? random : day}.png`
+                                      )
+                                      document.body.appendChild(element)
+                                      element.click()
+                                      document.body.removeChild(element)
+                                    }}
                                   />
+                                </p>
+                                <p className="text-xs">
+                                  Telefonon hosszú koppintással lehet menteni a
+                                  képet
                                 </p>
                               </>
                             )}

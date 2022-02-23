@@ -755,7 +755,7 @@ function App() {
               showCurrentRow={!isGameWon[difficulty]}
             />
           </div>
-          <div className="pb-5">
+          <div className="pb-5 keyboard">
             <Keyboard
               onChar={onChar}
               onDelete={onDelete}
