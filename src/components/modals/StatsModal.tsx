@@ -16,7 +16,7 @@ import { DifficultyList } from '../lists/DifficultyList'
 import { Tab } from '@headlessui/react'
 import classNames from 'classnames'
 import { createCustomStatURl } from '../../lib/hashUtils'
-import { GameType } from '../../lib/utils'
+import { addToDebugInfo, GameType } from '../../lib/utils'
 import { Difficulty, GameStats } from '../../hooks/gameReducer'
 import { toStats } from '../../lib/stats'
 import { ThemeContext } from '../theme/ThemeContext'
@@ -87,6 +87,7 @@ export const StatsModal = ({
           handleShareScreenshotSuccess()
         }
       } catch (e) {
+        addToDebugInfo('share', { m: (e as { message: string }).message })
         handleShareFailure()
       }
     },

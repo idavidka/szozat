@@ -208,7 +208,11 @@ export const shareStatus = async (
       var filesArray = [file]
 
       if (navigator.canShare && navigator.canShare({ files: filesArray })) {
-        await navigator.share({ files: filesArray })
+        await navigator.share({
+          files: filesArray,
+          title: 'Megoldásom',
+          text: `Nekem ${guesses.length} lépésből sikerült.`,
+        })
         return { type: 'share' as const }
       }
     }
