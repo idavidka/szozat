@@ -173,22 +173,73 @@ export const getShareText = (
 }
 
 export const shareStatus = async (
+  theme: ThemeValue,
   guesses: Word[],
   lost: boolean,
   day: number,
   random: number,
   difficulty: Difficulty,
+  type: 'status' | 'screenshot',
   solution?: Word
 ) => {
-  const text = getShareText(guesses, lost, day, random, difficulty, solution)
+  const content =
+    type === 'screenshot'
+      ? getScreenShot(theme, guesses, day, random, difficulty)
+      : getShareText(guesses, lost, day, random, difficulty, solution)
+
   if (navigator?.share != null) {
-    await navigator.share({ text })
-    return { type: 'share' as const }
+    if (typeof content === 'string') {
+      await navigator.share({ text: content })
+      return { type: 'share' as const }
+    }
+    if (typeof content === 'object') {
+      const image = await new Promise<Blob>((resolve, reject) => {
+        content.toBlob((blob) => {
+          if (blob) {
+            resolve(blob)
+          } else {
+            reject()
+          }
+        })
+      })
+      const file = new File([image], `jatek-${random > 0 ? random : day}.png`, {
+        type: 'image/png',
+      })
+      var filesArray = [file]
+
+      if (navigator.canShare && navigator.canShare({ files: filesArray })) {
+        await navigator.share({ files: filesArray })
+        return { type: 'share' as const }
+      }
+    }
   }
+
   if (navigator?.clipboard?.writeText != null) {
-    await navigator.clipboard.writeText(text)
-    return { type: 'clipboard' as const }
+    if (typeof content === 'string') {
+      await navigator.clipboard.writeText(content)
+      return { type: 'clipboard' as const }
+    }
+
+    if (typeof content === 'object') {
+      const image = await new Promise<Blob>((resolve, reject) => {
+        content.toBlob((blob) => {
+          if (blob) {
+            resolve(blob)
+          } else {
+            reject()
+          }
+        })
+      })
+
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          'image/png': image,
+        }),
+      ])
+      return { type: 'screenshot' as const }
+    }
   }
+
   throw new Error('No sharing methods are available')
 }
 

@@ -36,6 +36,7 @@ type Props = {
   stats: Record<Difficulty, GameStats>
   globalStats: Record<Difficulty, GameStats> | undefined
   handleShareCopySuccess: () => void
+  handleShareScreenshotSuccess: () => void
   handleShareFailure: () => void
   handleNewGameClick: (type: GameType) => void
 }
@@ -55,6 +56,7 @@ export const StatsModal = ({
   stats,
   globalStats,
   handleShareCopySuccess,
+  handleShareScreenshotSuccess,
   handleShareFailure,
   handleNewGameClick,
 }: Props) => {
@@ -64,32 +66,43 @@ export const StatsModal = ({
     setStatDifficulty(difficulty)
   }, [difficulty, isOpen])
 
-  const handleShareClick = useCallback(async () => {
-    try {
-      const { type } = await shareStatus(
-        guesses,
-        isGameLost,
-        day,
-        random,
-        statDifficulty,
-        solution
-      )
-      if (type === 'clipboard') {
-        handleShareCopySuccess()
+  const handleShareClick = useCallback(
+    async (shareType: 'status' | 'screenshot') => {
+      try {
+        const { type } = await shareStatus(
+          theme,
+          guesses,
+          isGameLost,
+          day,
+          random,
+          statDifficulty,
+          shareType,
+          solution
+        )
+        console.log(type)
+        if (type === 'clipboard') {
+          handleShareCopySuccess()
+        }
+        if (type === 'screenshot') {
+          handleShareScreenshotSuccess()
+        }
+      } catch (e) {
+        handleShareFailure()
       }
-    } catch (e) {
-      handleShareFailure()
-    }
-  }, [
-    guesses,
-    isGameLost,
-    day,
-    random,
-    statDifficulty,
-    solution,
-    handleShareCopySuccess,
-    handleShareFailure,
-  ])
+    },
+    [
+      theme,
+      guesses,
+      isGameLost,
+      day,
+      random,
+      statDifficulty,
+      solution,
+      handleShareCopySuccess,
+      handleShareScreenshotSuccess,
+      handleShareFailure,
+    ]
+  )
 
   const renderShareText = useCallback(
     (guesses: Word[], lost: boolean, solution?: Word) => {
@@ -281,7 +294,7 @@ export const StatsModal = ({
                                 tabIndex={-1}
                                 type="button"
                                 className="mt-2 w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
-                                onClick={handleShareClick}
+                                onClick={() => handleShareClick('status')}
                               >
                                 Megosztás
                               </button>
@@ -297,7 +310,14 @@ export const StatsModal = ({
                                   Vagy másold ki ezt a képet!
                                 </p>
                                 <p className="flex justify-center">
-                                  <img src={image} alt="status screenshot" />
+                                  <img
+                                    src={image}
+                                    className="cursor-pointer"
+                                    alt="status screenshot"
+                                    onClick={() =>
+                                      handleShareClick('screenshot')
+                                    }
+                                  />
                                 </p>
                               </>
                             )}

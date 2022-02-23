@@ -107,7 +107,9 @@ function App() {
     useState<ModalType>(false)
   const [isNotEnoughLetters, setIsNotEnoughLetters] = useState(false)
   const [isWordNotFoundAlertOpen, setIsWordNotFoundAlertOpen] = useState(false)
-  const [shareComplete, setShareComplete] = useState(false)
+  const [shareComplete, setShareComplete] = useState<
+    'status' | 'screenshot' | false
+  >(false)
   const [shareFailed, setShareFailed] = useState(false)
   const [successAlert, setSuccessAlert] = useState('')
   const [userInteracted, setUserInteracted] = useState(false)
@@ -444,7 +446,15 @@ function App() {
 
   const handleShareCopySuccess = useCallback(() => {
     addGTM('event', 'copy', { status: 'success' })
-    setShareComplete(true)
+    setShareComplete('status')
+    setTimeout(() => {
+      setShareComplete(false)
+    }, ALERT_TIME_MS)
+  }, [])
+
+  const handleShareScreenshotSuccess = useCallback(() => {
+    addGTM('event', 'copy', { status: 'success screenshot' })
+    setShareComplete('screenshot')
     setTimeout(() => {
       setShareComplete(false)
     }, ALERT_TIME_MS)
@@ -613,15 +623,18 @@ function App() {
         variant="success"
       />
       <Alert
-        message="A játékot kimásoltuk a vágólapra"
-        isOpen={shareComplete}
+        message={`A ${
+          shareComplete === 'screenshot' ? 'játék képét ' : 'játékot '
+        } kimásoltuk a vágólapra`}
+        isOpen={['status', 'screenshot'].includes(shareComplete || '')}
         variant="success"
-        className="z-[1020]"
+        className="z-[1200]"
       />
       <Alert
         message="Nem sikerült a megosztás - lehet, hogy beágyazott böngészőt használsz?"
         isOpen={shareFailed}
         variant="warning"
+        className="z-[1200]"
       />
       <InfoModal
         isOpen={checkIsModalOpen('info')}
@@ -647,6 +660,7 @@ function App() {
         solution={isGameWon[difficulty] ? solution : undefined}
         solutionCreator={solutionCreator}
         handleShareCopySuccess={handleShareCopySuccess}
+        handleShareScreenshotSuccess={handleShareScreenshotSuccess}
         handleShareFailure={handleShareFailure}
         handleNewGameClick={handleNewGame}
         stats={stats}
