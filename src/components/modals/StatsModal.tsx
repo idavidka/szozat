@@ -31,7 +31,7 @@ type Props = {
   handleShareCopySuccess: () => void
   handleShareFailure: () => void
   handleNewGameClick: (type: GameType) => void
-  screenshot?: () => Promise<HTMLCanvasElement>
+  screenshot?: () => HTMLCanvasElement
 }
 
 export const StatsModal = ({
@@ -174,9 +174,10 @@ export const StatsModal = ({
   const [image, setImage] = useState<string>()
   useEffect(() => {
     if (isGameWon && isOpen) {
-      screenshot?.().then((canvas) => {
+      const canvas = screenshot?.()
+      if (canvas) {
         setImage(canvas.toDataURL())
-      })
+      }
     } else {
       setImage('')
     }

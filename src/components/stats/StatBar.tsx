@@ -22,7 +22,6 @@ const StatItem = ({
 }
 
 export const StatBar = ({ gameStats, details }: Props) => {
-  console.log(gameStats)
   return (
     <div className="flex justify-center my-2 w-full">
       <StatItem label="Összes játék" value={gameStats.totalGames} />

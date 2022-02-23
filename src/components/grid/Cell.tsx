@@ -12,7 +12,7 @@ type Props = {
 export const Cell = ({ value, status, className, isPulsing }: Props) => {
   const prevValue = usePrevious(value)
   const containerClasses = classnames(
-    'grow relative inline-flex justify-center border-solid border-2 rounded before:content-[""] before:block before:pb-[100%] overflow-hidden',
+    'grow relative inline-flex justify-center border-solid border-2 rounded overflow-hidden',
     {
       'bg-white dark:bg-slate-800 border-slate-500 dark:text-slate-100':
         !status,

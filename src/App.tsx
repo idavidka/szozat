@@ -470,41 +470,40 @@ function App() {
   }
 
   const handleScreenShot = useCallback(() => {
-    if (gridContainerRef.current && gridSize.height) {
-      const grid = gridContainerRef.current.querySelector(
-        '.grid'
-      ) as HTMLDivElement
+    const canvas = document.createElement('canvas')
 
-      if (grid) {
-        const currentPadding = gridContainerRef.current.style.padding
-        const currentHeight = grid.style.height
-        const currentAutoRows = grid.style.gridAutoRows
-        const rowHeight =
-          gridSize.height / MAX_NUMBER_OF_GUESSES[difficulty] - 5
-
-        gridContainerRef.current.style.padding = '5px'
-        gridContainerRef.current.style.overflowY = 'hidden'
-        grid.style.height = `${gridSize.height}px`
-        grid.style.gridAutoRows = `${rowHeight}px`
-        return html2canvas(gridContainerRef.current, {
-          backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff',
-        }).then((canvas) => {
-          if (gridContainerRef.current) {
-            gridContainerRef.current.style.padding = currentPadding
-            gridContainerRef.current.style.overflowY = 'auto'
-
-            if (grid) {
-              grid.style.height = currentHeight
-              grid.style.gridAutoRows = currentAutoRows
-            }
-          }
-          return Promise.resolve(canvas)
-        })
-      }
-    }
-
-    return Promise.reject()
-  }, [difficulty, gridSize.height, theme])
+    return canvas
+    // if (gridContainerRef.current && gridSize.height) {
+    //   const grid = gridContainerRef.current.querySelector(
+    //     '.grid'
+    //   ) as HTMLDivElement
+    //   if (grid) {
+    //     const currentPadding = gridContainerRef.current.style.padding
+    //     const currentHeight = grid.style.height
+    //     const currentAutoRows = grid.style.gridAutoRows
+    //     const rowHeight =
+    //       gridSize.height / MAX_NUMBER_OF_GUESSES[difficulty] - 5
+    //     gridContainerRef.current.style.padding = '5px'
+    //     gridContainerRef.current.style.overflowY = 'hidden'
+    //     grid.style.height = `${gridSize.height}px`
+    //     grid.style.gridAutoRows = `${rowHeight}px`
+    //     return html2canvas(gridContainerRef.current, {
+    //       backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff',
+    //     }).then((canvas) => {
+    //       if (gridContainerRef.current) {
+    //         gridContainerRef.current.style.padding = currentPadding
+    //         gridContainerRef.current.style.overflowY = 'auto'
+    //         if (grid) {
+    //           grid.style.height = currentHeight
+    //           grid.style.gridAutoRows = currentAutoRows
+    //         }
+    //       }
+    //       return Promise.resolve(canvas)
+    //     })
+    //   }
+    // }
+    // return Promise.reject()
+  }, [])
 
   const handleNewGame = (type: GameType) => {
     addGTM('event', 'newGame', { difficulty })
