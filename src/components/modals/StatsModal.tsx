@@ -180,15 +180,7 @@ export const StatsModal = ({
   const [image, setImage] = useState<string>()
   useEffect(() => {
     if (isGameWon && isOpen) {
-      const canvas = getScreenShot(
-        theme,
-        guesses,
-        isGameLost,
-        day,
-        random,
-        statDifficulty,
-        solution
-      )
+      const canvas = getScreenShot(theme, guesses, day, random, statDifficulty)
       if (canvas) {
         setImage(canvas.toDataURL())
       }

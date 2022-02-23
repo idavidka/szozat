@@ -6,15 +6,14 @@ import { getCurrentWord, getRandomWord } from './words'
 import Konva from 'konva'
 import { ThemeValue } from './theme'
 import { range } from 'lodash'
+import { clipSquare } from './utils'
 
 export const getScreenShot = (
   theme: ThemeValue,
   guesses: Word[],
-  lost: boolean,
   day: number,
   random: number,
-  difficulty: Difficulty,
-  solution?: Word
+  difficulty: Difficulty
 ) => {
   const emptyColors: Record<
     ThemeValue,
@@ -36,17 +35,18 @@ export const getScreenShot = (
     'correct-diff': '#16a349',
     absent: '#94a4b8',
   }
-  const padding = 3
-  const itemSize = { w: 40, h: 32 }
+  const radius = 20
+  const padding = 20
+  const itemSize = { w: 150, h: 120, p: 12 }
   const rowSize = {
-    w: difficulty * itemSize.w + (difficulty - 1) * padding,
+    w: difficulty * itemSize.w + (difficulty - 1) * itemSize.p,
     h: itemSize.h,
   }
   const canvasSize = {
     w: rowSize.w + 2 * padding,
     h:
       rowSize.h * MAX_NUMBER_OF_GUESSES[difficulty] +
-      (MAX_NUMBER_OF_GUESSES[difficulty] - 1) * padding +
+      (MAX_NUMBER_OF_GUESSES[difficulty] - 1) * itemSize.p +
       2 * padding,
   }
 
@@ -69,32 +69,71 @@ export const getScreenShot = (
   layer.add(stageRect)
 
   range(0, MAX_NUMBER_OF_GUESSES[difficulty]).forEach((i) => {
-    const guess = guesses[i] ?? range(i, difficulty)
-    const status = guess
-      ? getGuessStatuses(guess, day, random, difficulty)
-      : null
+    const guess = guesses[i] ?? range(0, difficulty)
+    const status =
+      guesses[i] && getGuessStatuses(guesses[i], day, random, difficulty)
 
     guess.forEach((letter, j) => {
-      const fill = status ? colors[status[j]] : emptyColors[theme].background
-      var stageRect = new Konva.Rect({
-        x: padding + j * (itemSize.w + padding),
-        y: padding + i * (rowSize.h + padding),
+      const fill = status
+        ? colors[status[j].replace('-diff', '') as CharStatus]
+        : emptyColors[theme].background
+      const coord = {
+        x: padding + j * (itemSize.w + itemSize.p),
+        y: padding + i * (rowSize.h + itemSize.p),
+      }
+      var primaryRect = new Konva.Rect({
+        ...coord,
         width: itemSize.w,
         height: itemSize.h,
         fill,
-        cornerRadius: 5,
+        stroke: status ? undefined : emptyColors[theme].border,
+        strokeWidth: status ? 0 : itemSize.w / 20,
       })
-      layer.add(stageRect)
-    })
-  })
 
-  console.log('ASD', {
-    theme,
-    padding,
-    itemSize,
-    rowSize,
-    canvasSize,
-    im: stage.toCanvas(),
+      const group = new Konva.Group({
+        clipFunc: (ctx) =>
+          clipSquare(ctx, coord.x, coord.y, itemSize.w, itemSize.h, radius),
+      })
+
+      group.add(primaryRect)
+
+      const secondaryFill =
+        status && ['correct-diff', 'present-diff'].includes(status[j])
+          ? colors[status[j]]
+          : null
+      if (secondaryFill) {
+        const secondaryRect = new Konva.Line({
+          points: [
+            coord.x + itemSize.w,
+            coord.y,
+            coord.x + itemSize.w,
+            coord.y + itemSize.h,
+            coord.x,
+            coord.y + itemSize.h,
+          ],
+          fill: secondaryFill,
+          closed: true,
+        })
+        group.add(secondaryRect)
+      }
+
+      if (typeof letter === 'string') {
+        var content = new Konva.Text({
+          x: coord.x + itemSize.w / 2,
+          y: coord.y + itemSize.h / 2 + itemSize.p / 2,
+          text: letter,
+          fontSize: itemSize.h / 2,
+          fontFamily: 'Arial',
+          fill: '#ffffff',
+        })
+        content.offsetX(content.width() / 2)
+        content.offsetY(content.height() / 2)
+
+        group.add(content)
+      }
+
+      layer.add(group)
+    })
   })
 
   return stage.toCanvas()
