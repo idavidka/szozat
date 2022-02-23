@@ -4,6 +4,24 @@ import { Difficulty } from '../hooks/gameReducer'
 import { getGuessStatuses, Word } from './statuses'
 import { getCurrentWord, getRandomWord } from './words'
 
+export const getScreenShot = (
+  guesses: Word[],
+  lost: boolean,
+  day: number,
+  random: number,
+  difficulty: Difficulty,
+  solution?: Word
+) => {
+  const canvas = document.createElement('canvas')
+
+  const padding = 5
+  const itemWidth = 40
+  const rowWidth = difficulty * (itemWidth + padding) + padding
+  console.log('ASD', padding, itemWidth, rowWidth)
+
+  return canvas
+}
+
 export const getShareText = (
   guesses: Word[],
   lost: boolean,

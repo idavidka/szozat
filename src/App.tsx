@@ -72,7 +72,6 @@ import {
 } from './hooks/wordReducer'
 import { ThemeValue } from './lib/theme'
 import PKG from '../package.json'
-import html2canvas from 'html2canvas'
 
 const ALERT_TIME_MS = 2000
 const NEW_MODAL_TIME_MS = 500
@@ -469,42 +468,6 @@ function App() {
     dispatch({ type: 'SET_DIFFICULTY', difficulty: value })
   }
 
-  const handleScreenShot = useCallback(() => {
-    const canvas = document.createElement('canvas')
-
-    return canvas
-    // if (gridContainerRef.current && gridSize.height) {
-    //   const grid = gridContainerRef.current.querySelector(
-    //     '.grid'
-    //   ) as HTMLDivElement
-    //   if (grid) {
-    //     const currentPadding = gridContainerRef.current.style.padding
-    //     const currentHeight = grid.style.height
-    //     const currentAutoRows = grid.style.gridAutoRows
-    //     const rowHeight =
-    //       gridSize.height / MAX_NUMBER_OF_GUESSES[difficulty] - 5
-    //     gridContainerRef.current.style.padding = '5px'
-    //     gridContainerRef.current.style.overflowY = 'hidden'
-    //     grid.style.height = `${gridSize.height}px`
-    //     grid.style.gridAutoRows = `${rowHeight}px`
-    //     return html2canvas(gridContainerRef.current, {
-    //       backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff',
-    //     }).then((canvas) => {
-    //       if (gridContainerRef.current) {
-    //         gridContainerRef.current.style.padding = currentPadding
-    //         gridContainerRef.current.style.overflowY = 'auto'
-    //         if (grid) {
-    //           grid.style.height = currentHeight
-    //           grid.style.gridAutoRows = currentAutoRows
-    //         }
-    //       }
-    //       return Promise.resolve(canvas)
-    //     })
-    //   }
-    // }
-    // return Promise.reject()
-  }, [])
-
   const handleNewGame = (type: GameType) => {
     addGTM('event', 'newGame', { difficulty })
     setUserInteracted(true)
@@ -686,7 +649,6 @@ function App() {
         handleShareCopySuccess={handleShareCopySuccess}
         handleShareFailure={handleShareFailure}
         handleNewGameClick={handleNewGame}
-        screenshot={handleScreenShot}
         stats={stats}
         globalStats={globalStats}
       />

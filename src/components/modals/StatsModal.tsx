@@ -1,7 +1,7 @@
 import Countdown from 'react-countdown'
 import { StatBar } from '../stats/StatBar'
 import { Histogram } from '../stats/Histogram'
-import { getShareText, shareStatus } from '../../lib/share'
+import { getScreenShot, getShareText, shareStatus } from '../../lib/share'
 import { tomorrow } from '../../lib/words'
 import { BaseModal } from './BaseModal'
 import { Word } from '../../lib/statuses'
@@ -31,7 +31,6 @@ type Props = {
   handleShareCopySuccess: () => void
   handleShareFailure: () => void
   handleNewGameClick: (type: GameType) => void
-  screenshot?: () => HTMLCanvasElement
 }
 
 export const StatsModal = ({
@@ -51,7 +50,6 @@ export const StatsModal = ({
   handleShareCopySuccess,
   handleShareFailure,
   handleNewGameClick,
-  screenshot,
 }: Props) => {
   const [statDifficulty, setStatDifficulty] = useState<Difficulty>(difficulty)
   useEffect(() => {
@@ -174,7 +172,14 @@ export const StatsModal = ({
   const [image, setImage] = useState<string>()
   useEffect(() => {
     if (isGameWon && isOpen) {
-      const canvas = screenshot?.()
+      const canvas = getScreenShot(
+        guesses,
+        isGameLost,
+        day,
+        random,
+        statDifficulty,
+        solution
+      )
       if (canvas) {
         setImage(canvas.toDataURL())
       }
