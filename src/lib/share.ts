@@ -189,7 +189,10 @@ export const shareStatus = async (
 
   if (navigator?.share != null) {
     if (typeof content === 'string') {
-      await navigator.share({ text: content })
+      await navigator.share({
+        title: 'Megoldottam',
+        text: content,
+      })
       return { type: 'share' as const }
     }
     if (typeof content === 'object') {
@@ -209,7 +212,7 @@ export const shareStatus = async (
 
       if (navigator.canShare && navigator.canShare({ files: filesArray })) {
         await navigator.share({
-          files: filesArray,
+          // files: filesArray,
           title: 'Megoldásom',
           text: `Nekem ${guesses.length} lépésből sikerült.`,
         })
