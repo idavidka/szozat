@@ -76,7 +76,7 @@ export const getScreenShot = (
     guess.forEach((letter, j) => {
       const fill = status
         ? colors[status[j].replace('-diff', '') as CharStatus]
-        : emptyColors[theme].background
+        : emptyColors[theme].border
       const coord = {
         x: padding + j * (itemSize.w + itemSize.p),
         y: padding + i * (rowSize.h + itemSize.p),
@@ -86,8 +86,8 @@ export const getScreenShot = (
         width: itemSize.w,
         height: itemSize.h,
         fill,
-        stroke: status ? undefined : emptyColors[theme].border,
-        strokeWidth: status ? 0 : itemSize.w / 20,
+        // stroke: status ? undefined : emptyColors[theme].border,
+        // strokeWidth: status ? 0 : itemSize.w / 20,
       })
 
       const group = new Konva.Group({
@@ -96,6 +96,21 @@ export const getScreenShot = (
       })
 
       group.add(primaryRect)
+
+      if (!status) {
+        const borderWidth = status ? 0 : itemSize.w / 20
+        var innerRect = new Konva.Rect({
+          x: coord.x + borderWidth,
+          y: coord.y + borderWidth,
+          width: itemSize.w - borderWidth * 2,
+          height: itemSize.h - borderWidth * 2,
+          fill: emptyColors[theme].background,
+          cornerRadius: radius * 0.5,
+          // stroke: status ? undefined : emptyColors[theme].border,
+          // strokeWidth: status ? 0 : itemSize.w / 20,
+        })
+        group.add(innerRect)
+      }
 
       const secondaryFill =
         status && ['correct-diff', 'present-diff'].includes(status[j])
