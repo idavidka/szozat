@@ -38,7 +38,7 @@ export const BaseModal = ({
         className={`${context.theme} base-modal fixed z-[1010] inset-0 overflow-y-auto`}
         onClose={handleClose}
       >
-        <div className="flex items-center justify-center min-h-screen py-10 px-4 text-center">
+        <div className="flex items-start justify-center min-h-screen py-10 px-4 text-center">
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
