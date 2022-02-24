@@ -272,20 +272,24 @@ export const generateEmojiGrid = (
   random: number,
   difficulty: Difficulty
 ) => {
-  return guesses
-    .map((guess) => {
-      const status = getGuessStatuses(guess, day, random, difficulty)
+  return range(0, MAX_NUMBER_OF_GUESSES[difficulty])
+    .map((i) => {
+      const guess = guesses[i] ?? range(0, difficulty)
+      const status =
+        guesses[i] && getGuessStatuses(guesses[i], day, random, difficulty)
       return guess
-        .map((letter, i) => {
-          switch (status[i]) {
+        .map((letter, j) => {
+          switch (status?.[j]) {
             case 'correct':
             case 'correct-diff':
               return '🟩'
             case 'present':
             case 'present-diff':
               return '🟨'
-            default:
+            case 'absent':
               return '⬜'
+            default:
+              return '⬛'
           }
         })
         .join('')
